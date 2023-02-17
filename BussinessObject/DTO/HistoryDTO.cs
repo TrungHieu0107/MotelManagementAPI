@@ -8,13 +8,13 @@ namespace BussinessObject.DTO
 {
     public class HistoryDTO
     {
-        long Id { get; set; }
-        long RoomId { get; set; }
-        long ResidentId { get; set; }
-        DateTime StartDate { get; set; }
-        DateTime EndDate { get; set; }
-        RoomDTO Room { get; set; }
-        ResidentDTO Resident { get; set; }
-        
+        public long Id { get; set; }
+        public long RoomId { get; set; }
+        public long ResidentId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public RoomDTO Room { get; set; }
+        public ResidentDTO Resident { get; set; }
+
     }
 }

@@ -9,12 +9,12 @@ namespace BussinessObject.DTO
 {
     public class AccountDTO
     {
-        long Id { get; set; }
-        string UserName { get; set; }
-        string Password { get; set; }
-        string IdentityCardNumber { get; set; }
-        string Phone { get; set; }
-        string FullName { get; set; }
-        AccountStatus Status { get; set; }
+        public long Id { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string IdentityCardNumber { get; set; }
+        public string Phone { get; set; }
+        public string FullName { get; set; }
+        public AccountStatus Status { get; set; }
     }
 }

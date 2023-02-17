@@ -9,24 +9,24 @@ namespace BussinessObject.DTO
 {
     public class InvoiceDTO
     {
-        long Id { get; set; }
-        int ElectricityConsumptionStart { get; set; }
-        int ElectricityConsumptionEnd { get; set; }
-        long ElectricityCostId { get; set; }
-        int WaterConsumptionStart { get; set; }
-        int WaterConsumptionEnd { get; set; }
-        long WaterCostId { get; set; }
-        DateTime CreatedDate { get; set; }
-        DateTime PaidDate { get; set; }
-        DateTime StartDate { get; set; }
-        DateTime EndDate { get; set; }
-        DateTime ExpiredDate { get; set; }
-        long RoomId { get; set; }
-        long ResidentId { get; set; }
-        InvoiceStatus Status { get; set; }
-        ResidentDTO Resident { get; set; }
-        WaterCostDTO WaterCost { get; set; }
-        ElectricityCostDTO ElectricityCost { get; set; }
-        RoomDTO Room { get; set; }
+        public long Id { get; set; }
+        public int ElectricityConsumptionStart { get; set; }
+        public int ElectricityConsumptionEnd { get; set; }
+        public long ElectricityCostId { get; set; }
+        public int WaterConsumptionStart { get; set; }
+        public int WaterConsumptionEnd { get; set; }
+        public long WaterCostId { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime PaidDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime ExpiredDate { get; set; }
+        public long RoomId { get; set; }
+        public long ResidentId { get; set; }
+        public InvoiceStatus Status { get; set; }
+        public ResidentDTO Resident { get; set; }
+        public WaterCostDTO WaterCost { get; set; }
+        public ElectricityCostDTO ElectricityCost { get; set; }
+        public RoomDTO Room { get; set; }
     }
 }

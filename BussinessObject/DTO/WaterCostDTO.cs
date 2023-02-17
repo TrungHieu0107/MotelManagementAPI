@@ -8,9 +8,9 @@ namespace BussinessObject.DTO
 {
     public class WaterCostDTO
     {
-        long Id { get; set; }
-        long Price { get; set; }
-        DateTime AppliedDate { get; set; }
-        List<InvoiceDTO> Invoices { get; set; }
+        public long Id { get; set; }
+        public long Price { get; set; }
+        public DateTime AppliedDate { get; set; }
+        public List<InvoiceDTO> Invoices { get; set; }
     }
 }

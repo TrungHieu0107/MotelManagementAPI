@@ -8,6 +8,6 @@ namespace BussinessObject.DTO
 {
     public class ManagerDTO : AccountDTO
     {
-        MotelChainDTO MotelChain { get; set; }
+        public MotelChainDTO MotelChain { get; set; }
     }
 }
