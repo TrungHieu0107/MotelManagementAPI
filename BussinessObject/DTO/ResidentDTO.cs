@@ -8,7 +8,7 @@ namespace BussinessObject.DTO
 {
     public class ResidentDTO
     {
-        List<HistoryDTO> Histories { get; set; }
-        List<InvoiceDTO> Invoices { get; set; }
+        public List<HistoryDTO> Histories { get; set; }
+        public List<InvoiceDTO> Invoices { get; set; }
     }
 }
