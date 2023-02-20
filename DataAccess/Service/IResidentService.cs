@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BussinessObject.DTO;
+using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,15 @@ namespace DataAccess.Service
 {
     public interface IResidentService
     {
+        bool CreatResidentAccount(AccountDTO accountDTO);
+
+
+        ResidentDTO GetResidentByIdentityCardNumber(string idCard);
+
+        bool DeActiveResident(string idCard);
+
+        bool UpdateResidentAccount(long id, ResidentUpdateDTO account);
+
+        bool ActiveResident(string idCard);
     }
 }

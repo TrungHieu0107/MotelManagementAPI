@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Validator
 {
-    internal class ResidentValidator
+    public class ResidentValidator 
     {
     }
 }

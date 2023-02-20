@@ -10,5 +10,8 @@ namespace DataAccess.Repository
 {
     public interface IRoomRepo
     {
+        Task<Room> findRoomByCodeAndStatus(string code, RoomStatus status);
+        void UpdateRoomStatus(Room room);
     }
+      
 }
