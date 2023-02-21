@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repository
@@ -18,10 +17,10 @@ namespace DataAccess.Repository
             _context = context;
         }
 
-        public void AddWaterCost(WaterCost WaterCost)
+        public int AddWaterCost(WaterCost WaterCost)
         {
             _context.WaterCosts.Add(WaterCost);
-            _context.SaveChanges();
+           return _context.SaveChanges();
         }
 
         public async Task<WaterCost> GetCurrentWaterCost()
@@ -38,20 +37,22 @@ namespace DataAccess.Repository
             return _context.WaterCosts.Where(p => p.AppliedDate > date).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<WaterCost>> GetWaterCostByMonthAndYear(int month, int year)
+        public async Task<IEnumerable<WaterCost>> GetWaterCostByMonthAndYear(int month, int year, int currentPage, int pageSize)
         {
+            int skipCount = (currentPage - 1) * pageSize;
+            int takeCount = pageSize;
             var query = _context.WaterCosts.AsQueryable();
             if (year > 0)
                 query = query.Where(p => p.AppliedDate.Year == year);
             if (month > 0 && month <= 12)
                 query = query.Where(p => p.AppliedDate.Month == month);
-            return await query.ToListAsync();
+            return await query.Skip(skipCount).Take(takeCount).ToListAsync();
         }
 
-        public void UpdateWaterCost(WaterCost WaterCost)
+        public int UpdateWaterCost(WaterCost WaterCost)
         {
             _context.Entry(WaterCost).State = EntityState.Modified;
-            _context.SaveChanges();
+           return _context.SaveChanges();
         }
     }
 }

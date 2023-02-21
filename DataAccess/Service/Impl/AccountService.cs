@@ -2,15 +2,10 @@
 using BussinessObject.Models;
 using DataAccess.Repository;
 using DataAccess.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Service.Impl
 {
-    public class AccountService : IAccountService  
+    public class AccountService : IAccountService
     {
         private readonly IAccountRepo _accountRepo;
         private readonly IJwtService _jwtService;
@@ -27,13 +22,14 @@ namespace DataAccess.Service.Impl
             {
                 return null;
             }
-            
+
             string role = null;
-             role = account.GetType().Name.ToString();
+            role = account.GetType().Name.ToString();
             if (role.Equals("Manager"))
             {
                 role = "Manager";
-            } else if(role.Equals("Resident"))
+            }
+            else if (role.Equals("Resident"))
             {
                 role = "Resident";
             }

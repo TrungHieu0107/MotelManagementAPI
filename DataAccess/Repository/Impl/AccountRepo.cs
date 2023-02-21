@@ -1,10 +1,6 @@
 ﻿using BussinessObject.Data;
 using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
@@ -15,6 +11,12 @@ namespace DataAccess.Repository
         {
             this._context = context;
         }
+
+        public Account FindAccountByUserName(string UserName)
+        {
+            return _context.Accounts.Where(p => p.UserName == UserName).FirstOrDefault();
+        }
+
         public Account FindAccountByUserNameAndPassword(string UserName, string Password)
         {
             return _context.Accounts.Where(
@@ -25,7 +27,7 @@ namespace DataAccess.Repository
 
         public bool IsManager(long id)
         {
-           
+
             return _context.Accounts.Any(p => p.Id == id && p is Manager);
         }
     }

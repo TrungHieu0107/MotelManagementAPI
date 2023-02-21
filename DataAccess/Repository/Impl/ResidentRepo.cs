@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
@@ -18,19 +16,24 @@ namespace DataAccess.Repository
         {
             this._context = context;
         }
-        
+
 
         public Resident CreatResidentAccount(Resident resident)
         {
-            _context.Residents.Add(resident);
-            _context.SaveChanges();
-            return resident;
             
+            _context.Residents.Add(resident);
+            int check =  _context.SaveChanges();
+            if(check > 0)
+            {
+                return resident;
+            } else  throw new Exception("Can not update the resident");
+
+
         }
 
         public Resident findById(long id)
         {
-           return _context.Residents.Find(id);
+            return _context.Residents.Find(id);
         }
 
         public IEnumerable<Resident> GetResidentByIdentityCardNumberAndStatusAndUserName(string idCard, string username, [Optional] AccountStatus a)
@@ -51,13 +54,17 @@ namespace DataAccess.Repository
             return query.ToList();
         }
 
-        public Resident UpdateResidentAccount( Resident resident)
+        public Resident UpdateResidentAccount(Resident resident)
         {
             _context.Entry(resident).State = EntityState.Modified;
-            _context.SaveChanges();
-            return resident;
+            int check = _context.SaveChanges();
+            if (check > 0)
+            {
+                return resident;
+            }
+            else throw new Exception("Can not update the resident");
         }
 
-      
+
     }
 }

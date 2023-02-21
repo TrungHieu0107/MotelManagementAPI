@@ -1,9 +1,4 @@
 ﻿using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
@@ -11,5 +6,6 @@ namespace DataAccess.Repository
     {
         Account FindAccountByUserNameAndPassword(string UserName, string Password);
         public bool IsManager(long id);
+        Account FindAccountByUserName(string UserName);
     }
 }

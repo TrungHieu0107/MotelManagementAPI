@@ -1,12 +1,8 @@
 ﻿using BussinessObject.Data;
 using BussinessObject.Models;
 using BussinessObject.Status;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
@@ -19,8 +15,8 @@ namespace DataAccess.Repository
         }
         public List<Invoice> checkLateInvoice(string idCard)
         {
-          return  _context.Invoices.Where(
-                 p => p.Resident.IdentityCardNumber == idCard && p.Status == InvoiceStatus.LATE).ToList<Invoice>();
+            return _context.Invoices.Where(
+                   p => p.Resident.IdentityCardNumber == idCard && p.Status == InvoiceStatus.LATE).ToList<Invoice>();
         }
     }
 }

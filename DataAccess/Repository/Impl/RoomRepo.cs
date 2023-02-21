@@ -2,10 +2,7 @@
 using BussinessObject.Models;
 using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repository
@@ -20,9 +17,9 @@ namespace DataAccess.Repository
             this.residentRepository = residentRepo;
         }
 
-        public async Task<Room> findRoomByCodeAndStatus(string code, RoomStatus status)
+        public  Room findRoomByCodeAndStatus(string code, RoomStatus status)
         {
-            return await _context.Rooms.Where(p => p.Code == code && p.Status == status).FirstOrDefaultAsync();
+            return _context.Rooms.Where(p => p.Code == code && p.Status == status).FirstOrDefault();
         }
         public async void UpdateRoomStatus(Room room)
         {

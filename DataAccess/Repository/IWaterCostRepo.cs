@@ -1,8 +1,6 @@
 ﻿using BussinessObject.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repository
@@ -11,11 +9,11 @@ namespace DataAccess.Repository
     {
         Task<WaterCost> GetCurrentWaterCost();
 
-        Task<IEnumerable<WaterCost>> GetWaterCostByMonthAndYear(int month, int year);
+        Task<IEnumerable<WaterCost>> GetWaterCostByMonthAndYear(int month, int year, int currentPage, int pageSize);
         WaterCost GetWaterCostAfterDate(DateTime date);
 
-        void AddWaterCost(WaterCost WaterCost);
+        int AddWaterCost(WaterCost WaterCost);
 
-        void UpdateWaterCost(WaterCost WaterCost);
+        int UpdateWaterCost(WaterCost WaterCost);
     }
 }

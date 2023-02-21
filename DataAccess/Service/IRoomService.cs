@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using BussinessObject.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace DataAccess.Service
 {
     public interface IRoomService
     {
+       
     }
 }

@@ -2,12 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Security
 {
@@ -19,7 +16,7 @@ namespace DataAccess.Security
         {
             _config = config;
         }
-        public string GenerateJwtToken(Account user , string role)
+        public string GenerateJwtToken(Account user, string role)
         {
 
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -28,7 +25,7 @@ namespace DataAccess.Security
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
             var issuer = _config["JwtSettings:Issuer"];
 
-           
+
 
             var tokenDescription = new SecurityTokenDescriptor
             {
@@ -42,7 +39,7 @@ namespace DataAccess.Security
 
 
 
-                    new Claim("TokenId", Guid.NewGuid().ToString()), 
+                    new Claim("TokenId", Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, role )
 
                 }),

@@ -1,8 +1,10 @@
-﻿using BussinessObject.DTO.Common;
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
+using BussinessObject.DTO.Common;
 using DataAccess.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MotelManagementAPI.Controllers
 {
@@ -21,19 +23,25 @@ namespace MotelManagementAPI.Controllers
         public IActionResult Authenticate(LoginDTO loginDTO)
         {
             CommonResponse commonResponse = new CommonResponse();
+            try
+            {             
 
-            var token = _accountService.authenticate(loginDTO);
-            if (token == null)
+                var token = _accountService.authenticate(loginDTO);
+                if (token == null)
+                {
+                    commonResponse.Message = "UserName or Password is incorect";
+                    return Unauthorized(commonResponse);
+
+                }
+                else
+                {
+                    return Ok(token);
+
+                }
+            } catch (Exception ex)
             {
-                //commonResponse.Message = "UserName or Password is incorect";
-                return Unauthorized();
-
-            }
-            else
-            {
-              
-                return Ok(token);
-
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
             }
         }
     }
