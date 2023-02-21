@@ -1,5 +1,4 @@
-﻿using BussinessObject.DTO;
-using BussinessObject.DTO.Common;
+﻿using BussinessObject.DTO.Common;
 using System.Threading.Tasks;
 
 namespace MotelManagerWebApp.Service

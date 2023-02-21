@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DataAccess.Validator
+﻿namespace DataAccess.Validator
 {
-    public class ResidentValidator 
+    public class ResidentValidator
     {
     }
 }

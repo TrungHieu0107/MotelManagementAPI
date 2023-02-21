@@ -1,16 +1,11 @@
-﻿using BussinessObject.Data;
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Service.Impl
 {
@@ -18,10 +13,12 @@ namespace DataAccess.Service.Impl
     {
         private readonly IResidentRepo _residentRepo;
         private readonly IInvoiceRepo _invoiceRepo;
-        public ResidentService(IResidentRepo _residentRepo, IInvoiceRepo _invoiceRepo)
+        private readonly IAccountRepo _accountRepo;
+        public ResidentService(IResidentRepo _residentRepo, IInvoiceRepo _invoiceRepo, IAccountRepo accountRepo)
         {
             this._residentRepo = _residentRepo;
             this._invoiceRepo = _invoiceRepo;
+            _accountRepo = accountRepo;
         }
 
 
@@ -32,11 +29,11 @@ namespace DataAccess.Service.Impl
             var serialized = JsonConvert.SerializeObject(resident);
             var residentDTO = JsonConvert.DeserializeObject<ResidentDTO>(serialized);
             return residentDTO;
-            
+
         }
 
 
-       
+
 
         public bool DeActiveResident(String idCard)
         {
@@ -54,9 +51,9 @@ namespace DataAccess.Service.Impl
         public bool CreatResidentAccount(AccountDTO account)
         {
             bool check = false;
-            Resident checkExistAccount = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null).FirstOrDefault<Resident>();
-            
-            if (checkExistAccount == null)
+            Resident checkExistIdCardNumber = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null).FirstOrDefault<Resident>();
+            Account checkExistUserName = _accountRepo.FindAccountByUserName(account.UserName);
+            if (checkExistIdCardNumber == null && checkExistUserName == null)
             {
                 Resident resident = new Resident();
                 resident.IdentityCardNumber = account.IdentityCardNumber;
@@ -66,8 +63,17 @@ namespace DataAccess.Service.Impl
                 resident.FullName = account.FullName;
                 resident.Phone = account.Phone;
                 //Save change
-                _residentRepo.CreatResidentAccount(resident);
-                check = true;
+                var newResident = _residentRepo.CreatResidentAccount(resident);
+                if(newResident != null) {
+                    check = true;
+                }
+               
+            }else if(checkExistUserName != null)
+            {
+                throw new Exception("This username already exist");
+
+            } else if(checkExistIdCardNumber != null) {
+                throw new Exception("This resident already exist");
             }
 
             return check;
@@ -77,25 +83,31 @@ namespace DataAccess.Service.Impl
         {
             bool check = false;
             //  check if id cardnumber is exsit
-            Resident idCardCheck = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber,null).FirstOrDefault<Resident>();
-
+            Resident idCardCheck = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null,AccountStatus.ACTIVE).FirstOrDefault<Resident>();
+            if (idCardCheck == null)
+            {
+                throw new Exception("Indentity Number all read");
+            }
             // check if user exsit 
             Resident resident = _residentRepo.findById(id);
 
             // user exist , idCardnumber input is unique
-            if (resident != null && idCardCheck == null )
+            if (resident != null && idCardCheck == null)
             {
 
                 resident.IdentityCardNumber = account.IdentityCardNumber;
 
-              
+
                 resident.Password = account.Password;
                 resident.FullName = account.FullName;
                 resident.Phone = account.Phone;
-                resident.Status = account.Status;
+              
                 //Save change
-               _residentRepo.UpdateResidentAccount(resident);
-               check = true;
+                var updatedResident = _residentRepo.UpdateResidentAccount(resident);
+                if (updatedResident != null)
+                {
+                    check = true;
+                }
             }
 
             return check;
@@ -130,6 +142,6 @@ namespace DataAccess.Service.Impl
             return check;
         }
 
-      
+
     }
 }

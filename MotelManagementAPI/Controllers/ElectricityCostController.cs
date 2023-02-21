@@ -1,20 +1,16 @@
 ﻿using BussinessObject.DTO;
-using DataAccess.Repository;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System;
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+
     public class ElectricityCostController : ControllerBase
     {
         private readonly IElectricityCostService electricityCostService;
@@ -31,22 +27,36 @@ namespace MotelManagementAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("electricity-cost/{year}/{month}")]
-        public async Task<IActionResult> Get(int year, int month)
+        [Route("electricity-cost/{year}/{month}/{pageSize}/{currentPage}")]
+        public async Task<IActionResult> Get(int year, int month, int pageSize = 10, int currentPage = 1)
         {
-           // var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-           // var userId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
 
-            var electricityCost = await electricityCostService.GetElectrictyCost(month, year);
             CommonResponse common = new CommonResponse();
-            if (electricityCost == null) {
-                common.Message = "Some thing went wrong";
-            } else
+            try
             {
-                common.Data = electricityCost;
+                Pagination pagination = new Pagination();
 
+
+                pagination.PageSize = pageSize;
+                pagination.CurrentPage = currentPage;
+                var electricityCost = await electricityCostService.GetElectrictyCost(month, year, currentPage, pageSize);
+
+                if (electricityCost == null)
+                {
+                    common.Message = "Some thing went wrong";
+                }
+                else
+                {
+                    common.Data = electricityCost;
+
+                }
+                return Ok(common);
             }
-            return Ok(common); 
+            catch (Exception ex)
+            {
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+            }
         }
 
 
@@ -54,39 +64,59 @@ namespace MotelManagementAPI.Controllers
         /// lấy giá tiền của tiền điện hiện tại
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Manager")]
-        [Authorize(Roles = "Resident")]
+        // [Authorize(Roles = "Manager")]
+        // [Authorize(Roles = "Resident")]
 
         [HttpGet]
         [Route("get-current-electricity-cost")]
         public async Task<IActionResult> GetCurentElectricityCost()
         {
-            var electricityCost = await electricityCostService.GetCurrentElectricityCost();
             CommonResponse common = new CommonResponse();
-            if (electricityCost == null)
+            try
             {
-                common.Message = "Not Found";
+                var electricityCost = await electricityCostService.GetCurrentElectricityCost();
+
+                if (electricityCost == null)
+                {
+                    common.Message = "Not Found";
+                }
+                else
+                {
+                    common.Data = electricityCost;
+
+                }
+                return Ok(common);
             }
-            else
+            catch (Exception ex)
             {
-                common.Data = electricityCost;
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
 
             }
-            return  Ok(common);
         }
 
         [HttpPost]
         [Route("add-electricity-cost")]
         public async Task<IActionResult> Post(ElectricityCostRequestDTO obj)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            CommonResponse common = new CommonResponse();
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var result = electricityCostService.UpdateElectricity(obj);
-            if (result == null)
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
+                var result = electricityCostService.UpdateElectricity(obj);
+                if (result == null)
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
 
-            return Ok("Added Successfully");
+                return Ok("Added Successfully");
+            }
+            catch (Exception ex)
+            {
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+
+            }
         }
     }
 }

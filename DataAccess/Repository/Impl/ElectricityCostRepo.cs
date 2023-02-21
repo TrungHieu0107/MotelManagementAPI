@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repository
@@ -28,26 +27,29 @@ namespace DataAccess.Repository
               ).OrderByDescending(p => p.AppliedDate).FirstOrDefaultAsync();
         }
 
-        public void UpdateElectricityCost(ElectricityCost electricityCost)
+        public int UpdateElectricityCost(ElectricityCost electricityCost)
         {
             _context.Entry(electricityCost).State = EntityState.Modified;
-            _context.SaveChanges();
+            return _context.SaveChanges();
         }
 
-        public void AddElectricityCost(ElectricityCost electricityCost)
+        public int AddElectricityCost(ElectricityCost electricityCost)
         {
             _context.ElectricityCosts.Add(electricityCost);
-            _context.SaveChanges();
+            return _context.SaveChanges();
         }
 
-        public async Task<IEnumerable<ElectricityCost>> GetElectricityCostByMonthAndYear(int month, int year)
+        public async Task<IEnumerable<ElectricityCost>> GetElectricityCostByMonthAndYear(int month, int year, int currentPage, int pageSize)
         {
+            int skipCount = (currentPage - 1) * pageSize;
+            int takeCount = pageSize;
+
             var query = _context.ElectricityCosts.AsQueryable();
             if (year > 0)
                 query = query.Where(p => p.AppliedDate.Year == year);
-            if(month > 0 && month <= 12)
+            if (month > 0 && month <= 12)
                 query = query.Where(p => p.AppliedDate.Month == month);
-            return   await query.ToListAsync();
+            return await query.Skip(skipCount).Take(takeCount).ToListAsync();
         }
 
         public ElectricityCost GetElectricitAfterDate(DateTime date)

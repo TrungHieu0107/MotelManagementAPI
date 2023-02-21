@@ -1,10 +1,10 @@
-﻿using BussinessObject.DTO.Common;
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
+using BussinessObject.DTO.Common;
 using DataAccess.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
@@ -25,22 +25,35 @@ namespace MotelManagementAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("water-cost/{year}/{month}")]
-        public async Task<IActionResult> Get(int year, int month)
+        [Route("water-cost/{year}/{month}/{pageSize}/{currentPage}")]
+        public async Task<IActionResult> Get(int year, int month, int currentPage, int pageSize)
         {
-
-            var waterCost = await _waterCostService.GetWaterCost(month, year);
             CommonResponse common = new CommonResponse();
-            if (waterCost == null)
+            try
             {
-                common.Message = "Some thing went wrong";
-            }
-            else
-            {
-                common.Data = waterCost;
+                Pagination pagination = new Pagination();
+                pagination.PageSize = pageSize;
+                pagination.CurrentPage = currentPage;
 
+                var waterCost = await _waterCostService.GetWaterCost(month, year, currentPage, pageSize);
+
+                if (waterCost == null)
+                {
+                    common.Message = "Some thing went wrong";
+                }
+                else
+                {
+                    common.Data = waterCost;
+                }
+                return Ok(common);
             }
-            return Ok(common);
+            catch (Exception ex)
+            {
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+            }
+
+
         }
 
 

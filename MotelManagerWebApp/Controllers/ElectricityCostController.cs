@@ -8,7 +8,8 @@ namespace MotelManagerWebApp.Controllers
     {
         private readonly IElectricityCostApiClientcs _electricityCostApiClientcs;
 
-        public ElectricityCostController(IElectricityCostApiClientcs electricityCostApiClientcs) { 
+        public ElectricityCostController(IElectricityCostApiClientcs electricityCostApiClientcs)
+        {
             this._electricityCostApiClientcs = electricityCostApiClientcs;
         }
         [Route("ElectricityCost")]

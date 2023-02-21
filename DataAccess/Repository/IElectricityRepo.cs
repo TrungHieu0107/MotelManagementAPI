@@ -1,10 +1,7 @@
-﻿using System;
+﻿using BussinessObject.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using BussinessObject.DTO;
-using BussinessObject.Models;
 
 namespace DataAccess.Repository
 {
@@ -12,11 +9,11 @@ namespace DataAccess.Repository
     {
         Task<ElectricityCost> GetCurrentElectrictyCost();
 
-        Task<IEnumerable<ElectricityCost>> GetElectricityCostByMonthAndYear(int month, int year);
+        Task<IEnumerable<ElectricityCost>> GetElectricityCostByMonthAndYear(int month, int year, int currentPage, int pageSize);
         ElectricityCost GetElectricitAfterDate(DateTime date);
 
-        void AddElectricityCost(ElectricityCost electricityCost);
+        int AddElectricityCost(ElectricityCost electricityCost);
 
-        void UpdateElectricityCost(ElectricityCost electricityCost);
+        int UpdateElectricityCost(ElectricityCost electricityCost);
     }
 }

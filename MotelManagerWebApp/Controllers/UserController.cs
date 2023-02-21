@@ -1,17 +1,16 @@
 ﻿using BussinessObject.DTO;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using MotelManagerWebApp.Service;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using MotelManagerWebApp.Service;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Configuration;
-using System;
+using System.Threading.Tasks;
 
 namespace MotelManagerWebApp.Controllers
 {
@@ -41,12 +40,13 @@ namespace MotelManagerWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
-           string token = await _accountApiClient.Authenticate(loginDTO);
+            string token = await _accountApiClient.Authenticate(loginDTO);
             if (token == null)
             {
-                return RedirectToAction("Login","User");
+                return RedirectToAction("Login", "User");
 
-            } else
+            }
+            else
             {
                 var userPrincipal = ValidateToken(token);
                 var authenticationProperties = new AuthenticationProperties
@@ -62,8 +62,8 @@ namespace MotelManagerWebApp.Controllers
                 return RedirectToAction("Index", "Home");
 
             }
-           
-          
+
+
         }
 
 
