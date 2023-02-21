@@ -38,7 +38,6 @@ namespace DataAccess.Security
                     new Claim("Id", user.Id.ToString()),
 
 
-
                     new Claim("TokenId", Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, role )
 

@@ -13,35 +13,30 @@ namespace DataAccess.Repository
         void UpdateRoomStatus(Room room);
         RoomDTO GetRoomById(long roomId);
         RoomDTO GetRoomByCode(string roomCode);
-
-        Task<IEnumerable<Room>> GetAllRoomInMotelChain(long motelChainId);
         RoomDTO Insert(RoomDTO room);
         bool DeleteRomById(long room);
-
         RoomDTO Update(RoomDTO room);
-
         IEnumerable<RoomDTO> GetAllRoomHistoryWithFilter
         (
-            long motelId,
             string roomCode,
             long minFee,
             long maxFee,
             List<RoomStatus> listStatusEnum,
             DateTime appliedDateAfter,
             int page,
-            int pageSize
+            int pageSize,
+            long userId
         );
-
         long CountRoomHistoryWithFilter
         (
-            long motelId,
             string roomCode,
             long minFee,
             long maxFee,
             List<RoomStatus> listStatusEnum,
             DateTime appliedDateAfter,
             int page,
-            int pageSize
+            int pageSize,
+            long userId
         );
 
     }

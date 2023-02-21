@@ -23,7 +23,10 @@ namespace DataAccess.Service.Impl
         public List<InvoiceDTO> GetInvoiceHistoryOfRoom(long roomId, ref Pagination pagination)
         {
             pagination.Total = _invoiceRepo.CountInvocieHistoryHasRoomId(roomId);
-            return _invoiceRepo.GetInvoiceHistoryOfRoomWithPaging(roomId, pagination).ToList();
+
+            return _invoiceRepo
+                .GetInvoiceHistoryOfRoomWithPaging(roomId, pagination)
+                .ToList();
         }
     }
 }

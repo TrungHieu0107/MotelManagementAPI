@@ -105,14 +105,23 @@ namespace DataAccess.Service.Impl
     
         private readonly IRoomRepo _roomRepo;
         private readonly IHistoryRepo _historyRepo;
-        public RoomService(IRoomRepo roomRepo, IHistoryRepo historyRepo)
+        private readonly IMotelChainRepo _motelChainRepo;
+
+        public RoomService(IRoomRepo roomRepo, IHistoryRepo historyRepo, IMotelChainRepo motelChainRepo)
         {
-            _roomRepo = roomRepo;
-            _historyRepo = historyRepo;
+            this._roomRepo = roomRepo;
+            this._historyRepo = historyRepo;
+            this._motelChainRepo = motelChainRepo;
         }
 
-        public RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long motelID)
+        public RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId)
         {
+            var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
+            if (motelID == -1)
+            {
+                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
+            }
+
             RoomDTO newRoomDTO = GetRoom(code, rentFee, feeAppliedDate, status, motelID, -1);
 
             if (checkValidationRoom(newRoomDTO))
@@ -146,7 +155,7 @@ namespace DataAccess.Service.Impl
             return room;
         }
 
-        bool checkValidationRoom(RoomDTO room)
+        private bool checkValidationRoom(RoomDTO room)
         {
 
             bool isError = false;
@@ -158,11 +167,6 @@ namespace DataAccess.Service.Impl
             }
 
             if (room.RentFee < 0)
-            {
-                isError = true;
-            }
-
-            if (room.MotelId == 0)
             {
                 isError = true;
             }
@@ -182,18 +186,26 @@ namespace DataAccess.Service.Impl
             return isError;
         }
 
-        public RoomDTO UpdateRoom(RoomDTO room)
+        public RoomDTO UpdateRoom(RoomDTO room, long userId)
         {
+
+            var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
+            if (motelID == -1)
+            {
+                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
+            }
+
             RoomDTO oldValue = _roomRepo.GetRoomById(room.Id);
+
             if (oldValue == null)
             {
-                throw new Exception("Not found room " + room.Id);
+                return null;
             }
 
             if (!oldValue.RentFee.Equals(room.RentFee))
             {
                 HistoryDTO history = _historyRepo.GetLatestHistoryByRoomId(room.Id);
-                room = CopyToNewRoom(oldValue, room);
+
                 oldValue.Status = RoomStatus.INACTIVE;
                 if (_roomRepo.Update(oldValue).Status == RoomStatus.INACTIVE)
                 {
@@ -208,17 +220,6 @@ namespace DataAccess.Service.Impl
             return _roomRepo.Update(room);
         }
 
-        private RoomDTO CopyToNewRoom(RoomDTO oldRoom, RoomDTO newRoom)
-        {
-            RoomDTO room = new RoomDTO();
-            room.Status = newRoom.Status;
-            room.MotelId = oldRoom.MotelId;
-            room.RentFee = newRoom.RentFee;
-            room.FeeAppliedDate = newRoom.FeeAppliedDate;
-
-            return room;
-        }
-
         public bool DeleteRoomById(long id)
         {
             return _roomRepo.DeleteRomById(id);
@@ -226,13 +227,13 @@ namespace DataAccess.Service.Impl
 
         public List<RoomDTO> GetAllRoomHistoryWithFilter
         (
-            long motelId,
             string roomCode,
             long minFee,
             long maxFee,
             List<int> status,
             string appliedDateAfter,
-            ref Pagination pagination
+            ref Pagination pagination,
+            long userId
         )
         {
             DateTime date = appliedDateAfter != null ? DateTime.ParseExact(appliedDateAfter, "yyyy-MM-dd",
@@ -245,25 +246,30 @@ namespace DataAccess.Service.Impl
                 throw new Exception("Mix fee is greater than max fee");
             }
 
+            if (_motelChainRepo.GetMotelWithManagerId(userId) == null)
+            {
+                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
+            }
+
             pagination.Total = _roomRepo.CountRoomHistoryWithFilter(
-                motelId,
                 roomCode,
                 minFee,
                 maxFee,
                 listStatusEnum,
                 date,
                 pagination.CurrentPage,
-                pagination.PageSize);
+                pagination.PageSize,
+                userId);
 
             return _roomRepo.GetAllRoomHistoryWithFilter(
-                motelId,
                 roomCode,
                 minFee,
                 maxFee,
                 listStatusEnum,
                 date,
                 pagination.CurrentPage,
-                pagination.PageSize).ToList();
+                pagination.PageSize, 
+                userId).ToList();
         }
     }
 }

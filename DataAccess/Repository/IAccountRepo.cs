@@ -7,5 +7,6 @@ namespace DataAccess.Repository
         Account FindAccountByUserNameAndPassword(string UserName, string Password);
         public bool IsManager(long id);
         Account FindAccountByUserName(string UserName);
+
     }
 }

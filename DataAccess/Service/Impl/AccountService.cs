@@ -9,11 +9,12 @@ namespace DataAccess.Service.Impl
     {
         private readonly IAccountRepo _accountRepo;
         private readonly IJwtService _jwtService;
-        public AccountService(IAccountRepo accountRepo, IJwtService jwtService)
+        private readonly IMotelChainRepo _motelChainRepo;
+        public AccountService(IAccountRepo accountRepo, IJwtService jwtService, IMotelChainRepo motelChainRepo)
         {
             this._accountRepo = accountRepo;
             this._jwtService = jwtService;
-
+            this._motelChainRepo = motelChainRepo;
         }
         public string authenticate(LoginDTO loginDTO)
         {
@@ -27,7 +28,10 @@ namespace DataAccess.Service.Impl
             role = account.GetType().Name.ToString();
             if (role.Equals("Manager"))
             {
-                role = "Manager";
+                if(_motelChainRepo.GetMotelWithManagerId(account.Id) != null)
+                {
+                    role = "Manager";
+                }
             }
             else if (role.Equals("Resident"))
             {

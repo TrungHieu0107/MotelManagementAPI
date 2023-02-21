@@ -1,16 +1,19 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
+    [Authorize(Roles = "Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoomController : ControllerBase
@@ -74,21 +77,25 @@ namespace MotelManagementAPI.Controllers
 
 
         private readonly IRoomService _roomService;
-
-        public RoomController(IRoomService roomService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public RoomController(IRoomService roomService, IHttpContextAccessor httpContextAccessor)
         {
-            _roomService = roomService;
+            this._roomService = roomService ?? throw new ArgumentNullException(nameof(roomService));
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet]
         [Route("add-new-room")]
-        public async Task<IActionResult> AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long motelID)
+        public async Task<IActionResult> AddNewRoom(string code, long rentFee, string feeAppliedDate, int status)
         {
+            
             CommonResponse commonResponse = new CommonResponse();
 
             try
             {
-                
-                var result = _roomService.AddNewRoom(code, rentFee, feeAppliedDate, status, motelID);
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                var userId = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value;
+
+                var result = _roomService.AddNewRoom(code, rentFee, feeAppliedDate, status, long.Parse(userId));
                 if (result == null)
                 {
                     commonResponse.Message = "Something Went Wrong";
@@ -96,6 +103,11 @@ namespace MotelManagementAPI.Controllers
                 }
                 commonResponse.Data = result;
                 return Ok(commonResponse);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
             }
             catch (Exception ex)
             {
@@ -112,9 +124,17 @@ namespace MotelManagementAPI.Controllers
             CommonResponse commonResponse = new CommonResponse();
             try
             {
-                var result = _roomService.UpdateRoom(room);
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                var userId = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value;
+
+                var result = _roomService.UpdateRoom(room, long.Parse(userId));
                 commonResponse.Data = result;
                 return Ok(commonResponse);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
             }
             catch (Exception ex)
             {
@@ -141,6 +161,11 @@ namespace MotelManagementAPI.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest,commonResponse);
                 }
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
+            }
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
@@ -152,7 +177,6 @@ namespace MotelManagementAPI.Controllers
         [Route("get-rooms-filter")]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
         (
-            long motelId,
             string roomCode,
             long minFee,
             long maxFee,
@@ -165,23 +189,31 @@ namespace MotelManagementAPI.Controllers
             CommonResponse commonResponse = new CommonResponse();
             try
             {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                var userId = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value; 
+
                 Pagination pagination = new Pagination();
                 pagination.PageSize = pageSize ?? 10;
                 pagination.CurrentPage = currentPage ?? 1;
                 var result = _roomService.GetAllRoomHistoryWithFilter
                                 (
-                                     motelId,
                                      roomCode,
                                      minFee,
                                      maxFee,
                                      status,
                                      appliedDateAfter,
-                                     ref pagination
+                                     ref pagination, 
+                                     long.Parse(userId)
                                 );
 
                 commonResponse.Data = result;
                 commonResponse.Pagination = pagination;
                 return Ok(commonResponse);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
             }
             catch (Exception ex)
             {
