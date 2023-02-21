@@ -1,4 +1,4 @@
-﻿using BussinessObject.Data;
+using BussinessObject.Data;
 using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,10 +11,12 @@ namespace DataAccess.Repository
     public class WaterCostRepo : IWaterCostRepo
     {
         private readonly Context _context;
+        private readonly DbSet<WaterCost> _waterCosts;
 
         public WaterCostRepo(Context context)
         {
             _context = context;
+            _waterCosts = new Context().Set<WaterCost>();
         }
 
         public int AddWaterCost(WaterCost WaterCost)
@@ -53,6 +55,11 @@ namespace DataAccess.Repository
         {
             _context.Entry(WaterCost).State = EntityState.Modified;
            return _context.SaveChanges();
+        }
+       
+        public async Task<WaterCost> GetWaterCostOfInvoiceById(long id)
+        {
+            return await _waterCosts.FindAsync(id);
         }
     }
 }

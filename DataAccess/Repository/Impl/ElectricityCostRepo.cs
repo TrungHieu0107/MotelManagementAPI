@@ -1,4 +1,4 @@
-﻿using BussinessObject.Data;
+using BussinessObject.Data;
 using BussinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,10 +12,12 @@ namespace DataAccess.Repository
     {
 
         private readonly Context _context;
+        private readonly DbSet<ElectricityCost> _electricityCost;
 
         public ElectricityCostRepo(Context context)
         {
             _context = context;
+            _electricityCost = _context.Set<ElectricityCost>();
         }
 
         public async Task<ElectricityCost> GetCurrentElectrictyCost()
@@ -55,6 +57,11 @@ namespace DataAccess.Repository
         public ElectricityCost GetElectricitAfterDate(DateTime date)
         {
             return _context.ElectricityCosts.Where(p => p.AppliedDate > date).FirstOrDefault();
+        }
+        
+        public async Task<ElectricityCost> GetElectricityCostById(long id)
+        {
+            return await _electricityCost.FindAsync(id);
         }
     }
 }

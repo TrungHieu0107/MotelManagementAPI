@@ -1,4 +1,4 @@
-﻿using BussinessObject.Models;
+using BussinessObject.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,5 +15,6 @@ namespace DataAccess.Repository
         int AddWaterCost(WaterCost WaterCost);
 
         int UpdateWaterCost(WaterCost WaterCost);
+        Task<WaterCost> GetWaterCostOfInvoiceById(long id);
     }
 }

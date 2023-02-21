@@ -1,4 +1,4 @@
-﻿using BussinessObject.Data;
+using BussinessObject.Data;
 using BussinessObject.DTO;
 using DataAccess.Repository;
 using DataAccess.Security;
@@ -31,9 +31,6 @@ namespace MotelManagementAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-
-
             services.AddDbContext<Context>();
 
             services.AddScoped<IAccountService, AccountService>();
@@ -60,7 +57,6 @@ namespace MotelManagementAPI
             // Add validator
             services.AddTransient<IValidator<ElectricityCostRequestDTO>, ElectricityCostValidator>();
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ElectricityCostValidator>());
-            
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<WaterCostValidator>());
 
             services.AddSwaggerGen(c =>
@@ -133,6 +129,7 @@ namespace MotelManagementAPI
                     IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                 };
             });
+            services.AddMemoryCache();
 
         }
 
