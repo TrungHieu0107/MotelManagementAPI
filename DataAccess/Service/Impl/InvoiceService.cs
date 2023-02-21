@@ -5,6 +5,7 @@ using DataAccess.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BussinessObject.Status;
 
 namespace DataAccess.Service.Impl
 {
@@ -24,6 +25,30 @@ namespace DataAccess.Service.Impl
         {
             pagination.Total = _invoiceRepo.CountInvocieHistoryHasRoomId(roomId);
             return _invoiceRepo.GetInvoiceHistoryOfRoomWithPaging(roomId, pagination).ToList();
+        }
+
+      
+        public InvoiceDTO checkUnPayInvocieByRoomCode(String roomCode)
+        {
+            return _invoiceRepo.GetInvoiceHistoryOfRoomWithUnPayStatus(roomCode).FirstOrDefault();
+        }
+
+        public int PayInvoice(String roomCode)
+        {
+            InvoiceDTO UnPaidInvoice = _invoiceRepo.GetInvoiceHistoryOfRoomWithUnPayStatus(roomCode).FirstOrDefault();
+
+            if(UnPaidInvoice != null)
+            {
+
+                var invocie = _invoiceRepo.findById(UnPaidInvoice.Id);
+                invocie.PaidDate = DateTime.Now;
+                invocie.Status = InvoiceStatus.PAID;
+                return _invoiceRepo.updateInvoiceStatus(invocie);
+
+            } else
+            {
+                return 0;
+            }
         }
     }
 }

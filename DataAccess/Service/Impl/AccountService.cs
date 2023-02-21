@@ -17,8 +17,9 @@ namespace DataAccess.Service.Impl
         }
         public string authenticate(LoginDTO loginDTO)
         {
-            Account account = _accountRepo.FindAccountByUserNameAndPassword(loginDTO.UserName, loginDTO.Password);
-            if (account == null)
+            Account account = _accountRepo.FindAccountByUserName(loginDTO.UserName);
+            bool checkPassword = PasswordHasher.Verify(loginDTO.Password, account.Password);
+            if (account == null || !checkPassword)
             {
                 return null;
             }

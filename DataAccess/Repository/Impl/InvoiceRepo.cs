@@ -120,5 +120,53 @@ namespace DataAccess.Repository
                           .Take(size)
                           .ToListAsync();
         }
+
+        public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string RoomCode)
+        {
+            return (from invoice in _invoices
+                    where invoice.Room.Code == RoomCode
+                    && invoice.Status == InvoiceStatus.NOT_PAID_YET
+                    select invoice)
+                          .Include(x => x.WaterCost)
+                          .Include(x => x.ElectricityCost)
+
+                          .Select(x => new InvoiceDTO()
+                          {
+                              Id = x.Id,
+                              CreatedDate = x.CreatedDate,
+                              RoomId = x.RoomId,
+                              ElectricityConsumptionEnd = x.ElectricityConsumptionEnd,
+                              ElectricityConsumptionStart = x.ElectricityConsumptionStart,
+                              WaterConsumptionEnd = x.WaterConsumptionEnd,
+                              WaterConsumptionStart = x.WaterConsumptionStart,
+                              PaidDate = x.PaidDate,
+                              Status = x.Status,
+                              ElectricityCost = new ElectricityCostDTO()
+                              {
+                                  Price = x.ElectricityCost.Price,
+                              },
+                              WaterCost = new WaterCostDTO()
+                              {
+                                  Price = x.WaterCost.Price,
+                              },
+                              EndDate = x.EndDate,
+                              ExpiredDate = x.ExpiredDate,
+                          });
+                         
+        }
+
+        public int updateInvoiceStatus(Invoice invoice)
+        {
+
+
+            _context.Entry(invoice).State = EntityState.Modified;
+            return _context.SaveChanges();
+
+
+        }
+        public Invoice findById(long id)
+        {
+            return _context.Invoices.Find(id);
+        }
     }
 }

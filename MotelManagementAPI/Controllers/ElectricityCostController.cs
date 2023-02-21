@@ -1,6 +1,7 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ namespace MotelManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
 
     public class ElectricityCostController : ControllerBase
     {

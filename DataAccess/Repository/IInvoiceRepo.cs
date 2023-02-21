@@ -1,6 +1,7 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.Models;
+using BussinessObject.Status;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,5 +15,10 @@ namespace DataAccess.Repository
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination);
 
         long CountInvocieHistoryHasRoomId(long roomId);
+        IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string  RoomCode);
+
+        int updateInvoiceStatus(Invoice invoice);
+
+        Invoice findById(long id);
     }
 }

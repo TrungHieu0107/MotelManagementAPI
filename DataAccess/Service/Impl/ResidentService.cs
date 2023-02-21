@@ -2,6 +2,7 @@
 using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
+using DataAccess.Security;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace DataAccess.Service.Impl
             var resident = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null).FirstOrDefault<Resident>();
             var serialized = JsonConvert.SerializeObject(resident);
             var residentDTO = JsonConvert.DeserializeObject<ResidentDTO>(serialized);
+            residentDTO.Password = "";
+            residentDTO.UserName = "";
             return residentDTO;
 
         }
@@ -59,7 +62,7 @@ namespace DataAccess.Service.Impl
                 resident.IdentityCardNumber = account.IdentityCardNumber;
                 resident.Status = AccountStatus.ACTIVE;
                 resident.UserName = account.UserName;
-                resident.Password = account.Password;
+                resident.Password = PasswordHasher.Hash(account.Password);
                 resident.FullName = account.FullName;
                 resident.Phone = account.Phone;
                 //Save change
@@ -84,9 +87,9 @@ namespace DataAccess.Service.Impl
             bool check = false;
             //  check if id cardnumber is exsit
             Resident idCardCheck = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null,AccountStatus.ACTIVE).FirstOrDefault<Resident>();
-            if (idCardCheck == null)
+            if (idCardCheck != null && idCardCheck.Id != id)
             {
-                throw new Exception("Indentity Number all read");
+                throw new Exception("Indentity Number already exist");
             }
             // check if user exsit 
             Resident resident = _residentRepo.findById(id);

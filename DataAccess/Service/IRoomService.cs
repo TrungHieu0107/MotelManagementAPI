@@ -23,5 +23,7 @@ namespace DataAccess.Service
             string appliedDateAfter,
             ref Pagination pagination
         );
+
+
     }
 }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace DataAccess.Service.Impl
 {
     [Authorize]
+    
     public class ElectricityCostService : IElectricityCostService
     {
 

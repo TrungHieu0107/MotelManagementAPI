@@ -30,6 +30,7 @@ namespace MotelManagementAPI.Controllers
             {
                 var rs = _residentService.GetResidentByIdentityCardNumber(idCard);
                 
+                
                 if (rs == null)
                 {
                     common.Message = "Not found";
@@ -80,7 +81,7 @@ namespace MotelManagementAPI.Controllers
                     return Ok("Success");
 
                 else
-                    return StatusCode(StatusCodes.Status400BadRequest, "Count not find the resident");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Something went wrong please check data again");
             } catch(Exception ex)
             {
                 CommonResponse common = new CommonResponse();
@@ -99,32 +100,27 @@ namespace MotelManagementAPI.Controllers
                 return Ok("Success");
 
             else
-                return StatusCode(StatusCodes.Status500InternalServerError, "Count not find the resident");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong please check data again");
         }
 
         [HttpPut]
         [Route("update-resident")]
         public IActionResult UpdateResident(long id, ResidentUpdateDTO accountDTO)
         {
-            CommonResponse common = new CommonResponse();
             try
             {
-                var result = _residentService.UpdateResidentAccount(id, accountDTO);
-              
-                if (!result)
-                {
-                    common.Message = "Some thing went wrong";
-                }
-                else
-                {
-                    common.Data = result;
+                var result = _residentService.UpdateResidentAccount(id,accountDTO);
 
-                }
-                return Ok(common);
-            } catch (Exception ex)
+                if (!result)
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
+
+                return Ok("Added Successfully");
+            }
+            catch (Exception ex)
             {
+                CommonResponse common = new CommonResponse();
                 common.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, common);
+                return StatusCode(StatusCodes.Status400BadRequest, common);
             }
 
 

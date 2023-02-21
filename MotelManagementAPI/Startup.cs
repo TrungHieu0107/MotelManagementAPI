@@ -57,6 +57,7 @@ namespace MotelManagementAPI
             // Add validator
             services.AddTransient<IValidator<ElectricityCostRequestDTO>, ElectricityCostValidator>();
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ElectricityCostValidator>());
+            services.AddTransient<IValidator<WaterRequestDTO>, WaterCostValidator>();
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<WaterCostValidator>());
 
             services.AddSwaggerGen(c =>
