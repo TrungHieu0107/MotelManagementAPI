@@ -9,8 +9,6 @@ namespace DataAccess.Repository
 {
     public interface IRoomRepo
     {
-        Room findRoomByCodeAndStatus(string code, RoomStatus status);
-        void UpdateRoomStatus(Room room);
         RoomDTO GetRoomById(long roomId);
         RoomDTO GetRoomByCode(string roomCode);
         RoomDTO Insert(RoomDTO room);

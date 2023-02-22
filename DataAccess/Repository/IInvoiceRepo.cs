@@ -9,8 +9,6 @@ namespace DataAccess.Repository
     public interface IInvoiceRepo
     {
         List<Invoice> checkLateInvoice(string idCard);
-        Task<IEnumerable<Invoice>> GetInvoiceOfRoom(long roomId, int? pageNumber, int? pageSize);
-
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination);
 
         long CountInvocieHistoryHasRoomId(long roomId);

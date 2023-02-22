@@ -89,7 +89,7 @@ namespace DataAccess.Service.Impl
         //private bool checkResidentBookingHistoryByResidentIdCardNumber(string idCardNumber, int roomId)
         //{
         //    Resident resident = (Resident)_residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCardNumber, "");
-            
+
         //        if (resident == null)
         //        {
         //            return false;
@@ -102,7 +102,7 @@ namespace DataAccess.Service.Impl
         //        return true;          
 
         //}
-    
+
         private readonly IRoomRepo _roomRepo;
         private readonly IHistoryRepo _historyRepo;
         private readonly IMotelChainRepo _motelChainRepo;
@@ -117,10 +117,6 @@ namespace DataAccess.Service.Impl
         public RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId)
         {
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
-            if (motelID == -1)
-            {
-                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
-            }
 
             RoomDTO newRoomDTO = GetRoom(code, rentFee, feeAppliedDate, status, motelID, -1);
 
@@ -176,6 +172,10 @@ namespace DataAccess.Service.Impl
             {
                 isError = true;
             }
+            else if (date.Value <= DateTime.Now)
+            {
+                isError = true;
+            }
 
             if (!(room.Status == RoomStatus.INACTIVE || room.Status == RoomStatus.ACTIVE ||
                 room.Status == RoomStatus.EMPTY || room.Status == RoomStatus.DELETED))
@@ -190,10 +190,6 @@ namespace DataAccess.Service.Impl
         {
 
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
-            if (motelID == -1)
-            {
-                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
-            }
 
             RoomDTO oldValue = _roomRepo.GetRoomById(room.Id);
 
@@ -213,7 +209,7 @@ namespace DataAccess.Service.Impl
                     history.RoomId = room.Id;
                     _historyRepo.Update(history);
                 }
-               
+
                 return room;
             }
 
@@ -246,11 +242,6 @@ namespace DataAccess.Service.Impl
                 throw new Exception("Mix fee is greater than max fee");
             }
 
-            if (_motelChainRepo.GetMotelWithManagerId(userId) == null)
-            {
-                throw new UnauthorizedAccessException("You are not allow to manage any motel chain");
-            }
-
             pagination.Total = _roomRepo.CountRoomHistoryWithFilter(
                 roomCode,
                 minFee,
@@ -268,7 +259,7 @@ namespace DataAccess.Service.Impl
                 listStatusEnum,
                 date,
                 pagination.CurrentPage,
-                pagination.PageSize, 
+                pagination.PageSize,
                 userId).ToList();
         }
     }
