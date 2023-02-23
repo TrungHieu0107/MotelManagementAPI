@@ -11,10 +11,6 @@ namespace DataAccess.Service.Impl
 {
     public class InvoiceService : IInvoiceService
     {
-        public Invoice AddInititalInvoice(long residentId, long roomId, DateTime startDate)
-        {
-            throw new NotImplementedException();
-        }
         private readonly IInvoiceRepo _invoiceRepo;
 
         public InvoiceService(IInvoiceRepo invoiceRepo)
@@ -49,6 +45,11 @@ namespace DataAccess.Service.Impl
             {
                 return 0;
             }
+        }
+
+        public Invoice AddInititalInvoice(long residentId, long roomId, DateTime startDate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -22,19 +22,10 @@ namespace DataAccess.Repository
         {
             this._context = context;
             this.residentRepository = residentRepo;
-            _historyRepo = historyRepo;
+            this._historyRepo = historyRepo;
+
         }
 
-        public  Room findRoomByCodeAndStatus(string code, RoomStatus status)
-        {
-            return _context.Rooms.Where(p => p.Code == code && p.Status == status).FirstOrDefault();
-        }
-        public async void UpdateRoomStatus(Room room)
-        {
-            _context.Entry(room).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-        
         bool IRoomRepo.DeleteRomById(long roomId)
         {
             var room = _context.Rooms.Find(roomId);
@@ -52,9 +43,7 @@ namespace DataAccess.Repository
 
         public RoomDTO GetRoomById(long roomId)
         {
-            var result = (from room in _context.Rooms
-                          where room.Id == roomId
-                          select room).FirstOrDefault();
+            var result = _context.Rooms.Find(roomId);
             return JsonConvert.DeserializeObject<RoomDTO>(JsonConvert.SerializeObject(result));
         }
 
@@ -71,6 +60,16 @@ namespace DataAccess.Repository
 
         RoomDTO IRoomRepo.Update(RoomDTO room)
         {
+            var value =  _context.Rooms.Where(r => 
+                            r.Id == room.Id
+                         &&
+                            r.MotelId == room.MotelId
+                            ).FirstOrDefault();
+
+            if (room == null)
+            {
+                return null;
+            }
             _context.Update(room);
             _context.SaveChanges();
 
@@ -79,20 +78,18 @@ namespace DataAccess.Repository
 
         IEnumerable<RoomDTO> IRoomRepo.GetAllRoomHistoryWithFilter
         (
-            long motelId,
             string roomCode,
             long minFee,
             long maxFee,
             List<RoomStatus> listStatusEnum,
             DateTime appliedDateAfter,
             int page,
-            int pageSize
+            int pageSize,
+            long userId
         )
         {
-            var result = (from room in _context.Rooms
-                          where
-                              room.MotelId == motelId
-                          &&
+
+            var result = _context.Rooms.Where(room =>
                               roomCode != null ? room.Code.Contains(roomCode) : true
                           &&
                               minFee > 0 ? room.RentFee >= minFee : true
@@ -102,45 +99,74 @@ namespace DataAccess.Repository
                               listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
                           &&
                               room.FeeAppliedDate >= appliedDateAfter
-                          select room)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize);
+                          &&
+                              room.MotelChain.ManagerId == userId
+                        ).Select(x => new RoomDTO()
+                        {
+                            Id = x.Id,
+                            Code = x.Code,
+                            Status = x.Status,
+                            FeeAppliedDate = x.FeeAppliedDate,
+                            RentFee = x.RentFee,
+                            MotelChain = new MotelChainDTO()
+                            {
+                                Id = x.MotelChain.Id,
+                                Name = x.MotelChain.Name,
+                                Address = x.MotelChain.Address
+                            }
+                        })
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize);
 
-            return JsonConvert.DeserializeObject<IEnumerable<RoomDTO>>(JsonConvert.SerializeObject(result));
-        }
-
-        public async Task<IEnumerable<Room>> GetAllRoomInMotelChain(long motelChainId)
-        {
-            return await (from room in _context.Rooms
-                          where room.MotelId == motelChainId
-                           &&
-                            room.Status == RoomStatus.ACTIVE
-                          select room).ToListAsync();
+            return result;
         }
 
         public RoomDTO GetRoomByCode(string roomCode)
         {
-            Room room = _context.Rooms.Where(x => x.Code.Equals(roomCode)).FirstOrDefault();
-            RoomDTO result = JsonConvert.DeserializeObject<RoomDTO>(JsonConvert.SerializeObject(room));
-            return result;
+            RoomDTO room = _context.Rooms
+                .Where(x => x.Code.Equals(roomCode))
+                .Select(x => new RoomDTO()
+                {
+                    Id = x.Id,
+                    Code = x.Code,
+                    Status = x.Status,
+                    FeeAppliedDate = x.FeeAppliedDate,
+                    RentFee = x.RentFee,
+                    MotelChain = new MotelChainDTO()
+                    {
+                        Id = x.MotelChain.Id,
+                        Name = x.MotelChain.Name,
+                        Address = x.MotelChain.Address
+                    }
+                }).FirstOrDefault();
+            return room;
         }
 
-        public long CountRoomHistoryWithFilter(long motelId, string roomCode, long minFee, long maxFee, List<RoomStatus> listStatusEnum, DateTime appliedDateAfter, int page, int pageSize)
+        public long CountRoomHistoryWithFilter
+        (
+            string roomCode,
+            long minFee,
+            long maxFee,
+            List<RoomStatus> listStatusEnum,
+            DateTime appliedDateAfter,
+            int page,
+            int pageSize,
+            long userId
+        )
         {
-            return (from room in _context.Rooms
-                          where
-                              room.MotelId == motelId
-                          &&
-                              roomCode != null ? room.Code.Contains(roomCode) : true
-                          &&
-                              minFee > 0 ? room.RentFee >= minFee : true
-                          &&
-                              maxFee > 0 ? room.RentFee <= maxFee : true
-                          &&
-                              listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
-                          &&
-                              room.FeeAppliedDate >= appliedDateAfter
-                          select room).Count();
+            return _context.Rooms.Where(room =>
+                        roomCode != null ? room.Code.Contains(roomCode) : true
+                    &&
+                        minFee > 0 ? room.RentFee >= minFee : true
+                    &&
+                        maxFee > 0 ? room.RentFee <= maxFee : true
+                    &&
+                        listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
+                    &&
+                        room.FeeAppliedDate >= appliedDateAfter
+                    &&
+                        room.MotelChain.ManagerId == userId
+                        ).Count();
         }
     }
 }

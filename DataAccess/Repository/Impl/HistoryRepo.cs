@@ -23,9 +23,7 @@ namespace DataAccess.Repository
 
         public HistoryDTO GetLatestHistoryByRoomId(long id)
         {
-            var result = (from history in _context.Histories
-                          where history.RoomId == id
-                          select history).FirstOrDefaultAsync();
+            var result = _context.Histories.Find(id);
 
             return JsonConvert.DeserializeObject<HistoryDTO>(JsonConvert.SerializeObject(result));
         }

@@ -201,7 +201,7 @@ namespace BussinessObject.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("FeeAppliedDate")
+                    b.Property<DateTime>("FeeAppliedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("MotelId")

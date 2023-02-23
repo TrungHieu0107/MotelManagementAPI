@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BussinessObject.Migrations
 {
@@ -84,7 +84,7 @@ namespace BussinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RentFee = table.Column<long>(type: "bigint", nullable: false),
-                    FeeAppliedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FeeAppliedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     MotelId = table.Column<long>(type: "bigint", nullable: false)
                 },

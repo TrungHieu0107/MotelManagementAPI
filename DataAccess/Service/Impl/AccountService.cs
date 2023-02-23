@@ -1,4 +1,4 @@
-﻿using BussinessObject.DTO;
+using BussinessObject.DTO;
 using BussinessObject.Models;
 using DataAccess.Repository;
 using DataAccess.Security;
@@ -9,12 +9,14 @@ namespace DataAccess.Service.Impl
     {
         private readonly IAccountRepo _accountRepo;
         private readonly IJwtService _jwtService;
-        public AccountService(IAccountRepo accountRepo, IJwtService jwtService)
+        private readonly IMotelChainRepo _motelChainRepo;
+        public AccountService(IAccountRepo accountRepo, IJwtService jwtService, IMotelChainRepo motelChainRepo)
         {
             this._accountRepo = accountRepo;
             this._jwtService = jwtService;
-
+            this._motelChainRepo = motelChainRepo;
         }
+            
         public string authenticate(LoginDTO loginDTO)
         {
             Account account = _accountRepo.FindAccountByUserName(loginDTO.UserName);
@@ -23,12 +25,18 @@ namespace DataAccess.Service.Impl
             {
                 return null;
             }
-
             string role = null;
             role = account.GetType().Name.ToString();
             if (role.Equals("Manager"))
             {
-                role = "Manager";
+                if(_motelChainRepo.GetMotelWithManagerId(account.Id) != null)
+                {
+                    role = "Manager";
+                }
+                else
+                {
+                    return null;
+                }
             }
             else if (role.Equals("Resident"))
             {
@@ -40,7 +48,7 @@ namespace DataAccess.Service.Impl
             }
             string token = _jwtService.GenerateJwtToken(account, role);
             return token;
-
         }
+
     }
 }

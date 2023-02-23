@@ -1,6 +1,6 @@
 ﻿namespace DataAccess.Validator
 {
-    internal class MotelChainValidator
+    public class MotelChainValidator
     {
     }
 }

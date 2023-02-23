@@ -1,4 +1,4 @@
-﻿using BussinessObject.Models;
+using BussinessObject.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -36,7 +36,6 @@ namespace DataAccess.Security
 
                     new Claim("IdCardNumber", user.IdentityCardNumber.ToString()),
                     new Claim("Id", user.Id.ToString()),
-
 
 
                     new Claim("TokenId", Guid.NewGuid().ToString()),

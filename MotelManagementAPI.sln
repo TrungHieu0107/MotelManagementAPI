@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotelManagementAPI", "MotelManagementAPI\MotelManagementAPI.csproj", "{D0725F69-02BD-40D7-8C44-D0E02319FC6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotelManagerWebApp", "MotelManagerWebApp\MotelManagerWebApp.csproj", "{959170C9-8E00-4BBF-98E4-704DBCF14983}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotelManagerWebApp", "MotelManagerWebApp\MotelManagerWebApp.csproj", "{959170C9-8E00-4BBF-98E4-704DBCF14983}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,4 @@
-﻿using BussinessObject.DTO;
+using BussinessObject.DTO;
 using BussinessObject.Models;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Service.Impl
 {
-    [Authorize]
-    
     public class ElectricityCostService : IElectricityCostService
     {
 

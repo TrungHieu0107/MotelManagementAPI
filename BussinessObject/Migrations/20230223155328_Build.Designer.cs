@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BussinessObject.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230217062200_Build")]
+    [Migration("20230223155328_Build")]
     partial class Build
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,7 +203,7 @@ namespace BussinessObject.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("FeeAppliedDate")
+                    b.Property<DateTime>("FeeAppliedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("MotelId")
