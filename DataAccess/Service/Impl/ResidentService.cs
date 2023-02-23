@@ -17,6 +17,16 @@ namespace DataAccess.Service.Impl
         private readonly IRoomRepo _roomRepo;
         private readonly IMotelChainRepo _motelChainRepo;
 
+        public ResidentService(IResidentRepo residentRepo, IHistoryRepo historyRepo, IRoomRepo roomRepo, IMotelChainRepo motelChainRepo, IAccountRepo accountRepo, IInvoiceRepo invoiceRepo)
+        {
+            _residentRepo = residentRepo;
+            _historyRepo = historyRepo;
+            _roomRepo = roomRepo;
+            _motelChainRepo = motelChainRepo;
+            _accountRepo = accountRepo;
+            _invoiceRepo = invoiceRepo;
+        }
+
         public Resident FindById(long id)
         {
             return _residentRepo.FindById(id);
