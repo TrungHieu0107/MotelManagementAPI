@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    public class ElectricityCostRepo : IElectricityRepo
+    public class ElectricityCostRepo : IElectricityCostRepo
     {
 
         private readonly Context _context;
@@ -62,6 +62,10 @@ namespace DataAccess.Repository
         public async Task<ElectricityCost> GetElectricityCostById(long id)
         {
             return await _electricityCost.FindAsync(id);
+        }
+        public ElectricityCost GetElectricityCostForCreatingInvoicesByDate(DateTime dateTime)
+        {
+            return _context.ElectricityCosts.Where(e => e.AppliedDate <= dateTime).OrderBy(e => e.AppliedDate).LastOrDefault();
         }
     }
 }

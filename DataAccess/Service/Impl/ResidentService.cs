@@ -13,17 +13,49 @@ namespace DataAccess.Service.Impl
     public class ResidentService : IResidentService
     {
         private readonly IResidentRepo _residentRepo;
-        private readonly IInvoiceRepo _invoiceRepo;
-        private readonly IAccountRepo _accountRepo;
-        public ResidentService(IResidentRepo _residentRepo, IInvoiceRepo _invoiceRepo, IAccountRepo accountRepo)
+        private readonly IHistoryRepo _historyRepo;
+        private readonly IRoomRepo _roomRepo;
+        private readonly IMotelChainRepo _motelChainRepo;
+
+        public Resident FindById(long id)
         {
-            this._residentRepo = _residentRepo;
-            this._invoiceRepo = _invoiceRepo;
-            _accountRepo = accountRepo;
+            return _residentRepo.FindById(id);
         }
 
+        public Resident FindByIdentityCardNumberToBookRoom(string identityCardNumber)
+        {
+            return _residentRepo.FindByIdentityCardNumberToBookRoom(identityCardNumber);
+        }
 
+        public Resident UpdateStatusWhenBookingByIdentityCardNumber(string identityCardNumber)
+        {
+            return _residentRepo.UpdateStatusWhenBookingByIdentityCardNumber(identityCardNumber);
+        }
 
+        public ResidentDTOForDetail ViewResidentDetail(string identityCardNumber)
+        {
+            Resident resident = _residentRepo.FindByIdentityCardNumber(identityCardNumber);
+            ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+            residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
+            residentDTOForDetail.Phone = resident.Phone;
+            residentDTOForDetail.FullName = resident.FullName;
+            residentDTOForDetail.Status = nameof(resident.Status);
+            List<History> histories = _historyRepo.GetNullEndDateHistoriesByResident(resident);
+            List<RoomDTOForResidentDetail> roomDTOForResidentDetails = new List<RoomDTOForResidentDetail>();
+            foreach(History history in histories)
+            {
+                RoomDTOForResidentDetail roomDTOForResidentDetail = new RoomDTOForResidentDetail();
+                roomDTOForResidentDetail.Code = history.Room.Code;
+                roomDTOForResidentDetail.Status = nameof(history.Room.Status);
+                roomDTOForResidentDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
+                roomDTOForResidentDetail.MotelChainName = _motelChainRepo.FindById(history.Room.MotelId).Name;
+                roomDTOForResidentDetails.Add(roomDTOForResidentDetail);
+            }
+            residentDTOForDetail.RoomDTOForResidentDetails = roomDTOForResidentDetails;
+            return residentDTOForDetail;
+        }
+        private readonly IAccountRepo _accountRepo;
+        private readonly IInvoiceRepo _invoiceRepo;
         public ResidentDTO GetResidentByIdentityCardNumber(string idCard)
         {
             var resident = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null).FirstOrDefault<Resident>();
@@ -34,9 +66,6 @@ namespace DataAccess.Service.Impl
             return residentDTO;
 
         }
-
-
-
 
         public bool DeActiveResident(String idCard)
         {

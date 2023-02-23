@@ -61,5 +61,9 @@ namespace DataAccess.Repository
         {
             return await _waterCosts.FindAsync(id);
         }
+        public WaterCost GetWaterCostForCreatingInvoicesByDate(DateTime dateTime)
+        {
+            return _context.WaterCosts.Where(w => w.AppliedDate <= dateTime).OrderBy(w => w.AppliedDate).LastOrDefault();
+        }
     }
 }

@@ -7,7 +7,8 @@ using BussinessObject.Models;
 
 namespace DataAccess.Repository
 {
-    public interface IElectricityRepo
+    public interface IElectricityCostRepo
     {
+        public ElectricityCost GetElectricityCostForCreatingInvoicesByDate(DateTime dateTime);
     }
 }

@@ -10,14 +10,12 @@ namespace DataAccess.Repository
 {
     public class ManagerRepo : IManagerRepo
     {
-
-        Context context;
+        private readonly Context _context;
 
         public ManagerRepo(Context context)
         {
-            this.context = context;
+            _context = context;
         }
-
         public void AddManager(Manager manager)
         {
             context.Add(manager);

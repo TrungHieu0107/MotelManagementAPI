@@ -16,6 +16,20 @@ namespace DataAccess.Service.Impl
 {
     public class RoomService : IRoomService
     {
+        public bool AutoUpdateBookedRoomsToActive(DateTime dateTime)
+        {
+            List<History> histories = _historyRepo.GetHistoriesOfBookedUpToDateRooms(dateTime);
+            foreach (History history in histories)
+            {
+                _roomRepo.UpdateBookedRoomToActive(history.RoomId);
+            }
+            return true;
+        }
+
+        public Room UpdateStatusWhenBookingById(long managerId, long roomId)
+        {
+            return _roomRepo.UpdateStatusWhenBookingById(managerId, roomId);
+        }
 
         //private readonly IRoomRepo _roomRepo;
         //private readonly IInvoiceRepo _invoiceRepo;

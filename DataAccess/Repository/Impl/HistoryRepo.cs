@@ -1,6 +1,7 @@
 using BussinessObject.Data;
 using BussinessObject.DTO;
 using BussinessObject.Models;
+using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -39,6 +40,35 @@ namespace DataAccess.Repository
             _context.Entry(his).State = EntityState.Modified;
             _context.SaveChanges();
             return history;
+        }
+        private readonly Context _context;
+
+        public HistoryRepo(Context context)
+        {
+            _context = context;
+        }
+
+        public History Add(History history)
+        {
+            _context.Histories.Add(history);
+            _context.SaveChanges();
+            return history;
+        }
+
+        public List<History> GetHistoriesOfBookedUpToDateRooms(DateTime dateTime)
+        {
+            return _context.Histories.Include(h => h.Room).Where(h => h.Room.Status == RoomStatus.BOOKED && h.StartDate <= dateTime).ToList();
+        }
+
+        public List<History> GetNullEndDateHistories(DateTime dateTime)
+        {
+            return _context.Histories.Include(h => h.Room).Where(
+                h => h.EndDate == null && h.StartDate <= dateTime).ToList();
+        }
+
+        public List<History> GetNullEndDateHistoriesByResident(Resident resident)
+        {
+            return _context.Histories.Include(h => h.Room).Where(h => h.ResidentId == resident.Id && h.EndDate == null).ToList();
         }
     }
 }

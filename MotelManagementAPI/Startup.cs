@@ -15,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MotelManagementAPI.BackgroundService.ScheduledTasks;
+using System;
 using System.Collections.Generic;
 
 namespace MotelManagementAPI
@@ -45,7 +47,7 @@ namespace MotelManagementAPI
             services.AddScoped<IJwtService, JwtService>();
 
             services.AddScoped<IAccountRepo, AccountRepo>();
-            services.AddScoped<IElectricityRepo, ElectricityCostRepo>();
+            services.AddScoped<IElectricityCostRepo, ElectricityCostRepo>();
             services.AddScoped<IHistoryRepo, HistoryRepo>();
             services.AddScoped<IInvoiceRepo, InvoiceRepo>();
             services.AddScoped<IManagerRepo, ManagerRepo>();
@@ -59,6 +61,10 @@ namespace MotelManagementAPI
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ElectricityCostValidator>());
             services.AddTransient<IValidator<WaterRequestDTO>, WaterCostValidator>();
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<WaterCostValidator>());
+
+            services.AddSingleton<IHostedService, AutoCheckLateInvoices>();
+            services.AddSingleton<IHostedService, AutoCloseAndCreateInvoices>();
+            services.AddSingleton<IHostedService, AutoUpdateBookedRoomsToActive>();
 
             services.AddSwaggerGen(c =>
             {
