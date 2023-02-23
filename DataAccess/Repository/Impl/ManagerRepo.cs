@@ -1,6 +1,5 @@
 ﻿using BussinessObject.Data;
 using BussinessObject.Models;
-using DataAccess.DAO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,11 @@ namespace DataAccess.Repository
 {
     public class ManagerRepo : IManagerRepo
     {
-        
+        private readonly Context _context;
+
+        public ManagerRepo(Context context)
+        {
+            _context = context;
+        }
     }
 }

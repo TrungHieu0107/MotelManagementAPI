@@ -9,5 +9,6 @@ namespace DataAccess.Repository
 {
     public interface IWaterCostRepo
     {
+        public WaterCost GetWaterCostForCreatingInvoicesByDate(DateTime dateTime);
     }
 }

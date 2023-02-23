@@ -1,5 +1,4 @@
 using BussinessObject.Data;
-using DataAccess.DAO;
 using DataAccess.Repository;
 using DataAccess.Service;
 using DataAccess.Service.Impl;
@@ -11,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MotelManagementAPI.BackgroundService.ScheduledTasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace MotelManagementAPI
             services.AddScoped<IWaterCostService, WaterCostService>();
 
             services.AddScoped<IAccountRepo, AccountRepo>();
-            services.AddScoped<IElectricityRepo, ElectricityCostRepo>();
+            services.AddScoped<IElectricityCostRepo, ElectricityCostRepo>();
             services.AddScoped<IHistoryRepo, HistoryRepo>();
             services.AddScoped<IInvoiceRepo, InvoiceRepo>();
             services.AddScoped<IManagerRepo, ManagerRepo>();
@@ -53,6 +53,10 @@ namespace MotelManagementAPI
             services.AddScoped<IResidentRepo, ResidentRepo>();
             services.AddScoped<IRoomRepo, RoomRepo>();
             services.AddScoped<IWaterCostRepo, WaterCostRepo>();
+
+            services.AddSingleton<IHostedService, AutoCheckLateInvoices>();
+            services.AddSingleton<IHostedService, AutoCloseAndCreateInvoices>();
+            services.AddSingleton<IHostedService, AutoUpdateBookedRoomsToActive>();
 
             services.AddSwaggerGen(c =>
             {

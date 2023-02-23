@@ -11,5 +11,16 @@ namespace DataAccess.Repository
 {
     public class WaterCostRepo : IWaterCostRepo
     {
+        private readonly Context _context;
+
+        public WaterCostRepo(Context context)
+        {
+            _context = context;
+        }
+
+        public WaterCost GetWaterCostForCreatingInvoicesByDate(DateTime dateTime)
+        {
+            return _context.WaterCosts.Where(w => w.AppliedDate <= dateTime).OrderBy(w => w.AppliedDate).LastOrDefault();
+        }
     }
 }

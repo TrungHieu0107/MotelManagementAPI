@@ -12,7 +12,7 @@ namespace BussinessObject.Models
         public long Id { get; set; }
         public string Code { get; set; }
         public long RentFee { get; set; }
-        public DateTime? FeeAppliedDate { get; set; }
+        public DateTime FeeAppliedDate { get; set; }
         public RoomStatus Status { get; set; }
         public long MotelId { get; set; }
         [ForeignKey("MotelId")]

@@ -8,6 +8,6 @@ namespace BussinessObject.Status
 {
     public enum AccountStatus
     {
-        ACTIVE, INACTIVE
+        ACTIVE, INACTIVE, LATE_PAYMENT
     }
 }

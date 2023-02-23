@@ -9,7 +9,18 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    public class ElectricityCostRepo : IElectricityRepo
+    public class ElectricityCostRepo : IElectricityCostRepo
     {
+        private readonly Context _context;
+
+        public ElectricityCostRepo(Context context)
+        {
+            _context = context;
+        }
+
+        public ElectricityCost GetElectricityCostForCreatingInvoicesByDate(DateTime dateTime)
+        {
+            return _context.ElectricityCosts.Where(e => e.AppliedDate <= dateTime).OrderBy(e => e.AppliedDate).LastOrDefault();
+        }
     }
 }
