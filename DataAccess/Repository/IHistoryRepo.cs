@@ -1,5 +1,7 @@
 using BussinessObject.DTO;
 using BussinessObject.Models;
+using System;
+using System.Collections.Generic;
 
 namespace DataAccess.Repository
 {

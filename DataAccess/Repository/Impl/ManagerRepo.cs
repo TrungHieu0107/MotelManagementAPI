@@ -18,8 +18,8 @@ namespace DataAccess.Repository
         }
         public void AddManager(Manager manager)
         {
-            context.Add(manager);
-            context.SaveChanges();
+            _context.Add(manager);
+            _context.SaveChanges();
         }
     }
 }

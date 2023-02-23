@@ -13,6 +13,17 @@ namespace DataAccess.Repository
 {
     public class InvoiceRepo : IInvoiceRepo
     {
+        private readonly Context _context;
+        private readonly DbSet<Invoice> _invoices;
+        IWaterCostRepo _waterCostRepo;
+        IElectricityCostRepo _electricityCostRepo;
+        public InvoiceRepo(Context context, IWaterCostRepo waterCostRepo, IElectricityCostRepo electricityRepo)
+        {
+            this._context = context;
+            _invoices = new Context().Set<Invoice>();
+            _waterCostRepo = waterCostRepo;
+            _electricityCostRepo = electricityRepo;
+        }
         public void Add(Invoice invoice)
         {
             _context.Add(invoice);
@@ -87,17 +98,7 @@ namespace DataAccess.Repository
             _context.SaveChanges();
             return invoice;
         }
-        private readonly Context _context;
-        private readonly DbSet<Invoice> _invoices;
-        IWaterCostRepo _wareCostRepo;
-        IElectricityRepo _electricityRepo;
-        public InvoiceRepo(Context context, IWaterCostRepo waterCostRepo, IElectricityRepo electricityRepo)
-        {
-            this._context = context;
-            _invoices = new Context().Set<Invoice>();
-            _wareCostRepo = waterCostRepo;
-            _electricityRepo = electricityRepo;
-        }
+        
         public List<Invoice> checkLateInvoice(string idCard)
         {
             return _context.Invoices.Where(p => 

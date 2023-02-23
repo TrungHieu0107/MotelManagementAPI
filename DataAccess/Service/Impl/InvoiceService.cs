@@ -1,14 +1,11 @@
 using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
-using BussinessObject.Models;
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
-using DataAccess.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BussinessObject.Status;
 
 namespace DataAccess.Service.Impl
 {
@@ -152,6 +149,5 @@ namespace DataAccess.Service.Impl
                 return 0;
             }
         }
-
     }
 }
