@@ -3,7 +3,6 @@ using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.Models;
 using BussinessObject.Status;
-using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,15 +15,90 @@ namespace DataAccess.Repository
     {
         private readonly Context _context;
         private readonly DbSet<Invoice> _invoices;
-        IWaterCostRepo _wareCostRepo;
-        IElectricityRepo _electricityRepo;
-        public InvoiceRepo(Context context, IWaterCostRepo waterCostRepo, IElectricityRepo electricityRepo)
+        IWaterCostRepo _waterCostRepo;
+        IElectricityCostRepo _electricityCostRepo;
+        public InvoiceRepo(Context context, IWaterCostRepo waterCostRepo, IElectricityCostRepo electricityRepo)
         {
             this._context = context;
             _invoices = new Context().Set<Invoice>();
-            _wareCostRepo = waterCostRepo;
-            _electricityRepo = electricityRepo;
+            _waterCostRepo = waterCostRepo;
+            _electricityCostRepo = electricityRepo;
         }
+        public void Add(Invoice invoice)
+        {
+            _context.Add(invoice);
+            _context.SaveChanges();
+        }
+
+        public List<Invoice> AutoCheckLateInvoices(DateTime dateTime)
+        {
+            List<Invoice> lateInvoices = GetLateInvoices(dateTime);
+
+            foreach(Invoice invoice in lateInvoices)
+            {
+                CheckLateInvoice(invoice.Id);
+            }
+            return lateInvoices;
+        }
+
+        public List<Invoice> GetLateInvoices(DateTime dateTime)
+        {
+            return _context.Invoices.Where(i => i.ExpiredDate <= dateTime.AddMinutes(5) && i.Status == InvoiceStatus.NOT_PAID_YET).ToList();
+        }
+
+        public bool AutoCloseInvoices(DateTime dateTime)
+        {
+            List<Invoice> closedInvoices = GetInvoicesToClose(dateTime);
+            foreach (Invoice invoice in closedInvoices)
+            {
+                UpdateClosedInvoice(invoice, dateTime);
+            }
+            return true;
+        }
+
+        private List<Invoice> GetInvoicesToClose(DateTime dateTime)
+        {
+            return _context.Invoices.
+                Where(i =>
+                i.EndDate == null &&
+                i.StartDate <= dateTime.AddMinutes(5).AddMonths(-1)
+                ).ToList();
+        }
+
+        public Invoice FindById(long id)
+        {
+            return _context.Invoices.Where(i => i.Id == id).FirstOrDefault();
+        }
+
+        public Invoice GetPreviousInvoiceByRoomId(long roomId)
+        {
+            return _context.Invoices
+                .Where(i => i.RoomId == roomId && i.EndDate != null)
+                .OrderBy(i => i.EndDate).LastOrDefault();
+        }
+
+        private Invoice CheckLateInvoice(long invoiceId)
+        {
+            Invoice invoice = FindById(invoiceId);
+            invoice.Status = InvoiceStatus.LATE;
+            var tracker = _context.Attach(invoice);
+            tracker.State = EntityState.Modified;
+            _context.SaveChanges();
+            return invoice;
+        }
+
+        private Invoice UpdateClosedInvoice(Invoice invoice, DateTime endDate)
+        {
+            invoice.ElectricityConsumptionEnd = invoice.ElectricityConsumptionStart + 1;
+            invoice.WaterConsumptionEnd = invoice.WaterConsumptionStart + 1;
+            invoice.EndDate = endDate;
+            invoice.ExpiredDate = endDate.AddDays(FixedData.DATE_TO_PAY);
+            var tracker = _context.Attach(invoice);
+            tracker.State = EntityState.Modified;
+            _context.SaveChanges();
+            return invoice;
+        }
+        
         public List<Invoice> checkLateInvoice(string idCard)
         {
             return _context.Invoices.Where(p => 

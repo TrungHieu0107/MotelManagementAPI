@@ -1,4 +1,5 @@
 using BussinessObject.Models;
+using BussinessObject.Status;
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using System;
@@ -9,6 +10,8 @@ namespace DataAccess.Service
 {
     public interface IRoomService
     {
+        public Room UpdateStatusWhenBookingById(long managerId, long roomId);
+        public bool AutoUpdateBookedRoomsToActive(DateTime dateTime);
        
         RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId);
         RoomDTO UpdateRoom(RoomDTO room, long userId);

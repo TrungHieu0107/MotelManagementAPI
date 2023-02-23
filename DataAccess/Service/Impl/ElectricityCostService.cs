@@ -12,15 +12,15 @@ namespace DataAccess.Service.Impl
     public class ElectricityCostService : IElectricityCostService
     {
 
-        private readonly IElectricityRepo _electricityRepo;
+        private readonly IElectricityCostRepo _electricityCostRepo;
 
-        public ElectricityCostService(IElectricityRepo _electricityRepo)
+        public ElectricityCostService(IElectricityCostRepo _electricityCostRepo)
         {
-            this._electricityRepo = _electricityRepo;
+            this._electricityCostRepo = _electricityCostRepo;
         }
         public async Task<IEnumerable<ElectricityCostDTO>> GetElectrictyCost(int year, int month, int curentPage, int pageSize)
         {
-            var electricityCosts = await _electricityRepo.GetElectricityCostByMonthAndYear(year, month, curentPage, pageSize);
+            var electricityCosts = await _electricityCostRepo.GetElectricityCostByMonthAndYear(year, month, curentPage, pageSize);
             var serialized = JsonConvert.SerializeObject(electricityCosts);
             var electricityCostsDTO = JsonConvert.DeserializeObject<List<ElectricityCostDTO>>(serialized);
             return electricityCostsDTO;
@@ -30,7 +30,7 @@ namespace DataAccess.Service.Impl
 
         public async Task<ElectricityCostDTO> GetCurrentElectricityCost()
         {
-            var electricityCost = await _electricityRepo.GetCurrentElectrictyCost();
+            var electricityCost = await _electricityCostRepo.GetCurrentElectrictyCost();
             var serialized = JsonConvert.SerializeObject(electricityCost);
             var electricityCostDTO = JsonConvert.DeserializeObject<ElectricityCostDTO>(serialized);
             return electricityCostDTO;
@@ -44,7 +44,7 @@ namespace DataAccess.Service.Impl
         /// <returns></returns>
         private ElectricityCost GetElectricitAfterDate(DateTime date)
         {
-            return _electricityRepo.GetElectricitAfterDate(date);
+            return _electricityCostRepo.GetElectricitAfterDate(date);
         }
 
         public ElectricityCostDTO UpdateElectricity(ElectricityCostRequestDTO obj)
@@ -63,12 +63,12 @@ namespace DataAccess.Service.Impl
             {
                 updateData.Price = obj.Price;
                 updateData.AppliedDate = appliedDate;
-               check =  _electricityRepo.UpdateElectricityCost(updateData);
+               check =  _electricityCostRepo.UpdateElectricityCost(updateData);
             }
             else /// nếu không có đối tượng ElectricityCost nào áp dụng trong tương lai thì sẽ tiến hành tạo mới
             {
 
-                check = _electricityRepo.AddElectricityCost(electricityCost);
+                check = _electricityCostRepo.AddElectricityCost(electricityCost);
             }
             if (check > 0)
             {
