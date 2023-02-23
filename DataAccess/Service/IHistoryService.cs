@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BussinessObject.Models;
+using System;
 
 namespace DataAccess.Service
 {
     public interface IHistoryService
     {
+      
+
+       
     }
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BussinessObject.Models;
 
 namespace DataAccess.Repository
 {
     public interface IAccountRepo
     {
+        Account FindAccountByUserNameAndPassword(string UserName, string Password);
+        public bool IsManager(long id);
+        Account FindAccountByUserName(string UserName);
     }
 }

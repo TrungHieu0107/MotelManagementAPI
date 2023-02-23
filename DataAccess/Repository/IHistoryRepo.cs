@@ -1,13 +1,12 @@
-﻿using BussinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BussinessObject.DTO;
+using BussinessObject.Models;
 
 namespace DataAccess.Repository
 {
     public interface IHistoryRepo
     {
+        History checkResidentBookingHistoryByResidentId(long residentId);
+        HistoryDTO Update(HistoryDTO history);
+        HistoryDTO GetLatestHistoryByRoomId(long id);
     }
 }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BussinessObject.Status
+﻿namespace BussinessObject.Status
 {
     public enum AccountStatus
     {
-        ACTIVE, INACTIVE
+        ACTIVE, INACTIVE, LATE_PAYMENT
     }
 }
