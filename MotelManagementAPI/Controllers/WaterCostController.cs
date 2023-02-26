@@ -1,6 +1,7 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ namespace MotelManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class WaterCostController : ControllerBase
     {
 
@@ -24,6 +26,8 @@ namespace MotelManagementAPI.Controllers
         /// Xem giá nuoc thay đổi dựa theo năm, truyền vào giá trị -1 thì sẽ trả về tất cả các giá nuoc
         /// </summary>
         /// <returns></returns>
+        /// 
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("water-cost/{year}/{month}/{pageSize}/{currentPage}")]
         public async Task<IActionResult> Get(int year, int month, int currentPage, int pageSize)
@@ -61,6 +65,7 @@ namespace MotelManagementAPI.Controllers
         /// lấy giá tiền của tiền nuoc hiện tại
         /// </summary>
         /// <returns></returns>
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("get-current-water-cost")]
         public async Task<IActionResult> GetCurentWaterCost()
@@ -78,7 +83,7 @@ namespace MotelManagementAPI.Controllers
             }
             return Ok(common);
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpPost]
         [Route("add-water-cost")]
         public async Task<IActionResult> Post(WaterRequestDTO obj)

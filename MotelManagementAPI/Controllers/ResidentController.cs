@@ -1,15 +1,19 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Data;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MotelManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ResidentController : ControllerBase
     {
         private readonly IResidentService _residentService;
@@ -19,7 +23,7 @@ namespace MotelManagementAPI.Controllers
             this._residentService = residentService;
         }
 
-
+     
         // lấy toàn bộ tài khoản có cmnd tương ứng
         [HttpGet]
         [Route("resident/{idCard}")]
@@ -49,6 +53,8 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Manager")]
         [HttpPost]
         [Route("add-resident")]
         public IActionResult AddResidentAccount(AccountDTO accountDTO)
@@ -69,6 +75,8 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Manager")]
         [HttpPut]
         [Route("deactive-resident")]
         public IActionResult DeActiveResident(string idCard)
@@ -90,6 +98,10 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
+
+
+
+        [Authorize(Roles = "Manager")]
         [HttpPut]
         [Route("active-resident")]
         public IActionResult ActiveResident(string idCard)
@@ -103,6 +115,9 @@ namespace MotelManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong please check data again");
         }
 
+
+
+        [Authorize(Roles = "Manager")]
         [HttpPut]
         [Route("update-resident")]
         public IActionResult UpdateResident(long id, ResidentUpdateDTO accountDTO)
@@ -112,7 +127,7 @@ namespace MotelManagementAPI.Controllers
                 var result = _residentService.UpdateResidentAccount(id,accountDTO);
 
                 if (!result)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Identity cart number already exist");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Identity cart number already exist");
 
                 return Ok("Added Successfully");
             }
@@ -120,7 +135,7 @@ namespace MotelManagementAPI.Controllers
             {
                 CommonResponse common = new CommonResponse();
                 common.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, common);
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
             }
 
 
@@ -140,7 +155,7 @@ namespace MotelManagementAPI.Controllers
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
 
 
             }
@@ -162,10 +177,38 @@ namespace MotelManagementAPI.Controllers
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
 
 
             }
+
+        }
+
+        [Authorize(Roles = "Resident")]
+        [HttpPut]
+        [Route("update-information")]
+        public IActionResult UpdateInformationForResident( ResidentUpdateDTO accountDTO)
+        {
+            try
+            {
+                // Ensure that the authenticated user is the same as the user being updated
+                var userId = int.Parse(User.FindFirst("Id").Value);
+                
+                var result = _residentService.UpdateResidentAccount(userId, accountDTO);
+
+                if (!result)
+                    return StatusCode(StatusCodes.Status400BadRequest, "Identity cart number already exist");
+
+                return Ok("Added Successfully");
+            }
+            catch (Exception ex)
+            {
+                CommonResponse common = new CommonResponse();
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+
+            }
+
 
         }
 
