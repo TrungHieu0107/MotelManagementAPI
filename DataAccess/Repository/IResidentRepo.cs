@@ -17,5 +17,6 @@ namespace DataAccess.Repository
         public Resident FindByIdentityCardNumberToBookRoom(string identityCardNumber);
         public Resident FindByIdentityCardNumber(string identityCardNumber);
         public Resident UpdateStatusWhenBookingByIdentityCardNumber(string identityCardNumber);
+        public bool UpdateStatusOfResident(long residentId, AccountStatus status);
     }
 }

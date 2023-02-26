@@ -114,5 +114,23 @@ namespace DataAccess.Repository
             _context.SaveChanges();
             return resident;
         }
+
+        public bool UpdateStatusOfResident(long residentId, AccountStatus status)
+        {
+            var resident = _context.Residents.FirstOrDefault(r => r.Id == residentId);
+
+            if (resident == null)
+                return false;
+
+            resident.Status = status;
+            _context.Entry(resident).State = EntityState.Modified;
+           if (_context.SaveChanges() != 1)
+           {
+                return false;
+           }
+
+            return true;
+
+        }
     }
 }

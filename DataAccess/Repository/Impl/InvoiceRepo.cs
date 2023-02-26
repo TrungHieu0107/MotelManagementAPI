@@ -67,7 +67,10 @@ namespace DataAccess.Repository
 
         public Invoice FindById(long id)
         {
-            return _context.Invoices.Where(i => i.Id == id).FirstOrDefault();
+            return _context.Invoices
+                .Where(i => i.Id == id)
+                .Include(invoice => invoice.Resident)
+                .FirstOrDefault();
         }
 
         public Invoice GetPreviousInvoiceByRoomId(long roomId)
@@ -166,15 +169,18 @@ namespace DataAccess.Repository
                           .Take(pagination.PageSize);
         }
 
-        public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string RoomCode)
+        public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomNotPaidYet(string RoomCode)
         {
-            return (from invoice in _invoices
-                    where invoice.Room.Code == RoomCode
-                    && invoice.Status == InvoiceStatus.NOT_PAID_YET
-                    select invoice)
+            return _invoices.Where(invoice => 
+                                    invoice.Room.Code == RoomCode
+                                && 
+                                    (
+                                        invoice.Status == InvoiceStatus.NOT_PAID_YET 
+                                    ||
+                                        invoice.Status == InvoiceStatus.LATE)
+                                    )
                           .Include(x => x.WaterCost)
                           .Include(x => x.ElectricityCost)
-
                           .Select(x => new InvoiceDTO()
                           {
                               Id = x.Id,
@@ -202,8 +208,6 @@ namespace DataAccess.Repository
 
         public int UpdateInvoiceStatus(Invoice invoice)
         {
-
-
             _context.Entry(invoice).State = EntityState.Modified;
             return _context.SaveChanges();
 

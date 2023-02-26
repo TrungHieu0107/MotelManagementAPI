@@ -13,7 +13,7 @@ namespace DataAccess.Repository
         List<Invoice> checkLateInvoice(string idCard);
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination);
         long CountInvocieHistoryHasRoomId(long roomId);
-        IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string  RoomCode);
+        IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomNotPaidYet(string  RoomCode);
         int UpdateInvoiceStatus(Invoice invoice);
         InvoiceDTO GetInvoiceDetailById(long id);
         public Invoice GetPreviousInvoiceByRoomId(long roomId);
