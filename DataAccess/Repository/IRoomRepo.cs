@@ -9,7 +9,7 @@ namespace DataAccess.Repository
 {
     public interface IRoomRepo
     {
-        RoomDTO GetRoomById(long roomId);
+        RoomDTO GetLatestRoomByRoomCode(string roomCode);
         RoomDTO GetRoomByCode(string roomCode);
         RoomDTO Insert(RoomDTO room);
         bool DeleteRomById(long room);

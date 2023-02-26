@@ -41,19 +41,34 @@ namespace DataAccess.Repository
         }
 
 
-        public RoomDTO GetRoomById(long roomId)
+        public RoomDTO GetLatestRoomByRoomCode(string roomCode)
         {
-            var result = _context.Rooms.Find(roomId);
-            return JsonConvert.DeserializeObject<RoomDTO>(JsonConvert.SerializeObject(result));
+            var result = _context.Rooms.Where(room => room.Code.Equals(roomCode)).Select(room => new RoomDTO()
+            {
+                Id = room.Id,
+                Code = room.Code,
+                Status = room.Status,
+                FeeAppliedDate = room.FeeAppliedDate,
+                RentFee = room.RentFee,
+                MotelId = room.MotelId
+            }).OrderByDescending(room => room.Id).FirstOrDefault();
+            return result;
         }
 
         RoomDTO IRoomRepo.Insert(RoomDTO room)
         {
-            Room r = JsonConvert.DeserializeObject<Room>(JsonConvert.SerializeObject(room));
+            Room r = new Room();
+            r.Status = room.Status;
+            r.RentFee = room.RentFee;
+            r.FeeAppliedDate = room.FeeAppliedDate;
+            r.MotelId = room.MotelId;
+            r.Code = room.Code;
+
             _context.Rooms.Add(r);
             _context.SaveChanges();
+            room.Id = r.Id;
 
-            return JsonConvert.DeserializeObject<RoomDTO>(JsonConvert.SerializeObject(r));
+            return room;
         }
 
 
@@ -66,11 +81,15 @@ namespace DataAccess.Repository
                             r.MotelId == room.MotelId
                             ).FirstOrDefault();
 
-            if (room == null)
+            if (value == null)
             {
                 return null;
             }
-            _context.Update(room);
+
+            value.Status = room.Status;
+            value.FeeAppliedDate = room.FeeAppliedDate;
+            value.RentFee = room.RentFee;
+            _context.Update(value);
             _context.SaveChanges();
 
             return room;
