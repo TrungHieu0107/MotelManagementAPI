@@ -33,6 +33,8 @@ namespace MotelManagementAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+         
             services.AddDbContext<Context>();
 
             services.AddScoped<IAccountService, AccountService>();
@@ -65,6 +67,11 @@ namespace MotelManagementAPI
             services.AddSingleton<IHostedService, AutoCheckLateInvoices>();
             services.AddSingleton<IHostedService, AutoCloseAndCreateInvoices>();
             services.AddSingleton<IHostedService, AutoUpdateBookedRoomsToActive>();
+
+            services.AddTransient<TokenValidationMiddleware>();
+            services.AddScoped<ITokenBlacklist, TokenBlackList>();
+
+            
 
             services.AddSwaggerGen(c =>
             {
@@ -149,6 +156,8 @@ namespace MotelManagementAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MotelManagementAPI v1"));
             }
+
+            app.UseMiddleware<TokenValidationMiddleware>();
             app.UseAuthentication();
             app.UseRouting();
 
