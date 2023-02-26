@@ -104,11 +104,6 @@ namespace MotelManagementAPI.Controllers
                 commonResponse.Data = result;
                 return Ok(commonResponse);
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
-            }
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
@@ -130,11 +125,6 @@ namespace MotelManagementAPI.Controllers
                 var result = _roomService.UpdateRoom(room, long.Parse(userId));
                 commonResponse.Data = result;
                 return Ok(commonResponse);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
             }
             catch (Exception ex)
             {
@@ -161,11 +151,6 @@ namespace MotelManagementAPI.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest,commonResponse);
                 }
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
-            }
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
@@ -174,7 +159,7 @@ namespace MotelManagementAPI.Controllers
         }
 
         [HttpPost]
-        [Route("get-rooms-filter")]
+        [Route("get-rooms")]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
         (
             string roomCode,
@@ -209,11 +194,6 @@ namespace MotelManagementAPI.Controllers
                 commonResponse.Data = result;
                 commonResponse.Pagination = pagination;
                 return Ok(commonResponse);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                commonResponse.Message = ex.Message;
-                return StatusCode(StatusCodes.Status401Unauthorized, commonResponse);
             }
             catch (Exception ex)
             {

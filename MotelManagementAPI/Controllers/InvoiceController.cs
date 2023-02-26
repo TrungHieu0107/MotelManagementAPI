@@ -1,5 +1,6 @@
 using BussinessObject.DTO.Common;
 using DataAccess.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
+    [Authorize(Roles = "Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase
@@ -48,7 +50,7 @@ namespace MotelManagementAPI.Controllers
             CommonResponse commonResponse = new CommonResponse();
             try
             {
-                var invocie = _invoiceService.checkUnPayInvocieByRoomCode(roomCode);
+                var invocie = _invoiceService.CheckUnPayInvocieByRoomCode(roomCode);
               
                 if (invocie == null)
                 {
@@ -99,6 +101,32 @@ namespace MotelManagementAPI.Controllers
             }
 
 
+        }
+
+        [HttpGet]
+        [Route("get-invoice-detail")]
+        public IActionResult GetInvoiceDetail(long id)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                var result = _invoiceService.GetInvoiceDetailById(id);
+
+                if(result == null)
+                {
+                    commonResponse.Message = "Not found this invoice with id " + id;
+                    return BadRequest(commonResponse);
+                }
+
+                commonResponse.Data = result;
+                return Ok(commonResponse);
+
+            }
+            catch (Exception ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
+            }
         }
     }
 }

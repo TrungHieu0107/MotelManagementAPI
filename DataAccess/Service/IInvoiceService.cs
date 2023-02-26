@@ -10,7 +10,7 @@ namespace DataAccess.Service
     public interface IInvoiceService
     {
         List<InvoiceDTO> GetInvoiceHistoryOfRoom(long roomId, ref Pagination pagination);
-        InvoiceDTO checkUnPayInvocieByRoomCode(String roomCode);
+        InvoiceDTO CheckUnPayInvocieByRoomCode(String roomCode);
         int PayInvoice(String roomCode);
         public bool AutoCreateInvoices(DateTime dateTime);
         public Invoice GetPreviousInvoiceByRoomId(long roomId);
@@ -18,5 +18,7 @@ namespace DataAccess.Service
         public Invoice FindById(long id);
         public bool AutoCloseInvoices(DateTime dateTime);
         public Invoice AddInitialInvoice(long residentId, long roomId, DateTime startDate);
+
+        InvoiceDTO GetInvoiceDetailById(long id);
     }
 }

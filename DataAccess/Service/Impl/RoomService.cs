@@ -253,7 +253,7 @@ namespace DataAccess.Service.Impl
 
             if (minFee > maxFee)
             {
-                throw new Exception("Mix fee is greater than max fee");
+                throw new InvalidProgramException("Mix fee is greater than max fee");
             }
 
             pagination.Total = _roomRepo.CountRoomHistoryWithFilter(
