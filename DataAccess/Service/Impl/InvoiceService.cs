@@ -139,7 +139,6 @@ namespace DataAccess.Service.Impl
             if(UnPaidInvoice != null)
             {
                 var invocie = _invoiceRepo.FindById(UnPaidInvoice.Id);
-                var resident = _residentRepo.FindById(invocie.ResidentId);
 
                 invocie.PaidDate = DateTime.Now;
                 invocie.Status = InvoiceStatus.PAID;
@@ -149,8 +148,13 @@ namespace DataAccess.Service.Impl
                 {
                     return 0;
                 }
-                
-                return _residentRepo.UpdateStatusOfResident(resident.Id, AccountStatus.ACTIVE) ? 1 : 0;
+                var resident = _residentRepo.FindById(invocie.ResidentId);
+                if(resident.Status == AccountStatus.LATE_PAYMENT)
+                {
+                    return _residentRepo.UpdateStatusOfResident(resident.Id, AccountStatus.ACTIVE) ? 1 : 0;
+                }
+
+                return checkUpdateinvoice;
 
             } else
             {
