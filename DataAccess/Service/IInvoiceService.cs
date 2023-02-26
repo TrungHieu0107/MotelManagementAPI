@@ -18,7 +18,7 @@ namespace DataAccess.Service
         public Invoice FindById(long id);
         public bool AutoCloseInvoices(DateTime dateTime);
         public Invoice AddInitialInvoice(long residentId, long roomId, DateTime startDate);
-
         InvoiceDTO GetInvoiceDetailById(long id);
+        List<InvoiceDTO> GetAllLatestInvoice(string roomCode,int status,long userId, ref Pagination pagination);
     }
 }

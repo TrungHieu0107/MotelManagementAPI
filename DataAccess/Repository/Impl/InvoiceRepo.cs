@@ -277,5 +277,77 @@ namespace DataAccess.Repository
 
             return result;
         }
+
+        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, ref Pagination pagination)
+        {
+            pagination = pagination ?? new Pagination();
+
+            var listAllInvoice = _context.Invoices
+                .Include(x => x.Room)
+                .Where(invoice =>
+                (status == -1 ? true : invoice.Status == (InvoiceStatus)status)
+                &&
+                (roomCode == null ? true : invoice.Room.Code.Contains(roomCode))
+                && 
+                (userId != -1 ? invoice.Resident.Id == userId : true)
+                ).Select(invoice => new InvoiceDTO
+                {
+                    Id = invoice.Id,
+                    StartDate = invoice.StartDate,
+                    EndDate = invoice.EndDate,
+                    CreatedDate = invoice.CreatedDate,
+                    ExpiredDate = invoice.ExpiredDate,
+                    PaidDate = invoice.PaidDate,
+                    Status = invoice.Status,
+                    ElectricityConsumptionEnd = invoice.ElectricityConsumptionEnd,
+                    ElectricityConsumptionStart = invoice.ElectricityConsumptionStart,
+                    ElectricityCostId = invoice.ElectricityCostId,
+                    ElectricityCost = new ElectricityCostDTO()
+                    {
+                        Price = invoice.ElectricityCost.Price,
+                        Id = invoice.ElectricityCost.Id,
+                        AppliedDate = invoice.ElectricityCost.AppliedDate
+                    },
+                    WaterConsumptionEnd = invoice.WaterConsumptionEnd,
+                    WaterConsumptionStart = invoice.WaterConsumptionStart,
+                    WaterCost = new WaterCostDTO()
+                    {
+                        Price = invoice.WaterCost.Price,
+                        Id = invoice.WaterCost.Id,
+                        AppliedDate = invoice.WaterCost.AppliedDate
+                    },
+                    Resident = new ResidentDTO()
+                    {
+                        Id = invoice.Resident.Id,
+                        FullName = invoice.Resident.FullName,
+                        IdentityCardNumber = invoice.Resident.IdentityCardNumber,
+                        Phone = invoice.Resident.Phone
+                    },
+                    Room = new RoomDTO()
+                    {
+                        Id = invoice.Room.Id,
+                        Code = invoice.Room.Code,
+                        FeeAppliedDate = invoice.Room.FeeAppliedDate,
+                        MotelChain = new MotelChainDTO()
+                        {
+                            Id = invoice.Room.MotelChain.Id,
+                            Address = invoice.Room.MotelChain.Address,
+                            Name = invoice.Room.MotelChain.Name,
+                            Manager = new ManagerDTO()
+                            {
+                                FullName = invoice.Room.MotelChain.Manager.FullName,
+                                IdentityCardNumber = invoice.Room.MotelChain.Manager.IdentityCardNumber,
+                                Phone = invoice.Room.MotelChain.Manager.Phone
+                            },
+                        },
+                    }
+                });
+
+            pagination.Total = listAllInvoice.LongCount();
+
+            return listAllInvoice.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
+                .Take(pagination.PageSize);
+
+        }
     }
 }
