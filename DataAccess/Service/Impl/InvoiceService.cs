@@ -129,16 +129,28 @@ namespace DataAccess.Service.Impl
       
         public InvoiceDTO CheckUnPayInvocieByRoomCode(String roomCode)
         {
-            return _invoiceRepo.GetInvoiceHistoryOfRoomWithUnPayStatus(roomCode).FirstOrDefault();
+            return _invoiceRepo.GetInvoiceHistoryOfRoomNotPaidYet(roomCode).FirstOrDefault();
         }
 
         public int PayInvoice(String roomCode)
         {
-            InvoiceDTO UnPaidInvoice = _invoiceRepo.GetInvoiceHistoryOfRoomWithUnPayStatus(roomCode).FirstOrDefault();
+            InvoiceDTO UnPaidInvoice = _invoiceRepo.GetInvoiceHistoryOfRoomNotPaidYet(roomCode).FirstOrDefault();
 
             if(UnPaidInvoice != null)
             {
                 var invocie = _invoiceRepo.FindById(UnPaidInvoice.Id);
+                var resident = _residentRepo.FindById(invocie.ResidentId);
+                bool checkUpdateAccount = true;
+                if(resident.Status == AccountStatus.LATE_PAYMENT)
+                {
+                    checkUpdateAccount = _residentRepo.UpdateStatusOfResident(resident.Id, AccountStatus.ACTIVE);
+                }
+
+                if (!checkUpdateAccount)
+                {
+                    return 0;
+                }
+
                 invocie.PaidDate = DateTime.Now;
                 invocie.Status = InvoiceStatus.PAID;
                 return _invoiceRepo.UpdateInvoiceStatus(invocie);
