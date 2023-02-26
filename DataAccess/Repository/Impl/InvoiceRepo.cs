@@ -124,11 +124,7 @@ namespace DataAccess.Repository
                         ).LongCount();
         }
 
-        public Invoice findById(long id)
-        {
-            throw new NotImplementedException();
-        }
-
+     
         public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination)
         {
             return _invoices.Where(invoice =>
@@ -172,15 +168,53 @@ namespace DataAccess.Repository
 
         public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string RoomCode)
         {
-            throw new NotImplementedException();
-        }
+            return (from invoice in _invoices
+                    where invoice.Room.Code == RoomCode
+                    && invoice.Status == InvoiceStatus.NOT_PAID_YET
+                    select invoice)
+                          .Include(x => x.WaterCost)
+                          .Include(x => x.ElectricityCost)
 
-        public Task<IEnumerable<Invoice>> GetInvoiceOfRoom(long roomId, int? pageNumber, int? pageSize)
-        {
-            throw new NotImplementedException();
+                          .Select(x => new InvoiceDTO()
+                          {
+                              Id = x.Id,
+                              CreatedDate = x.CreatedDate,
+                              RoomId = x.RoomId,
+                              ElectricityConsumptionEnd = x.ElectricityConsumptionEnd,
+                              ElectricityConsumptionStart = x.ElectricityConsumptionStart,
+                              WaterConsumptionEnd = x.WaterConsumptionEnd,
+                              WaterConsumptionStart = x.WaterConsumptionStart,
+                              PaidDate = x.PaidDate,
+                              Status = x.Status,
+                              ElectricityCost = new ElectricityCostDTO()
+                              {
+                                  Price = x.ElectricityCost.Price,
+                              },
+                              WaterCost = new WaterCostDTO()
+                              {
+                                  Price = x.WaterCost.Price,
+                              },
+                              EndDate = x.EndDate,
+                              ExpiredDate = x.ExpiredDate,
+                          });
+
         }
 
         public int updateInvoiceStatus(Invoice invoice)
+        {
+
+
+            _context.Entry(invoice).State = EntityState.Modified;
+            return _context.SaveChanges();
+
+
+        }
+        public Invoice findById(long id)
+        {
+            return _context.Invoices.Find(id);
+        }
+
+        public Task<IEnumerable<Invoice>> GetInvoiceOfRoom(long roomId, int? pageNumber, int? pageSize)
         {
             throw new NotImplementedException();
         }
