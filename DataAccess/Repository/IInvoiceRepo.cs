@@ -11,12 +11,11 @@ namespace DataAccess.Repository
     public interface IInvoiceRepo
     {
         List<Invoice> checkLateInvoice(string idCard);
-        Task<IEnumerable<Invoice>> GetInvoiceOfRoom(long roomId, int? pageNumber, int? pageSize);
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination);
         long CountInvocieHistoryHasRoomId(long roomId);
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithUnPayStatus(string  RoomCode);
-        int updateInvoiceStatus(Invoice invoice);
-        Invoice findById(long id);
+        int UpdateInvoiceStatus(Invoice invoice);
+        InvoiceDTO GetInvoiceDetailById(long id);
         public Invoice GetPreviousInvoiceByRoomId(long roomId);
         public List<Invoice> AutoCheckLateInvoices(DateTime dateTime);
         public void Add(Invoice invoice);

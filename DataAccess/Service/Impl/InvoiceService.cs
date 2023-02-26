@@ -127,7 +127,7 @@ namespace DataAccess.Service.Impl
         }
 
       
-        public InvoiceDTO checkUnPayInvocieByRoomCode(String roomCode)
+        public InvoiceDTO CheckUnPayInvocieByRoomCode(String roomCode)
         {
             return _invoiceRepo.GetInvoiceHistoryOfRoomWithUnPayStatus(roomCode).FirstOrDefault();
         }
@@ -138,16 +138,22 @@ namespace DataAccess.Service.Impl
 
             if(UnPaidInvoice != null)
             {
-
-                var invocie = _invoiceRepo.findById(UnPaidInvoice.Id);
+                var invocie = _invoiceRepo.FindById(UnPaidInvoice.Id);
                 invocie.PaidDate = DateTime.Now;
                 invocie.Status = InvoiceStatus.PAID;
-                return _invoiceRepo.updateInvoiceStatus(invocie);
+                return _invoiceRepo.UpdateInvoiceStatus(invocie);
 
             } else
             {
                 return 0;
             }
+        }
+
+        public InvoiceDTO GetInvoiceDetailById(long id)
+        {
+            var result = _invoiceRepo.GetInvoiceDetailById(id);
+
+            return result;
         }
     }
 }

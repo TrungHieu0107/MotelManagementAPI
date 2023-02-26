@@ -34,7 +34,7 @@ namespace DataAccess.Repository
         {
             List<Invoice> lateInvoices = GetLateInvoices(dateTime);
 
-            foreach(Invoice invoice in lateInvoices)
+            foreach (Invoice invoice in lateInvoices)
             {
                 CheckLateInvoice(invoice.Id);
             }
@@ -98,11 +98,11 @@ namespace DataAccess.Repository
             _context.SaveChanges();
             return invoice;
         }
-        
+
         public List<Invoice> checkLateInvoice(string idCard)
         {
-            return _context.Invoices.Where(p => 
-                            p.Resident.IdentityCardNumber == idCard 
+            return _context.Invoices.Where(p =>
+                            p.Resident.IdentityCardNumber == idCard
                         &&
                             p.Status == InvoiceStatus.LATE)
                         .ToList<Invoice>();
@@ -124,7 +124,7 @@ namespace DataAccess.Repository
                         ).LongCount();
         }
 
-     
+
         public IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomWithPaging(long roomId, Pagination pagination)
         {
             return _invoices.Where(invoice =>
@@ -200,7 +200,7 @@ namespace DataAccess.Repository
 
         }
 
-        public int updateInvoiceStatus(Invoice invoice)
+        public int UpdateInvoiceStatus(Invoice invoice)
         {
 
 
@@ -209,14 +209,69 @@ namespace DataAccess.Repository
 
 
         }
-        public Invoice findById(long id)
-        {
-            return _context.Invoices.Find(id);
-        }
 
-        public Task<IEnumerable<Invoice>> GetInvoiceOfRoom(long roomId, int? pageNumber, int? pageSize)
+        public InvoiceDTO GetInvoiceDetailById(long id)
         {
-            throw new NotImplementedException();
+            var result = _context.Invoices
+                .Where(x => x.Id == id)
+                .Include(invoice => invoice.WaterCost)
+                .Include(invoice => invoice.ElectricityCost)
+                .Include(invoice => invoice.Room.MotelChain)
+                .Include(invoice => invoice.Room.MotelChain.Manager)
+                .Select(invoice => new InvoiceDTO
+                {
+                    Id = id,
+                    StartDate = invoice.StartDate,
+                    EndDate = invoice.EndDate,
+                    CreatedDate = invoice.CreatedDate,
+                    ExpiredDate = invoice.ExpiredDate,
+                    PaidDate = invoice.PaidDate,
+                    Status = invoice.Status,
+                    ElectricityConsumptionEnd = invoice.ElectricityConsumptionEnd,
+                    ElectricityConsumptionStart = invoice.ElectricityConsumptionStart,
+                    ElectricityCostId = invoice.ElectricityCostId,
+                    ElectricityCost = new ElectricityCostDTO()
+                    {
+                        Price = invoice.ElectricityCost.Price,
+                        Id = invoice.ElectricityCost.Id,
+                        AppliedDate = invoice.ElectricityCost.AppliedDate
+                    },
+                    WaterConsumptionEnd = invoice.WaterConsumptionEnd,
+                    WaterConsumptionStart = invoice.WaterConsumptionStart,
+                    WaterCost = new WaterCostDTO()
+                    {
+                        Price = invoice.WaterCost.Price,
+                        Id = invoice.WaterCost.Id,
+                        AppliedDate = invoice.WaterCost.AppliedDate
+                    },
+                    Resident = new ResidentDTO()
+                    {
+                        Id = invoice.Resident.Id,
+                        FullName = invoice.Resident.FullName,
+                        IdentityCardNumber = invoice.Resident.IdentityCardNumber,
+                        Phone = invoice.Resident.Phone
+                    },
+                    Room = new RoomDTO()
+                    {
+                        Id = invoice.Room.Id,
+                        Code = invoice.Room.Code,
+                        FeeAppliedDate = invoice.Room.FeeAppliedDate,
+                        MotelChain = new MotelChainDTO()
+                        {
+                            Id = invoice.Room.MotelChain.Id,
+                            Address = invoice.Room.MotelChain.Address,
+                            Name = invoice.Room.MotelChain.Name,
+                            Manager = new ManagerDTO()
+                            {
+                                FullName = invoice.Room.MotelChain.Manager.FullName,
+                                IdentityCardNumber = invoice.Room.MotelChain.Manager.IdentityCardNumber,
+                                Phone = invoice.Room.MotelChain.Manager.Phone
+                            },
+                        },
+                    }
+                }).FirstOrDefault();
+
+            return result;
         }
     }
 }
