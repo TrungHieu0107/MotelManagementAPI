@@ -128,30 +128,34 @@ namespace DataAccess.Service.Impl
             Resident idCardCheck = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null,AccountStatus.ACTIVE).FirstOrDefault<Resident>();
             if (idCardCheck != null && idCardCheck.Id != id)
             {
-                throw new Exception("Indentity Number already exist");
+                return false;
             }
-            // check if user exsit 
-            Resident resident = _residentRepo.findById(id);
-
-            // user exist , idCardnumber input is unique
-            if (resident != null && idCardCheck == null)
+            else
             {
+                // check if user exsit 
+                Resident resident = _residentRepo.findById(id);
 
-                resident.IdentityCardNumber = account.IdentityCardNumber;
-
-
-                resident.Password = account.Password;
-                resident.FullName = account.FullName;
-                resident.Phone = account.Phone;
-              
-                //Save change
-                var updatedResident = _residentRepo.UpdateResidentAccount(resident);
-                if (updatedResident != null)
+                // user exist , idCardnumber input is unique
+                if (resident != null)
                 {
-                    check = true;
-                }
-            }
 
+                    resident.IdentityCardNumber = account.IdentityCardNumber;
+
+
+                    resident.Password = account.Password;
+                    resident.FullName = account.FullName;
+                    resident.Phone = account.Phone;
+
+                    //Save change
+                    var updatedResident = _residentRepo.UpdateResidentAccount(resident);
+                    if (updatedResident != null)
+                    {
+                        check = true;
+                    }
+                }
+                else throw new Exception("Some thing went wrong");
+
+            }
             return check;
         }
 
@@ -184,6 +188,14 @@ namespace DataAccess.Service.Impl
             return check;
         }
 
+        public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage)
+        {
+            return _residentRepo.GetAllResident(pageSize, currentPage);
+        }
 
+        public IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage)
+        {
+            return _residentRepo.FillterResident(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+        }
     }
 }

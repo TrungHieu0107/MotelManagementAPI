@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BussinessObject.Status;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BussinessObject.DTO
@@ -30,6 +31,8 @@ namespace BussinessObject.DTO
         [Required(AllowEmptyStrings = false, ErrorMessage = "The full name can not be empty")]
         [StringLength(60, MinimumLength = 8, ErrorMessage = "full name field must have minimum 8 and maximum 60 character!")]
         public string FullName { get; set; }
+
+        public string status;
 
         public List<HistoryDTO> Histories { get; set; }
         public List<InvoiceDTO> Invoices { get; set; }

@@ -112,7 +112,7 @@ namespace MotelManagementAPI.Controllers
                 var result = _residentService.UpdateResidentAccount(id,accountDTO);
 
                 if (!result)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Identity cart number already exist");
 
                 return Ok("Added Successfully");
             }
@@ -123,6 +123,49 @@ namespace MotelManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, common);
             }
 
+
+        }
+
+        [HttpGet]
+        [Route("get-all-resident")]
+        public IActionResult getAllResident(int pageSize = 10, int currentPage = 1)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                var list = _residentService.getAllResident(pageSize,currentPage);
+                commonResponse.Data = list;
+                return Ok(commonResponse);
+            }
+            catch (Exception ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+
+
+            }
+
+        }
+
+
+        [HttpPost]
+        [Route("filter-resident")]
+        public IActionResult FillterResident(string idCardNumber,string phone, string Fullname,int status,int pageSize, int currentPage)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                var list = _residentService.FillterResident(idCardNumber, phone, Fullname,status,  pageSize, currentPage);
+                commonResponse.Data = list;
+                return Ok(commonResponse);
+            }
+            catch (Exception ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+
+
+            }
 
         }
 

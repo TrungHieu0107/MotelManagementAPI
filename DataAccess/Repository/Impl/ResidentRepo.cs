@@ -1,4 +1,5 @@
 using BussinessObject.Data;
+using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
@@ -132,5 +133,68 @@ namespace DataAccess.Repository
             return true;
 
         }
+
+        public IEnumerable<ResidentDTO> GetAllResident(int pageSize, int currentPage)
+        {
+
+            return _context.Residents.ToList().Select(
+                 r => new ResidentDTO()
+                 {
+
+                     IdentityCardNumber = r.IdentityCardNumber,
+                     FullName = r.FullName,
+                     Id = r.Id,
+                     Phone = r.Phone,
+                     status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
+                     Password = "",
+                     UserName = ""
+                 }
+              ).Skip((currentPage - 1) * pageSize)
+                        .Take(pageSize);
+
+        }
+
+     
+
+        public IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname, int status ,int pageSize, int currentPage)
+        {
+            var query = _context.Residents.AsQueryable();
+            if (!String.IsNullOrEmpty(idCardNumber))
+            {
+                query = query.Where(p => p.IdentityCardNumber == idCardNumber);
+
+            }
+            if (!String.IsNullOrEmpty(phone))
+            {
+                query = query.Where(p => p.Phone == phone);
+            }
+            if (!String.IsNullOrEmpty(Fullname))
+            {
+                query = query.Where(p => p.FullName.Contains(Fullname));
+            }
+            if (status >=0 && status <= Enum.GetNames(typeof(AccountStatus)).Length)
+            {
+                query = query.Where(p => p.Status == (AccountStatus)Enum.ToObject(typeof(AccountStatus), status));
+            }
+
+            return query.ToList().Select(
+                r => new ResidentDTO()
+                {
+
+                    IdentityCardNumber = r.IdentityCardNumber,
+                    FullName = r.FullName,
+                    Id = r.Id,
+                    Phone = r.Phone,
+                    status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
+                    Password = "",
+                    UserName = ""
+                }
+             ).Skip((currentPage - 1) * pageSize)
+                       .Take(pageSize);
+
+
+        }
+
+     
     }
 }

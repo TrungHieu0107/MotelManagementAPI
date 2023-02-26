@@ -19,5 +19,8 @@ namespace DataAccess.Service
         public Resident FindByIdentityCardNumberToBookRoom(string identityCardNumber);
         public Resident UpdateStatusWhenBookingByIdentityCardNumber(string identityCardNumber);
         public ResidentDTOForDetail ViewResidentDetail(string identityCardNumber);
+
+        public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage);
+        IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage);
     }
 }
