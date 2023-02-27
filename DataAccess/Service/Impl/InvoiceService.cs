@@ -139,21 +139,22 @@ namespace DataAccess.Service.Impl
             if(UnPaidInvoice != null)
             {
                 var invocie = _invoiceRepo.FindById(UnPaidInvoice.Id);
-                var resident = _residentRepo.FindById(invocie.ResidentId);
-                bool checkUpdateAccount = true;
-                if(resident.Status == AccountStatus.LATE_PAYMENT)
-                {
-                    checkUpdateAccount = _residentRepo.UpdateStatusOfResident(resident.Id, AccountStatus.ACTIVE);
-                }
-
-                if (!checkUpdateAccount)
-                {
-                    return 0;
-                }
 
                 invocie.PaidDate = DateTime.Now;
                 invocie.Status = InvoiceStatus.PAID;
-                return _invoiceRepo.UpdateInvoiceStatus(invocie);
+                int checkUpdateinvoice = _invoiceRepo.UpdateInvoiceStatus(invocie);
+
+                if (checkUpdateinvoice <=0)
+                {
+                    return 0;
+                }
+                var resident = _residentRepo.FindById(invocie.ResidentId);
+                if(resident.Status == AccountStatus.LATE_PAYMENT)
+                {
+                    return _residentRepo.UpdateStatusOfResident(resident.Id, AccountStatus.ACTIVE) ? 1 : 0;
+                }
+
+                return checkUpdateinvoice;
 
             } else
             {
