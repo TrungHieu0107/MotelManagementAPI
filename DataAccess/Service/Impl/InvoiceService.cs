@@ -167,5 +167,17 @@ namespace DataAccess.Service.Impl
 
             return result;
         }
+
+        public List<InvoiceDTO> GetAllLatestInvoice(string roomCode, int status, long userId, ref Pagination pagination)
+        {
+            var result = _invoiceRepo.GetAllInvoice(
+                                                roomCode,
+                                                status,
+                                                userId,
+                                                ref pagination
+                                                );
+
+            return result.ToList();
+        }
     }
 }

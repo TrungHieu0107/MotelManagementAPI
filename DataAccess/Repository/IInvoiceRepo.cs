@@ -21,5 +21,6 @@ namespace DataAccess.Repository
         public void Add(Invoice invoice);
         public Invoice FindById(long id);
         public bool AutoCloseInvoices(DateTime dateTime);
+        IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, ref Pagination pagination);
     }
 }
