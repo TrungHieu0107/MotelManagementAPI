@@ -142,7 +142,7 @@ namespace DataAccess.Service.Impl
                     resident.IdentityCardNumber = account.IdentityCardNumber;
 
 
-                    resident.Password = account.Password;
+                    resident.Password = PasswordHasher.Hash(account.Password);
                     resident.FullName = account.FullName;
                     resident.Phone = account.Phone;
 
