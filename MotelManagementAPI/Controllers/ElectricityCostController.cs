@@ -28,6 +28,8 @@ namespace MotelManagementAPI.Controllers
         /// Xem giá điện thay đổi dựa theo năm, truyền vào giá trị -1 thì sẽ trả về tất cả các giá điện
         /// </summary>
         /// <returns></returns>
+        /// 
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("electricity-cost/{year}/{month}/{pageSize}/{currentPage}")]
         public async Task<IActionResult> Get(int year, int month, int pageSize = 10, int currentPage = 1)
@@ -68,7 +70,8 @@ namespace MotelManagementAPI.Controllers
         /// <returns></returns>
         // [Authorize(Roles = "Manager")]
         // [Authorize(Roles = "Resident")]
-
+     
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("get-current-electricity-cost")]
         public async Task<IActionResult> GetCurentElectricityCost()
@@ -97,6 +100,7 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost]
         [Route("add-electricity-cost")]
         public async Task<IActionResult> Post(ElectricityCostRequestDTO obj)

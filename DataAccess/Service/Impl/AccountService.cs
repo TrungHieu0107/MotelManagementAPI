@@ -20,11 +20,20 @@ namespace DataAccess.Service.Impl
         public string authenticate(LoginDTO loginDTO)
         {
             Account account = _accountRepo.FindAccountByUserName(loginDTO.UserName);
-            bool checkPassword = PasswordHasher.Verify(loginDTO.Password, account.Password);
-            if (account == null || !checkPassword)
+            bool checkPassword = false;
+            if (account == null)
             {
                 return null;
             }
+            else {
+
+                checkPassword = PasswordHasher.Verify(loginDTO.Password, account.Password);
+                if( !checkPassword) {
+                    return null;
+                }
+
+            }
+           
             string role = null;
             role = account.GetType().Name.ToString();
             if (role.Equals("Manager"))
