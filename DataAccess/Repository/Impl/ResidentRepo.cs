@@ -91,14 +91,12 @@ namespace DataAccess.Repository
         public Resident FindByIdentityCardNumberToBookRoom(string identityCardNumber)
         {
             Resident resident = _context.Residents.FirstOrDefault(r => r.IdentityCardNumber == identityCardNumber);
-            if (resident == null) throw new Exception("Resident with identity card number: " + identityCardNumber + " doesn't exist.");
-            if (resident.Status != AccountStatus.LATE_PAYMENT) throw new Exception("This resident has an invoice that is not paid yet.");
             return resident;
         }
 
         public Resident UpdateStatusWhenBookingByIdentityCardNumber(string identityCardNumber)
         {
-            Resident resident = FindByIdentityCardNumberToBookRoom(identityCardNumber);
+            Resident resident = _context.Residents.FirstOrDefault(r => r.IdentityCardNumber == identityCardNumber);
             resident.Status = AccountStatus.ACTIVE;
             var tracker = _context.Attach(resident);
             tracker.State = EntityState.Modified;

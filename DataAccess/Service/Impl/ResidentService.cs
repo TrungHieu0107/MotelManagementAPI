@@ -1,4 +1,5 @@
 using BussinessObject.DTO;
+using BussinessObject.DTO.Common;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
@@ -42,28 +43,6 @@ namespace DataAccess.Service.Impl
             return _residentRepo.UpdateStatusWhenBookingByIdentityCardNumber(identityCardNumber);
         }
 
-        public ResidentDTOForDetail ViewResidentDetail(string identityCardNumber)
-        {
-            Resident resident = _residentRepo.FindByIdentityCardNumber(identityCardNumber);
-            ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
-            residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
-            residentDTOForDetail.Phone = resident.Phone;
-            residentDTOForDetail.FullName = resident.FullName;
-            residentDTOForDetail.Status = nameof(resident.Status);
-            List<History> histories = _historyRepo.GetNullEndDateHistoriesByResident(resident);
-            List<RoomDTOForResidentDetail> roomDTOForResidentDetails = new List<RoomDTOForResidentDetail>();
-            foreach(History history in histories)
-            {
-                RoomDTOForResidentDetail roomDTOForResidentDetail = new RoomDTOForResidentDetail();
-                roomDTOForResidentDetail.Code = history.Room.Code;
-                roomDTOForResidentDetail.Status = nameof(history.Room.Status);
-                roomDTOForResidentDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
-                roomDTOForResidentDetail.MotelChainName = _motelChainRepo.FindById(history.Room.MotelId).Name;
-                roomDTOForResidentDetails.Add(roomDTOForResidentDetail);
-            }
-            residentDTOForDetail.RoomDTOForResidentDetails = roomDTOForResidentDetails;
-            return residentDTOForDetail;
-        }
         private readonly IAccountRepo _accountRepo;
         private readonly IInvoiceRepo _invoiceRepo;
         public ResidentDTO GetResidentByIdentityCardNumber(string idCard)
@@ -74,7 +53,6 @@ namespace DataAccess.Service.Impl
             residentDTO.Password = "";
             residentDTO.UserName = "";
             return residentDTO;
-
         }
 
         public bool DeActiveResident(String idCard)
@@ -188,11 +166,96 @@ namespace DataAccess.Service.Impl
             return check;
         }
 
+        public CommonResponse FindByIdForDetail(long residentId, int pageSize, int currentPage, string roomStatus)
+        {
+            Resident resident = FindById(residentId);
         public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage)
         {
             return _residentRepo.GetAllResident(pageSize, currentPage);
         }
 
+            if (resident == null) throw new Exception("Resident with ID: " + residentId + " doesn't exist.");
+            ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+            residentDTOForDetail.FullName = resident.FullName;
+            residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
+            residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
+            residentDTOForDetail.Phone = resident.Phone;
+
+            List<RoomDTOForDetail> roomDTOForDetails = new List<RoomDTOForDetail>();
+            List<History> histories = _historyRepo.FindByResidentId(residentId);
+            switch (roomStatus)
+            {
+                case "RENTING":
+                    {
+                        histories = histories.
+                            Where(h => h.ResidentId == residentId && h.EndDate == null && h.StartDate < DateTime.Now).ToList();
+                        break;
+                    }
+                case "USED_TO_RENT":
+                    {
+                        histories = histories.
+                            Where(h => h.ResidentId == residentId && h.EndDate != null).ToList();
+                        break;
+                    }
+                case "BOOKING":
+                    {
+                        DateTime dateTimePoint = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddDays(1);
+                        histories = histories.
+                            Where(h => h.ResidentId == residentId && h.StartDate > dateTimePoint).ToList();
+                        break;
+                    }
+                default:
+                    {
+                        throw new Exception("Status of renting must be RENTING, USED_TO_RENT or BOOKING");
+                    }
+            }
+
+            long total = histories.Count;
+            histories = histories.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+            foreach (History history in histories)
+            {
+                Room room = history.Room;
+                RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
+                roomDTOForDetail.Code = room.Code;
+                roomDTOForDetail.MotelChainName = _motelChainRepo.FindById(room.MotelId).Name;
+                roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
+                roomDTOForDetail.EndDate = history.EndDate == null ? "-" : history.EndDate.Value.ToString("dd/MM/yyyy");
+
+                roomDTOForDetails.Add(roomDTOForDetail);
+            }
+            
+            residentDTOForDetail.RoomDTOForDetails = roomDTOForDetails;
+            Pagination pagination = new Pagination();
+            pagination.PageSize = pageSize;
+            pagination.CurrentPage = currentPage;
+            pagination.Total = total;
+            CommonResponse response = new CommonResponse();
+            response.Data = residentDTOForDetail;
+            response.Pagination = pagination;
+            response.Message = "Get resident successfully";
+            return response;
+        }
+
+        public bool BookRoom(BookingRoomRequest bookingRoomRequest, long managerId)
+        {
+            Resident resident = _residentRepo.FindByIdentityCardNumberToBookRoom(bookingRoomRequest.IdentityCardNumber);
+            if (resident == null) throw new Exception("Resident with identity card number: " + bookingRoomRequest.IdentityCardNumber + " doesn't exist.");
+            if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("This resident has an invoice that is not paid yet.");
+
+            Room room = _roomRepo.CheckAndGetBeforeBookingById(managerId, bookingRoomRequest.RoomId);
+            if (room == null) throw new Exception("Room with ID: " + bookingRoomRequest.RoomId + " doesn't exist or isn't managed by the manager.");
+            if (room.Status != RoomStatus.EMPTY) throw new Exception("Booked room's status must be EMPTY.");
+
+            _residentRepo.UpdateStatusWhenBookingByIdentityCardNumber(bookingRoomRequest.IdentityCardNumber);
+            _roomRepo.UpdateStatusWhenBookingById(managerId, bookingRoomRequest.RoomId, bookingRoomRequest.StartDate);
+            History history = new History();
+            history.RoomId = bookingRoomRequest.RoomId;
+            history.StartDate = bookingRoomRequest.StartDate;
+            history.ResidentId = resident.Id;
+            history.EndDate = null;
+            _historyRepo.Add(history);
+            return true;
+        }
         public IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage)
         {
             return _residentRepo.FillterResident(idCardNumber, phone, Fullname, status, pageSize, currentPage);

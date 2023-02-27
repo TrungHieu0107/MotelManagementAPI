@@ -1,5 +1,7 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using BussinessObject.Models;
+using BussinessObject.Status;
 using DataAccess.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Data;
 using System.Security.Claims;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MotelManagementAPI.Controllers
@@ -17,39 +20,53 @@ namespace MotelManagementAPI.Controllers
     public class ResidentController : ControllerBase
     {
         private readonly IResidentService _residentService;
+        private readonly IHistoryService _historyService;
+        private readonly IRoomService _roomService;
+        private readonly IInvoiceService _invoiceService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ResidentController(IResidentService residentService)
+        public ResidentController(IResidentService residentService, IHistoryService historyService, IRoomService roomService, IInvoiceService invoiceService, IHttpContextAccessor httpContextAccessor)
         {
-            this._residentService = residentService;
+            _residentService = residentService;
+            _historyService = historyService;
+            _roomService = roomService;
+            _invoiceService = invoiceService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-     
-        // lấy toàn bộ tài khoản có cmnd tương ứng
         [HttpGet]
-        [Route("resident/{idCard}")]
-        public IActionResult GetResidentAccountByIdentityCard(string idCard)
+        [Authorize(Roles = "Manager, Resident")]
+        [Route("detail")]
+        public IActionResult FindByIdForDetail(long? residentId, int pageSize, int currentPage, string roomStatus)
         {
-            CommonResponse common = new CommonResponse();
+            CommonResponse response = new CommonResponse();
+            var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            long accountId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+            string roleClaim = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+
             try
             {
-                var rs = _residentService.GetResidentByIdentityCardNumber(idCard);
-                
-                
-                if (rs == null)
+                try
                 {
-                    common.Message = "Not found";
+                    if (pageSize < 1 || currentPage < 1) throw new Exception("Page size and current page must be >= 1");
+                    if(roleClaim == "Manager")
+                    {
+                        if (residentId == null) throw new Exception("Resident ID must not empty.");
+                        return Ok(_residentService.FindByIdForDetail(residentId.Value, pageSize, currentPage, roomStatus));
+                    }
+                    else
+                        return Ok(_residentService.FindByIdForDetail(accountId, pageSize, currentPage, roomStatus));
                 }
-                else
+                catch (Exception ex)
                 {
-                    common.Data = rs;
-
+                    response.Message = ex.Message;
+                    return StatusCode(StatusCodes.Status400BadRequest, response);
                 }
-                return Ok(common);
+                
             } catch(Exception ex)
             {
-                common.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, common);
-
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 
@@ -137,9 +154,35 @@ namespace MotelManagementAPI.Controllers
                 common.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, common);
             }
-
-
         }
+
+        //[HttpGet]
+        //[Route("find-by-identity-card-number-to-book-room")]
+        //public IActionResult FindByIdentityCardNumberToBookRoom(string identityCardNumber)
+        //{
+        //    try
+        //    {
+                
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        CommonResponse common = new CommonResponse();
+        //        common.Message = ex.Message;
+        //        return StatusCode(StatusCodes.Status400BadRequest, common);
+        //    }
+        //}
+
+        [Authorize(Roles = "Manager")]
+        [HttpPost]
+        [Route("book-room")]
+        public IActionResult BookRoom(BookingRoomRequest bookingRoomRequest)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long managerId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+                DateTime startDate = bookingRoomRequest.StartDate;
 
         [HttpGet]
         [Route("get-all-resident")]
@@ -156,6 +199,8 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
+                Resident resident = new Resident(); 
+                Room room = new Room();
 
 
             }
@@ -213,5 +258,27 @@ namespace MotelManagementAPI.Controllers
         }
 
 
+                try
+                {
+                    _residentService.BookRoom(bookingRoomRequest, managerId);
+                    _invoiceService.AddInitialInvoice(resident.Id, bookingRoomRequest.RoomId, startDate);
+                }
+                catch (Exception ex)
+                {
+                    response.Message = ex.Message;
+                    return StatusCode(StatusCodes.Status400BadRequest, response);
+                }
+                
+                response.Data = bookingRoomRequest.RoomId;
+                response.Message = "Booked room successfully.";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }

@@ -211,15 +211,56 @@ namespace DataAccess.Repository
             return room;
         }
 
-        public Room UpdateStatusWhenBookingById(long managerId, long roomId)
+        public Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate)
         {
             Room room = _context.Rooms.Include(r => r.MotelChain).FirstOrDefault(r => r.Id == roomId && r.MotelChain.ManagerId == managerId);
-            if (room == null) throw new Exception("Room with ID: " + roomId + " doesn't exist or isn't managed by the manager.");
-            if(room.Status != RoomStatus.EMPTY) throw new Exception("Booked room's status must be EMPTY.");
-            room.Status = RoomStatus.BOOKED;
+            DateTime dateTimePoint = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).AddDays(1);
+            if (startDate < dateTimePoint)
+            {
+                room.Status = RoomStatus.ACTIVE;
+            }
+            else 
+            { 
+                room.Status = RoomStatus.BOOKED; 
+            }
             var tracker = _context.Attach(room);
             tracker.State = EntityState.Modified;
             _context.SaveChanges();
+            return room;
+        }
+
+        public List<Room> FindByIdForManager(long roomId, long managerId)
+        {
+            Room latestRecord = _context.Rooms.Include(r => r.MotelChain).
+                FirstOrDefault(r => r.Id == roomId && r.MotelChain.ManagerId == managerId);
+            if (latestRecord == null) throw new Exception("Room with ID: " + roomId + " doesn't exist or isn't managed by the manager.");
+            Room roomWithCorrectRentFeeInCurrent = _context.Rooms.Include(r => r.MotelChain).Where(
+                        r => r.Code == latestRecord.Code && r.FeeAppliedDate <= DateTime.Now &&
+                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED))
+                    .OrderBy(r => r.FeeAppliedDate).LastOrDefault();
+            List<Room> roomList = new List<Room>();
+            roomList.Add(roomWithCorrectRentFeeInCurrent);
+            roomList.Add(latestRecord);
+            return roomList;
+        }
+
+        public List<Room> FindByIdForResident(long roomId)
+        {
+            Room latestRecord = _context.Rooms.Include(r => r.MotelChain).
+                FirstOrDefault(r => r.Id == roomId);
+            Room roomWithCorrectRentFeeInCurrent = _context.Rooms.Include(r => r.MotelChain).Where(
+                        r => r.Code == latestRecord.Code && r.FeeAppliedDate <= DateTime.Now &&
+                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED))
+                    .OrderBy(r => r.FeeAppliedDate).LastOrDefault();
+            List<Room> roomList = new List<Room>();
+            roomList.Add(roomWithCorrectRentFeeInCurrent);
+            roomList.Add(latestRecord);
+            return roomList;
+        }
+
+        public Room CheckAndGetBeforeBookingById(long managerId, long roomId)
+        {
+            Room room = _context.Rooms.Include(r => r.MotelChain).FirstOrDefault(r => r.Id == roomId && r.MotelChain.ManagerId == managerId);
             return room;
         }
     }

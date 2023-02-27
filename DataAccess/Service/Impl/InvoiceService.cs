@@ -32,7 +32,7 @@ namespace DataAccess.Service.Impl
         {
             ElectricityCost electricityCost = _electricityCostRepo.GetElectricityCostForCreatingInvoicesByDate(startDate);
             WaterCost waterCost = _waterCostRepo.GetWaterCostForCreatingInvoicesByDate(startDate);
-            Invoice previousInvoice = GetPreviousInvoiceByRoomId(roomId);
+            Invoice previousInvoice = _invoiceRepo.GetPreviousInvoiceByRoomId(roomId);
 
             Invoice invoice = new()
             {

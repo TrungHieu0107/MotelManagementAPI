@@ -71,5 +71,19 @@ namespace DataAccess.Repository
         {
             return _context.Histories.Include(h => h.Room).Where(h => h.ResidentId == resident.Id && h.EndDate == null).ToList();
         }
+
+        public History FindByRoomIdForCurrentActiveRoomForManager(long roomId)
+        {
+            return _context.Histories.Include(h => h.Resident).Include(h => h.Room).
+                FirstOrDefault(h => (h.Room.Status == RoomStatus.ACTIVE || h.Room.Status == RoomStatus.EMPTY || h.Room.Status == RoomStatus.BOOKED) && 
+                h.RoomId == roomId && 
+                (h.EndDate == null || h.EndDate >= DateTime.Now));
+        }
+
+        public List<History> FindByResidentId(long residentId)
+        {
+            return _context.Histories.Include(h => h.Room).
+                            Where(h => h.ResidentId == residentId).ToList();
+        }
     }
 }

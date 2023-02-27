@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
-    [Authorize(Roles = "Manager")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoomController : ControllerBase
@@ -83,6 +82,9 @@ namespace MotelManagementAPI.Controllers
             this._roomService = roomService ?? throw new ArgumentNullException(nameof(roomService));
             _httpContextAccessor = httpContextAccessor;
         }
+
+
+        [Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("add-new-room")]
         public async Task<IActionResult> AddNewRoom(string code, long rentFee, string feeAppliedDate, int status)
@@ -114,6 +116,7 @@ namespace MotelManagementAPI.Controllers
 
         [HttpPost]
         [Route("update-room")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateRoom(RoomDTO room)
         {
             CommonResponse commonResponse = new CommonResponse();
@@ -136,6 +139,7 @@ namespace MotelManagementAPI.Controllers
 
         [HttpGet]
         [Route("delete-room")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> DeleteRoom(long id)
         {
             CommonResponse commonResponse = new CommonResponse();
@@ -160,6 +164,7 @@ namespace MotelManagementAPI.Controllers
 
         [HttpPost]
         [Route("get-rooms")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
         (
             string roomCode,
@@ -199,6 +204,52 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
+            }
+        }
+
+        [HttpGet]
+        [Route("detail")]
+        [Authorize(Roles = "Manager")]
+        public IActionResult GetRoomDTOForDetailById(long roomId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long managerId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
+                RoomDTOForDetail roomDTOForDetail = _roomService.FindByIdForManager(roomId, managerId);
+                response.Data = roomDTOForDetail;
+                response.Message = "Get room successfully";
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+        }
+
+        [HttpGet]
+        [Route("detail-for-resident")]
+        [Authorize(Roles = "Resident")]
+        public IActionResult GetRoomDTOForDetailForResidentById(long roomId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long residentId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
+                RoomDTOForDetail roomDTOForDetail = _roomService.FindByIdForResident(roomId, residentId);
+                response.Data = roomDTOForDetail;
+                response.Message = "Get room successfully";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, response);
             }
         }
     }

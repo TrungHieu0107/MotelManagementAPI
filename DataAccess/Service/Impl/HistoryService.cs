@@ -7,6 +7,12 @@ namespace DataAccess.Service.Impl
     public class HistoryService : IHistoryService
     {
         private readonly IHistoryRepo _historyRepo;
+
+        public HistoryService(IHistoryRepo historyRepo)
+        {
+            _historyRepo = historyRepo;
+        }
+
         public History AddNewHistory(long residentId, long roomId, DateTime startDate)
         {
             History history = new History();

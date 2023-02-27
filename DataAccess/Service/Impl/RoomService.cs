@@ -26,9 +26,9 @@ namespace DataAccess.Service.Impl
             return true;
         }
 
-        public Room UpdateStatusWhenBookingById(long managerId, long roomId)
+        public Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate)
         {
-            return _roomRepo.UpdateStatusWhenBookingById(managerId, roomId);
+            return _roomRepo.UpdateStatusWhenBookingById(managerId, roomId, startDate);
         }
 
         //private readonly IRoomRepo _roomRepo;
@@ -284,6 +284,92 @@ namespace DataAccess.Service.Impl
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId).ToList();
+        }
+
+        public RoomDTOForDetail FindByIdForManager(long roomId, long managerId)
+        {
+            List<Room> rooms = _roomRepo.FindByIdForManager(roomId, managerId);
+            Room roomWithCorrectRentFeeInCurrent = rooms.ElementAt(0);
+            Room latestRecord = rooms.ElementAt(1);
+            RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
+
+            roomDTOForDetail.Code = latestRecord.Code;
+
+
+            roomDTOForDetail.FeeAppliedDate = roomWithCorrectRentFeeInCurrent.FeeAppliedDate.ToString("dd/MM/yyyy");
+            roomDTOForDetail.RentFee = roomWithCorrectRentFeeInCurrent.RentFee.ToString();
+            if (latestRecord.RentFee == roomWithCorrectRentFeeInCurrent.RentFee)
+            {
+                roomDTOForDetail.NearestNextFeeAppliedDate = "-";
+                roomDTOForDetail.NearestNextRentFee = "-";
+            }
+            else
+            {
+                roomDTOForDetail.NearestNextFeeAppliedDate = latestRecord.FeeAppliedDate.ToString("dd/MM/yyyy");
+                roomDTOForDetail.NearestNextRentFee = latestRecord.RentFee.ToString();
+            }
+
+            roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+            roomDTOForDetail.MotelChainName = latestRecord.MotelChain.Name;
+            History history = _historyRepo.FindByRoomIdForCurrentActiveRoomForManager(roomId);
+            if (history != null)
+            {
+                Resident resident = history.Resident;
+                ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+                residentDTOForDetail.FullName = resident.FullName;
+                residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
+                residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
+                residentDTOForDetail.Phone = resident.Phone;
+
+                roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
+                roomDTOForDetail.EndDate = history.EndDate == null ? "-" : history.EndDate.Value.ToString("dd/MM/yyyy");
+
+                roomDTOForDetail.Resident = residentDTOForDetail;
+            }
+            return roomDTOForDetail;
+        }
+
+
+        public RoomDTOForDetail FindByIdForResident(long roomId, long residentId)
+        {
+            List<History> histories = _historyRepo.FindByResidentId(residentId).
+                            Where(h => h.EndDate == null && h.StartDate < DateTime.Now).ToList();
+
+            History history = histories.FirstOrDefault(h => h.RoomId == roomId);
+            if (history != null)
+            {
+                List<Room> rooms = _roomRepo.FindByIdForResident(roomId);
+                Room roomWithCorrectRentFeeInCurrent = rooms.ElementAt(0);
+                Room latestRecord = rooms.ElementAt(1);
+                RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
+
+                roomDTOForDetail.Code = latestRecord.Code;
+                roomDTOForDetail.FeeAppliedDate = roomWithCorrectRentFeeInCurrent.FeeAppliedDate.ToString("dd/MM/yyyy");
+                roomDTOForDetail.RentFee = roomWithCorrectRentFeeInCurrent.RentFee.ToString();
+                if (latestRecord.RentFee == roomWithCorrectRentFeeInCurrent.RentFee)
+                {
+                    roomDTOForDetail.NearestNextFeeAppliedDate = "-";
+                    roomDTOForDetail.NearestNextRentFee = "-";
+                }
+                else
+                {
+                    roomDTOForDetail.NearestNextFeeAppliedDate = latestRecord.FeeAppliedDate.ToString("dd/MM/yyyy");
+                    roomDTOForDetail.NearestNextRentFee = latestRecord.RentFee.ToString();
+                }
+                roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                roomDTOForDetail.MotelChainName = latestRecord.MotelChain.Name;
+                roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
+                roomDTOForDetail.EndDate = history.EndDate == null ? "-" : history.EndDate.Value.ToString("dd/MM/yyyy");
+
+                return roomDTOForDetail;
+            }
+            else throw new Exception("Room with ID: " + roomId + " doesn't exist or isn't renting by the resident.");
+                        
+        }
+
+        public Room CheckBeforeBookingById(long managerId, long roomId)
+        {
+            return _roomRepo.CheckAndGetBeforeBookingById(managerId, roomId);
         }
     }
 }

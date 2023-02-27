@@ -38,8 +38,11 @@ namespace DataAccess.Repository
         );
 
         public List<Room> GetRoomsForCreatingInvoicesByHistoriesAndDate(List<History> histories, DateTime dateTime);
-        public Room UpdateStatusWhenBookingById(long managerId, long roomId);
+        public Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate);
         public Room UpdateBookedRoomToActive(long roomId);
+        public List<Room> FindByIdForManager(long roomId, long managerId);
+        public Room CheckAndGetBeforeBookingById(long managerId, long roomId);
+        public List<Room> FindByIdForResident(long roomId);
     }
 
 }

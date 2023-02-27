@@ -1,5 +1,6 @@
 using BussinessObject.DTO;
 using BussinessObject.Models;
+using BussinessObject.Status;
 using System;
 using System.Collections.Generic;
 
@@ -14,5 +15,7 @@ namespace DataAccess.Repository
         public History Add(History history);
         public List<History> GetHistoriesOfBookedUpToDateRooms(DateTime dateTime);
         public List<History> GetNullEndDateHistoriesByResident(Resident resident);
+        public History FindByRoomIdForCurrentActiveRoomForManager(long roomId);
+        public List<History> FindByResidentId(long residentId);
     }
 }

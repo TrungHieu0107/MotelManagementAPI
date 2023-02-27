@@ -13,6 +13,6 @@ namespace BussinessObject.DTO
         public string Phone { get; set; }
         public string FullName { get; set; }
         public string Status { get; set; }
-        public List<RoomDTOForResidentDetail> RoomDTOForResidentDetails { get; set; }
+        public List<RoomDTOForDetail> RoomDTOForDetails { get; set; }
     }
 }

@@ -17,17 +17,26 @@ namespace MotelManagementAPI.BackgroundService.ScheduledTasks
         public override Task ProcessInScope(IServiceProvider serviceProvider)
         {
             DateTime current = DateTime.Now;
+            _invoiceService = serviceProvider.GetService<IInvoiceService>();
             DateTime dateTime = new DateTime(current.Year, current.Month, current.Day, 0, 0, 0);
             try
             {
-                _invoiceService = serviceProvider.GetService<IInvoiceService>();
                 _invoiceService.AutoCloseInvoices(dateTime);
-                _invoiceService.AutoCreateInvoices(dateTime);
-                Console.WriteLine("AutoCloseAndCreateInvoices fired at: " + current);
+                Console.WriteLine("AutoCloseAndCreateInvoices with method AutoCloseInvoices fired at: " + current);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An exception occured at AutoCloseAndCreateInvoices fired at: " + current + " with message: " + ex.Message);
+                Console.WriteLine("An exception occured at AutoCloseAndCreateInvoices with method AutoCloseInvoices fired at: " + current + " with message: " + ex.Message);
+            }
+
+            try
+            {
+                _invoiceService.AutoCreateInvoices(dateTime);
+                Console.WriteLine("AutoCloseAndCreateInvoices with method AutoCreateInvoices fired at: " + current);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An exception occured at AutoCloseAndCreateInvoices with method AutoCreateInvoices fired at: " + current + " with message: " + ex.Message);
             }
             return Task.CompletedTask;
         }
