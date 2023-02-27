@@ -205,11 +205,18 @@ namespace DataAccess.Service.Impl
 
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
 
-            RoomDTO oldValue = _roomRepo.GetRoomById(room.Id);
+            RoomDTO oldValue = _roomRepo.GetLatestRoomByRoomCode(room.Code);
 
             if (oldValue == null)
             {
                 return null;
+            }
+
+            if (oldValue.FeeAppliedDate > DateTime.Now)
+            {
+                oldValue.FeeAppliedDate = room.FeeAppliedDate;
+                oldValue.RentFee = room.RentFee;
+                return _roomRepo.Update(oldValue);
             }
 
             if (!oldValue.RentFee.Equals(room.RentFee))
@@ -226,7 +233,9 @@ namespace DataAccess.Service.Impl
 
                 return room;
             }
-
+            room.Id = oldValue.Id;
+            room.Code = oldValue.Code;
+            room.MotelId = oldValue.MotelId;
             return _roomRepo.Update(room);
         }
 

@@ -24,9 +24,16 @@ namespace DataAccess.Repository
 
         public HistoryDTO GetLatestHistoryByRoomId(long id)
         {
-            var result = _context.Histories.Find(id);
+            var result = _context.Histories.Where(x => x.Id == id).Select(history => new HistoryDTO()
+            {
+                Id = id,
+                RoomId = history.RoomId,
+                EndDate = history.EndDate, 
+                StartDate = history.StartDate,
+                ResidentId = history.ResidentId
+            }).FirstOrDefault();
 
-            return JsonConvert.DeserializeObject<HistoryDTO>(JsonConvert.SerializeObject(result));
+            return result;
         }
 
         public HistoryDTO Update(HistoryDTO history)
@@ -36,8 +43,8 @@ namespace DataAccess.Repository
             {
                 throw new Exception("Not found history " + history.Id);
             }
-            History his = JsonConvert.DeserializeObject<History>(JsonConvert.SerializeObject(history));
-            _context.Entry(his).State = EntityState.Modified;
+            old.RoomId = history.RoomId;
+            _context.Entry(old).State = EntityState.Modified;
             _context.SaveChanges();
             return history;
         }
