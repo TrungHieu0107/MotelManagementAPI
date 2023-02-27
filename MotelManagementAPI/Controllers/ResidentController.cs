@@ -184,6 +184,31 @@ namespace MotelManagementAPI.Controllers
                 long managerId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
                 DateTime startDate = bookingRoomRequest.StartDate;
 
+                Resident resident = new Resident();
+                Room room = new Room();
+                try
+                {
+                    _residentService.BookRoom(bookingRoomRequest, managerId);
+                    _invoiceService.AddInitialInvoice(resident.Id, bookingRoomRequest.RoomId, startDate);
+                }
+                catch (Exception ex)
+                {
+                    response.Message = ex.Message;
+                    return StatusCode(StatusCodes.Status400BadRequest, response);
+                }
+
+                response.Data = bookingRoomRequest.RoomId;
+                response.Message = "Booked room successfully.";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
         [HttpGet]
         [Route("get-all-resident")]
         public IActionResult getAllResident(int pageSize = 10, int currentPage = 1)
@@ -199,8 +224,6 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
-                Resident resident = new Resident(); 
-                Room room = new Room();
 
 
             }
@@ -258,27 +281,6 @@ namespace MotelManagementAPI.Controllers
         }
 
 
-                try
-                {
-                    _residentService.BookRoom(bookingRoomRequest, managerId);
-                    _invoiceService.AddInitialInvoice(resident.Id, bookingRoomRequest.RoomId, startDate);
-                }
-                catch (Exception ex)
-                {
-                    response.Message = ex.Message;
-                    return StatusCode(StatusCodes.Status400BadRequest, response);
-                }
                 
-                response.Data = bookingRoomRequest.RoomId;
-                response.Message = "Booked room successfully.";
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
     }
 }

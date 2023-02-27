@@ -169,10 +169,6 @@ namespace DataAccess.Service.Impl
         public CommonResponse FindByIdForDetail(long residentId, int pageSize, int currentPage, string roomStatus)
         {
             Resident resident = FindById(residentId);
-        public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage)
-        {
-            return _residentRepo.GetAllResident(pageSize, currentPage);
-        }
 
             if (resident == null) throw new Exception("Resident with ID: " + residentId + " doesn't exist.");
             ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
@@ -259,6 +255,11 @@ namespace DataAccess.Service.Impl
         public IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage)
         {
             return _residentRepo.FillterResident(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+        }
+
+        public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage)
+        {
+            return _residentRepo.GetAllResident(pageSize, currentPage);
         }
     }
 }
