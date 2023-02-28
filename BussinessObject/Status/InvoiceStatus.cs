@@ -2,6 +2,6 @@
 {
     public enum InvoiceStatus
     {
-        NOT_PAID_YET, PAID, LATE, BOOKED
+        NOT_PAID_YET, PAID, LATE
     }
 }

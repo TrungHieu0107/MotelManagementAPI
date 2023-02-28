@@ -168,7 +168,7 @@ namespace DataAccess.Service.Impl
 
         public CommonResponse FindByIdForDetail(long residentId, int pageSize, int currentPage, string roomStatus)
         {
-            Resident resident = FindById(residentId);
+            Resident resident = _residentRepo.FindById(residentId);
 
             if (resident == null) throw new Exception("Resident with ID: " + residentId + " doesn't exist.");
             ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
