@@ -20,7 +20,7 @@ namespace DataAccess.Service
             string roomCode,
             long minFee,
             long maxFee,
-            List<int> status,
+            int status,
             string appliedDateAfter,
             ref Pagination pagination, 
             long userId

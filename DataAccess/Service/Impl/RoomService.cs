@@ -19,12 +19,14 @@ namespace DataAccess.Service.Impl
         private readonly IRoomRepo _roomRepo;
         private readonly IHistoryRepo _historyRepo;
         private readonly IMotelChainRepo _motelChainRepo;
+        private readonly IInvoiceRepo _invoiceRepo;
 
-        public RoomService(IRoomRepo roomRepo, IHistoryRepo historyRepo, IMotelChainRepo motelChainRepo)
+        public RoomService(IRoomRepo roomRepo, IHistoryRepo historyRepo, IMotelChainRepo motelChainRepo, IInvoiceRepo invoiceRepo)
         {
-            this._roomRepo = roomRepo;
-            this._historyRepo = historyRepo;
-            this._motelChainRepo = motelChainRepo;
+            _roomRepo = roomRepo;
+            _historyRepo = historyRepo;
+            _motelChainRepo = motelChainRepo;
+            _invoiceRepo = invoiceRepo;
         }
 
         public bool AutoUpdateBookedRoomsToActive(DateTime dateTime)
@@ -143,6 +145,7 @@ namespace DataAccess.Service.Impl
                     _roomRepo.Insert(room);
                     history.RoomId = room.Id;
                     _historyRepo.Update(history);
+                    _invoiceRepo.UpdateRoomIdfOfInvoice(room.Id, oldValue.Id);
                 }
 
                 return room;
@@ -168,7 +171,7 @@ namespace DataAccess.Service.Impl
             string roomCode,
             long minFee,
             long maxFee,
-            List<int> status,
+            int status,
             string appliedDateAfter,
             ref Pagination pagination,
             long userId
@@ -176,8 +179,6 @@ namespace DataAccess.Service.Impl
         {
             DateTime date = appliedDateAfter != null ? DateTime.ParseExact(appliedDateAfter, "yyyy-MM-dd",
                                       System.Globalization.CultureInfo.InvariantCulture) : DateTime.MinValue;
-
-            List<RoomStatus> listStatusEnum = status.Select(x => (RoomStatus)x).ToList();
 
             if (minFee > maxFee)
             {
@@ -188,21 +189,28 @@ namespace DataAccess.Service.Impl
                 roomCode,
                 minFee,
                 maxFee,
-                listStatusEnum,
+                (RoomStatus) status,
                 date,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId);
 
-            return _roomRepo.GetAllRoomHistoryWithFilter(
+            var listRoom = _roomRepo.GetAllRoomHistoryWithFilter(
                 roomCode,
                 minFee,
                 maxFee,
-                listStatusEnum,
+                (RoomStatus)status,
                 date,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId).ToList();
+
+            listRoom.ForEach(r =>
+            {
+                r.LatestHistory = _historyRepo.GetLatestHistoryOfRoom(r.Id);
+            });
+
+            return listRoom.OrderByDescending(room => room.LatestHistory.EndDate).ToList();
         }
 
         public RoomDTOForDetail FindByIdForManager(long roomId, long managerId)

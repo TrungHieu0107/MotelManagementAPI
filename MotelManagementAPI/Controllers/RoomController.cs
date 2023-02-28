@@ -115,11 +115,11 @@ namespace MotelManagementAPI.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
         (
-            string roomCode,
-            long minFee,
-            long maxFee,
-            List<int> status,
-            string appliedDateAfter,
+            string? roomCode,
+            long? minFee,
+            long? maxFee,
+            int? status,
+            string? appliedDateAfter,
             int? currentPage,
             int? pageSize
         )
@@ -136,9 +136,9 @@ namespace MotelManagementAPI.Controllers
                 var result = _roomService.GetAllRoomHistoryWithFilter
                                 (
                                      roomCode,
-                                     minFee,
-                                     maxFee,
-                                     status,
+                                     minFee ?? -1,
+                                     maxFee ?? -1,
+                                     status ?? -1,
                                      appliedDateAfter,
                                      ref pagination, 
                                      long.Parse(userId)

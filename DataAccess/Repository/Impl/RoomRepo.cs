@@ -92,7 +92,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -107,12 +107,13 @@ namespace DataAccess.Repository
                           &&
                               maxFee > 0 ? room.RentFee <= maxFee : true
                           &&
-                              listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
+                              status < 0 ? room.Status == status : true
                           &&
                               room.FeeAppliedDate >= appliedDateAfter
                           &&
                               room.MotelChain.ManagerId == userId
-                        ).Select(x => new RoomDTO()
+                        )
+                        .Select(x => new RoomDTO()
                         {
                             Id = x.Id,
                             Code = x.Code,
@@ -158,7 +159,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -172,7 +173,7 @@ namespace DataAccess.Repository
                     &&
                         maxFee > 0 ? room.RentFee <= maxFee : true
                     &&
-                        listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
+                        status < 0 ? room.Status == status : true
                     &&
                         room.FeeAppliedDate >= appliedDateAfter
                     &&

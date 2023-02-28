@@ -155,5 +155,20 @@ namespace DataAccess.Repository
             };
             
         }
+
+        public HistoryDTO GetLatestHistoryOfRoom(long id)
+        {
+            return _context.Histories
+                .Where(h => h.Id == id)
+                .OrderByDescending(h => h.EndDate)
+                .Select(h => new HistoryDTO()
+                {
+                    Id = h.Id,
+                    EndDate = h.EndDate,
+                    StartDate= h.StartDate,
+                    ResidentId=h.Resident.Id, 
+                    RoomId=h.Room.Id,
+                }).FirstOrDefault();
+        }
     }
 }
