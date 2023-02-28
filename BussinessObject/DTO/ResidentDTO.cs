@@ -32,7 +32,7 @@ namespace BussinessObject.DTO
         [StringLength(60, MinimumLength = 8, ErrorMessage = "full name field must have minimum 8 and maximum 60 character!")]
         public string FullName { get; set; }
 
-        public string status;
+        public string Status;
 
         public List<HistoryDTO> Histories { get; set; }
         public List<InvoiceDTO> Invoices { get; set; }

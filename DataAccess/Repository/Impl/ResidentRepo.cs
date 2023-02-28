@@ -143,7 +143,7 @@ namespace DataAccess.Repository
                      FullName = r.FullName,
                      Id = r.Id,
                      Phone = r.Phone,
-                     status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
+                     Status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
                      Password = "",
                      UserName = ""
                  }
@@ -183,7 +183,7 @@ namespace DataAccess.Repository
                     FullName = r.FullName,
                     Id = r.Id,
                     Phone = r.Phone,
-                    status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
+                    Status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
                     Password = "",
                     UserName = ""
                 }

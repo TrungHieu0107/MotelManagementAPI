@@ -1,5 +1,6 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using BussinessObject.CommonConstant;
 using DataAccess.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,64 +18,6 @@ namespace MotelManagementAPI.Controllers
     [ApiController]
     public class RoomController : ControllerBase
     {
-        //private readonly IRoomService _roomService;
-
-        //public RoomController(IRoomService roomService) {
-        //    this._roomService = roomService;
-        //}
-
-        //[HttpPut]
-        //[Route("/booking-room")]
-        //public IActionResult BookingRoom(string code, string idCard, DateTime bookedDate)
-        //{
-        //    CommonResponse common = new CommonResponse();
-        //    try
-        //    {
-        //      var room = _roomService.bookRoom(code, idCard, bookedDate);
-        //        if(room != null)
-        //        {
-        //            common.Message = "Booking room successfully";
-        //            return Ok(common);
-        //        } else
-        //        {
-        //            throw new Exception("Can not book room");
-        //        }
-        //    } catch (Exception ex)
-        //    {
-               
-        //        common.Message = ex.Message;
-        //        return StatusCode(StatusCodes.Status500InternalServerError, common);
-        //    }
-        //}
-
-
-        //[HttpPut]
-        //[Route("/booking-room")]
-        //public IActionResult CancelBookingRoom(string code, string idCard, DateTime bookedDate)
-        //{
-        //    CommonResponse common = new CommonResponse();
-        //    try
-        //    {
-        //        var room = _roomService.CancelBookRoom(code);
-        //        if (room != null)
-        //        {
-        //            common.Message = "Booking room successfully";
-        //            return Ok(common);
-        //        }
-        //        else
-        //        {
-        //            throw new Exception("Can not cancel book room");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        common.Message = ex.Message;
-        //        return StatusCode(StatusCodes.Status500InternalServerError, common);
-        //    }
-        //}
-
-
         private readonly IRoomService _roomService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public RoomController(IRoomService roomService, IHttpContextAccessor httpContextAccessor)
@@ -254,7 +197,7 @@ namespace MotelManagementAPI.Controllers
             catch (Exception ex)
             {
                 response.Message = ex.Message;
-                return StatusCode(StatusCodes.Status400BadRequest, response);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
     }

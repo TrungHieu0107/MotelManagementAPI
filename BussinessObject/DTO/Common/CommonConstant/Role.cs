@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BussinessObject.Role
+namespace BussinessObject.CommonConstant
 {
     public class Role
     {

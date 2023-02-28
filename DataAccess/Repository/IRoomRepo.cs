@@ -43,6 +43,8 @@ namespace DataAccess.Repository
         public List<Room> FindByIdForManager(long roomId, long managerId);
         public Room CheckAndGetBeforeBookingById(long managerId, long roomId);
         public List<Room> FindByIdForResident(long roomId);
+        RoomDTO UpdateCheckoutDateForResident(long roomId, DateTime checkOutDate);
+        RoomDTO FindById(long roomId);  
     }
 
 }
