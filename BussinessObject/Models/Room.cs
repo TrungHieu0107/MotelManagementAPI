@@ -19,5 +19,6 @@ namespace BussinessObject.Models
         public MotelChain MotelChain { get; set; }
         public virtual List<History> Histories { get; set; }
         public virtual List<Invoice> Invoices { get; set; }
+
     }
 }

@@ -20,5 +20,6 @@ namespace DataAccess.Repository
         public bool CheckEmptyRoom(long roomId);
         HistoryDTO FindByRoomId(long roomId);
         HistoryDTO UpdateCheckoutDateForResident(long residentId, long roomId, DateTime checkoutDate);
+        HistoryDTO GetLatestHistoryOfRoom(long id);
     }
 }
