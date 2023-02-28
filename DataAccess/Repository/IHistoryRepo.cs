@@ -17,5 +17,6 @@ namespace DataAccess.Repository
         public List<History> GetNullEndDateHistoriesByResident(Resident resident);
         public History FindByRoomIdForCurrentActiveRoomForManager(long roomId);
         public List<History> FindByResidentId(long residentId);
+        public bool CheckEmptyRoom(long roomId);
     }
 }

@@ -3,27 +3,19 @@ using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
     public class RoomRepo : IRoomRepo
     {
         private readonly Context _context;
-        private readonly IResidentRepo residentRepository;
-        private IHistoryRepo _historyRepo;
 
-        public RoomRepo(Context context, IResidentRepo residentRepo, IHistoryRepo historyRepo)
+        public RoomRepo(Context context)
         {
             this._context = context;
-            this.residentRepository = residentRepo;
-            this._historyRepo = historyRepo;
-
         }
 
         bool IRoomRepo.DeleteRomById(long roomId)

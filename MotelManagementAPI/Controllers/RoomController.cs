@@ -155,6 +155,11 @@ namespace MotelManagementAPI.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest,commonResponse);
                 }
             }
+            catch(TaskCanceledException e)
+            {
+                commonResponse.Message = e.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+            }
             catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;

@@ -85,5 +85,20 @@ namespace DataAccess.Repository
             return _context.Histories.Include(h => h.Room).
                             Where(h => h.ResidentId == residentId).ToList();
         }
+
+        public bool CheckEmptyRoom(long roomId)
+        {
+            var historyLatest = _context.Histories
+                            .Where(history => history.RoomId == roomId)
+                            .OrderByDescending(history => history.Id)
+                            .FirstOrDefault();
+        
+            if(historyLatest.EndDate == null || historyLatest.EndDate >= DateTime.Now)
+            {
+                return false;
+            }
+            
+            return true;
+        }
     }
 }
