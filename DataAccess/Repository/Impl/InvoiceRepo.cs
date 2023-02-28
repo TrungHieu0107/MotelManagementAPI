@@ -290,6 +290,8 @@ namespace DataAccess.Repository
                 (roomCode == null ? true : invoice.Room.Code.Contains(roomCode))
                 && 
                 (userId != -1 ? invoice.Resident.Id == userId : true)
+                &&
+                (invoice.EndDate != null)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,

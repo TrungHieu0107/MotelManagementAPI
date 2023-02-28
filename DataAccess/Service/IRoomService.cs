@@ -10,8 +10,8 @@ namespace DataAccess.Service
 {
     public interface IRoomService
     {
-        public Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate);
-        public bool AutoUpdateBookedRoomsToActive(DateTime dateTime);
+        Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate);
+        bool AutoUpdateBookedRoomsToActive(DateTime dateTime);
         RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId);
         RoomDTO UpdateRoom(RoomDTO room, long userId);
         bool DeleteRoomById(long id);
@@ -25,8 +25,8 @@ namespace DataAccess.Service
             ref Pagination pagination, 
             long userId
         );
-        public RoomDTOForDetail FindByIdForManager(long roomId, long managerId);
-        public Room CheckBeforeBookingById(long managerId, long roomId);
-        public RoomDTOForDetail FindByIdForResident(long roomId, long residentId);
+        RoomDTOForDetail FindByIdForManager(long roomId, long managerId);
+        Room CheckBeforeBookingById(long managerId, long roomId);
+        RoomDTOForDetail FindByIdForResident(long roomId, long residentId);
     }
 }
