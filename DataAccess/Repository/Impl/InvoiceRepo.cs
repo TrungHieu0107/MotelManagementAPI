@@ -290,6 +290,8 @@ namespace DataAccess.Repository
                 (roomCode == null ? true : invoice.Room.Code.Contains(roomCode))
                 && 
                 (userId != -1 ? invoice.Resident.Id == userId : true)
+                &&
+                (invoice.EndDate != null)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,
@@ -348,6 +350,79 @@ namespace DataAccess.Repository
             return listAllInvoice.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
                 .Take(pagination.PageSize);
 
+        }
+
+        public InvoiceDTO UpdateRoomIdfOfInvoice(long newRoomId, long oldRoomId)
+        {
+            var invoice = _context.Invoices
+                .Where(invoice => invoice.RoomId == oldRoomId)
+                .OrderByDescending(invoice => invoice.Id)
+                .FirstOrDefault();
+
+            if(invoice == null)
+            {
+                return null;
+            }
+            
+            invoice.RoomId = newRoomId;
+            _context.Entry(invoice).State = EntityState.Modified;
+            if(_context.SaveChanges() <= 0)
+            {
+                return null;
+            }
+            
+            return new InvoiceDTO
+            {
+                Id = invoice.Id,
+                StartDate = invoice.StartDate,
+                EndDate = invoice.EndDate,
+                CreatedDate = invoice.CreatedDate,
+                ExpiredDate = invoice.ExpiredDate,
+                PaidDate = invoice.PaidDate,
+                Status = invoice.Status,
+                ElectricityConsumptionEnd = invoice.ElectricityConsumptionEnd,
+                ElectricityConsumptionStart = invoice.ElectricityConsumptionStart,
+                ElectricityCostId = invoice.ElectricityCostId,
+                ElectricityCost = new ElectricityCostDTO()
+                {
+                    Price = invoice.ElectricityCost.Price,
+                    Id = invoice.ElectricityCost.Id,
+                    AppliedDate = invoice.ElectricityCost.AppliedDate
+                },
+                WaterConsumptionEnd = invoice.WaterConsumptionEnd,
+                WaterConsumptionStart = invoice.WaterConsumptionStart,
+                WaterCost = new WaterCostDTO()
+                {
+                    Price = invoice.WaterCost.Price,
+                    Id = invoice.WaterCost.Id,
+                    AppliedDate = invoice.WaterCost.AppliedDate
+                },
+                Resident = new ResidentDTO()
+                {
+                    Id = invoice.Resident.Id,
+                    FullName = invoice.Resident.FullName,
+                    IdentityCardNumber = invoice.Resident.IdentityCardNumber,
+                    Phone = invoice.Resident.Phone
+                },
+                Room = new RoomDTO()
+                {
+                    Id = invoice.Room.Id,
+                    Code = invoice.Room.Code,
+                    FeeAppliedDate = invoice.Room.FeeAppliedDate,
+                    MotelChain = new MotelChainDTO()
+                    {
+                        Id = invoice.Room.MotelChain.Id,
+                        Address = invoice.Room.MotelChain.Address,
+                        Name = invoice.Room.MotelChain.Name,
+                        Manager = new ManagerDTO()
+                        {
+                            FullName = invoice.Room.MotelChain.Manager.FullName,
+                            IdentityCardNumber = invoice.Room.MotelChain.Manager.IdentityCardNumber,
+                            Phone = invoice.Room.MotelChain.Manager.Phone
+                        },
+                    },
+                }
+            };
         }
     }
 }

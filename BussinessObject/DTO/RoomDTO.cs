@@ -15,5 +15,6 @@ namespace BussinessObject.DTO
         public MotelChainDTO MotelChain { get; set; }
         public List<HistoryDTO> Histories { get; set; }
         public List<InvoiceDTO> Invoices { get; set; }
+        public HistoryDTO LatestHistory { get; set; }
     }
 }

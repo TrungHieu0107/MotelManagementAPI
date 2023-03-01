@@ -19,7 +19,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -30,7 +30,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -43,6 +43,8 @@ namespace DataAccess.Repository
         public List<Room> FindByIdForManager(long roomId, long managerId);
         public Room CheckAndGetBeforeBookingById(long managerId, long roomId);
         public List<Room> FindByIdForResident(long roomId);
+        RoomDTO UpdateCheckoutDateForResident(long roomId, DateTime checkOutDate);
+        RoomDTO FindById(long roomId);  
     }
 
 }

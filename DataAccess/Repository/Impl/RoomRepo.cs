@@ -3,27 +3,19 @@ using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
     public class RoomRepo : IRoomRepo
     {
         private readonly Context _context;
-        private readonly IResidentRepo residentRepository;
-        private IHistoryRepo _historyRepo;
 
-        public RoomRepo(Context context, IResidentRepo residentRepo, IHistoryRepo historyRepo)
+        public RoomRepo(Context context)
         {
             this._context = context;
-            this.residentRepository = residentRepo;
-            this._historyRepo = historyRepo;
-
         }
 
         bool IRoomRepo.DeleteRomById(long roomId)
@@ -100,7 +92,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -115,12 +107,13 @@ namespace DataAccess.Repository
                           &&
                               maxFee > 0 ? room.RentFee <= maxFee : true
                           &&
-                              listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
+                              status < 0 ? room.Status == status : true
                           &&
                               room.FeeAppliedDate >= appliedDateAfter
                           &&
                               room.MotelChain.ManagerId == userId
-                        ).Select(x => new RoomDTO()
+                        )
+                        .Select(x => new RoomDTO()
                         {
                             Id = x.Id,
                             Code = x.Code,
@@ -166,7 +159,7 @@ namespace DataAccess.Repository
             string roomCode,
             long minFee,
             long maxFee,
-            List<RoomStatus> listStatusEnum,
+            RoomStatus status,
             DateTime appliedDateAfter,
             int page,
             int pageSize,
@@ -180,7 +173,7 @@ namespace DataAccess.Repository
                     &&
                         maxFee > 0 ? room.RentFee <= maxFee : true
                     &&
-                        listStatusEnum != null ? listStatusEnum.Contains(room.Status) : true
+                        status < 0 ? room.Status == status : true
                     &&
                         room.FeeAppliedDate >= appliedDateAfter
                     &&
@@ -262,6 +255,33 @@ namespace DataAccess.Repository
         {
             Room room = _context.Rooms.Include(r => r.MotelChain).FirstOrDefault(r => r.Id == roomId && r.MotelChain.ManagerId == managerId);
             return room;
+        }
+
+        public RoomDTO UpdateCheckoutDateForResident(long roomId, DateTime checkOutDate)
+        {
+            var room = _context.Rooms.Find(roomId);
+
+            if(room == null)
+            {
+                return null;
+            }
+
+            
+
+            return null;
+        }
+
+        public RoomDTO FindById(long roomId)
+        {
+            return _context.Rooms.Where(room => room.Id == roomId).Select(room => new RoomDTO
+            {
+                Id = room.Id,
+                MotelId = room.MotelId,
+                Code = room.Code,
+                FeeAppliedDate = room.FeeAppliedDate,
+                Status = room.Status,
+                RentFee = room.RentFee,
+            }).FirstOrDefault();
         }
     }
 }

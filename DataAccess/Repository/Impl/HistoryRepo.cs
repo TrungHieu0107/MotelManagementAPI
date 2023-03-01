@@ -85,5 +85,90 @@ namespace DataAccess.Repository
             return _context.Histories.Include(h => h.Room).
                             Where(h => h.ResidentId == residentId).ToList();
         }
+
+        public bool CheckEmptyRoom(long roomId)
+        {
+            var historyLatest = _context.Histories
+                            .Where(history => history.RoomId == roomId)
+                            .OrderByDescending(history => history.Id)
+                            .FirstOrDefault();
+        
+            if(historyLatest.EndDate == null || historyLatest.EndDate >= DateTime.Now)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+
+        public HistoryDTO FindByRoomId(long roomId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public HistoryDTO UpdateCheckoutDateForResident(long residentId, long roomId, DateTime checkoutDate)
+        {
+            var history = _context.Histories
+                .Include(history => history.Resident)
+                .Include(history => history.Room)
+                .Where(history => history.Resident.Status == AccountStatus.ACTIVE
+                && history.Room.Status == RoomStatus.ACTIVE
+                && history.ResidentId == residentId
+                && history.RoomId == roomId)
+                .OrderByDescending(history => history.StartDate)
+                .FirstOrDefault();
+            
+            if(history == null)
+            {
+                return null;
+            }
+
+            history.EndDate = checkoutDate;
+            _context.Entry(history).State = EntityState.Modified;
+            int countUpdate = _context.SaveChanges();
+            if(countUpdate <= 0)
+            {
+                return null;
+            }
+
+            return new HistoryDTO()
+            {
+                Id = history.Id,
+                EndDate = history.EndDate,
+                StartDate = history.StartDate,
+                RoomId = history.RoomId,
+                ResidentId = history.ResidentId,
+                Room = new RoomDTO()
+                {
+                    RentFee = history.Room.RentFee,
+                    FeeAppliedDate = history.Room.FeeAppliedDate,
+                    Code = history.Room.Code,
+                    Id = history.Room.Id,
+                },
+                Resident = new ResidentDTO()
+                {
+                    Id = history.Resident.Id,
+                    FullName = history.Resident.FullName,
+                    Phone = history.Resident.Phone,
+                    Status = Enum.GetName(typeof(AccountStatus), history.Resident.Status),
+                }
+            };
+            
+        }
+
+        public HistoryDTO GetLatestHistoryOfRoom(long id)
+        {
+            return _context.Histories
+                .Where(h => h.Id == id)
+                .OrderByDescending(h => h.EndDate)
+                .Select(h => new HistoryDTO()
+                {
+                    Id = h.Id,
+                    EndDate = h.EndDate,
+                    StartDate= h.StartDate,
+                    ResidentId=h.Resident.Id, 
+                    RoomId=h.Room.Id,
+                }).FirstOrDefault();
+        }
     }
 }
