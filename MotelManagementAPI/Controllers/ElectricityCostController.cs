@@ -11,7 +11,7 @@ namespace MotelManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
 
     public class ElectricityCostController : ControllerBase
     {
@@ -71,7 +71,7 @@ namespace MotelManagementAPI.Controllers
         // [Authorize(Roles = "Manager")]
         // [Authorize(Roles = "Resident")]
      
-        [Authorize(Roles = "Manager")]
+        //[Authorize(Roles = "Manager")]
         [HttpGet]
         [Route("get-current-electricity-cost")]
         public async Task<IActionResult> GetCurentElectricityCost()

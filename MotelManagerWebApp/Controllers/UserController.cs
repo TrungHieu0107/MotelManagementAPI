@@ -51,7 +51,7 @@ namespace MotelManagerWebApp.Controllers
                 var userPrincipal = ValidateToken(token);
                 var authenticationProperties = new AuthenticationProperties
                 {
-                    ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(10)
+                    ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(60)
                 };
                 await HttpContext.SignInAsync(
                   CookieAuthenticationDefaults.AuthenticationScheme,

@@ -193,6 +193,10 @@ namespace DataAccess.Repository
 
         }
 
+        public Resident findByPhone(String phone)
+        {
+            return _context.Residents.FirstOrDefault(r => r.Phone == phone);
+        }
      
     }
 }
