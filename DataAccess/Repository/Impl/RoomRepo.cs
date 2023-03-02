@@ -100,14 +100,16 @@ namespace DataAccess.Repository
         )
         {
 
-            var result = _context.Rooms.Where(room =>
+            var result = _context.Rooms
+                .Include(room => room.MotelChain)
+                .Where(room =>
                               roomCode != null ? room.Code.Contains(roomCode) : true
                           &&
                               minFee > 0 ? room.RentFee >= minFee : true
                           &&
                               maxFee > 0 ? room.RentFee <= maxFee : true
                           &&
-                              status < 0 ? room.Status == status : true
+                              status >= 0 ? room.Status == status : true
                           &&
                               room.FeeAppliedDate >= appliedDateAfter
                           &&
@@ -166,14 +168,16 @@ namespace DataAccess.Repository
             long userId
         )
         {
-            return _context.Rooms.Where(room =>
+            return _context.Rooms
+                .Include(room => room.MotelChain)
+                .Where(room =>
                         roomCode != null ? room.Code.Contains(roomCode) : true
                     &&
                         minFee > 0 ? room.RentFee >= minFee : true
                     &&
                         maxFee > 0 ? room.RentFee <= maxFee : true
                     &&
-                        status < 0 ? room.Status == status : true
+                        status >= 0 ? room.Status == status : true
                     &&
                         room.FeeAppliedDate >= appliedDateAfter
                     &&

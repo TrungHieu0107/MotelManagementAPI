@@ -110,7 +110,7 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("get-rooms")]
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
