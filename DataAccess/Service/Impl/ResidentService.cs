@@ -4,10 +4,13 @@ using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
 using DataAccess.Security;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DataAccess.Service.Impl
 {
@@ -73,7 +76,11 @@ namespace DataAccess.Service.Impl
             bool check = false;
             Resident checkExistIdCardNumber = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null).FirstOrDefault<Resident>();
             Account checkExistUserName = _accountRepo.FindAccountByUserName(account.UserName);
-            if (checkExistIdCardNumber == null && checkExistUserName == null)
+            Resident checkExistPhone = _residentRepo.findByPhone(account.Phone);
+
+
+
+            if (checkExistIdCardNumber == null && checkExistUserName == null && checkExistPhone == null)
             {
                 Resident resident = new Resident();
                 resident.IdentityCardNumber = account.IdentityCardNumber;
@@ -90,10 +97,13 @@ namespace DataAccess.Service.Impl
                
             }else if(checkExistUserName != null)
             {
-                throw new Exception("This username already exist");
+                throw new TaskCanceledException("This username already exist");
 
             } else if(checkExistIdCardNumber != null) {
-                throw new Exception("This resident already exist");
+                throw new TaskCanceledException("This resident already exist");
+            } else if(checkExistPhone != null)
+            {
+                throw new TaskCanceledException("This phone is already exist");
             }
 
             return check;
@@ -104,9 +114,16 @@ namespace DataAccess.Service.Impl
             bool check = false;
             //  check if id cardnumber is exsit
             Resident idCardCheck = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(account.IdentityCardNumber, null,AccountStatus.ACTIVE).FirstOrDefault<Resident>();
-            if (idCardCheck != null && idCardCheck.Id != id)
+            
+            Resident phoneCheck = _residentRepo.findByPhone(account.Phone);          
+            
+            if ( phoneCheck != null && id != phoneCheck.Id   )
             {
-                return false;
+                throw new TaskCanceledException("Phone must be unique");
+            }
+            else if (idCardCheck != null && id != idCardCheck.Id)
+            {
+                throw new TaskCanceledException("Indentity cart number must be unique");
             }
             else
             {
@@ -261,5 +278,7 @@ namespace DataAccess.Service.Impl
         {
             return _residentRepo.GetAllResident(pageSize, currentPage);
         }
+
+       
     }
 }

@@ -23,5 +23,7 @@ namespace DataAccess.Repository
         public IEnumerable<ResidentDTO> GetAllResident(int pageSize, int currentPage);
 
         IEnumerable<ResidentDTO>  FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage);
+
+        Resident findByPhone(String phone);
     }
 }

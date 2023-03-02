@@ -11,6 +11,7 @@ using System.Data;
 using System.Security.Claims;
 using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Threading.Tasks;
 
 namespace MotelManagementAPI.Controllers
 {
@@ -84,11 +85,19 @@ namespace MotelManagementAPI.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
 
                 return Ok("Added Successfully");
-            } catch(Exception ex)
+            }catch (TaskCanceledException ex)
             {
+
                 CommonResponse common = new CommonResponse();
                 common.Message = ex.Message;
                 return StatusCode(StatusCodes.Status400BadRequest, common);
+            } 
+            
+            catch(Exception ex)
+            {
+                CommonResponse common = new CommonResponse();
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
             }
         }
 
@@ -141,12 +150,21 @@ namespace MotelManagementAPI.Controllers
         {
             try
             {
+
+                
+
                 var result = _residentService.UpdateResidentAccount(id,accountDTO);
 
                 if (!result)
-                    return StatusCode(StatusCodes.Status400BadRequest, "Identity cart number already exist");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Update failed, please check again");
 
                 return Ok("Added Successfully");
+            }
+            catch (TaskCanceledException ex)
+            {
+                CommonResponse common = new CommonResponse();
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, common);
             }
             catch (Exception ex)
             {
