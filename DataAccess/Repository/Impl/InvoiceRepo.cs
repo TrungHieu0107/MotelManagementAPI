@@ -214,14 +214,18 @@ namespace DataAccess.Repository
 
         }
 
-        public InvoiceDTO GetInvoiceDetailById(long id)
+        public InvoiceDTO GetInvoiceDetailById(long id, long userId, long managerId)
         {
             var result = _context.Invoices
-                .Where(x => x.Id == id)
                 .Include(invoice => invoice.WaterCost)
                 .Include(invoice => invoice.ElectricityCost)
                 .Include(invoice => invoice.Room.MotelChain)
                 .Include(invoice => invoice.Room.MotelChain.Manager)
+                .Where(x => x.Id == id &&
+                (userId != -1 ? x.ResidentId == userId : true)
+                && 
+                (managerId != -1 ? x.Room.MotelChain.ManagerId == managerId : true)
+                )
                 .Select(invoice => new InvoiceDTO
                 {
                     Id = id,
@@ -278,12 +282,14 @@ namespace DataAccess.Repository
             return result;
         }
 
-        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, ref Pagination pagination)
+        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, long managerId, ref Pagination pagination)
         {
             pagination = pagination ?? new Pagination();
 
             var listAllInvoice = _context.Invoices
                 .Include(x => x.Room)
+                .Include(x => x.Room.MotelChain)
+                .Include(x => x.Resident)
                 .Where(invoice =>
                 (status == -1 ? true : invoice.Status == (InvoiceStatus)status)
                 &&
@@ -292,6 +298,8 @@ namespace DataAccess.Repository
                 (userId != -1 ? invoice.Resident.Id == userId : true)
                 &&
                 (invoice.EndDate != null)
+                &&
+                (managerId != -1 ? invoice.Room.MotelChain.ManagerId == managerId : true)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,

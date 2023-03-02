@@ -101,37 +101,7 @@
         </div>
 
     </div>
-
-   @* <script>
-         console.log("123");
-           $(document).ready(function(){
-            $('#loginBtn').click(function () {
-                console.log("1",@Model.LoginDTO);
-                $.ajax({
-                        type: "POST",
-                        url: "https://63e21d95ad0093bf29c802d4.mockapi.io/android/products",
-                        data: JSON.stringify(@Model.LoginDTO),
-                        dataType:"json",
-                        contentType:"application/json; charset=utf-8",
-                        success: function (response) {
-                            alert ("abc");
-                        },
-                        failure : function (res){
-                            alert("fail");
-                        },
-                        error: function (res){
-                            alert("error");
-                        }
-
-         });
-            })
-        })
-    </script>*@
-
 </body>
-
-
-
 </html>
 
 @section Scripts {

@@ -15,13 +15,13 @@ namespace DataAccess.Repository
         long CountInvocieHistoryHasRoomId(long roomId);
         IEnumerable<InvoiceDTO> GetInvoiceHistoryOfRoomNotPaidYet(string  RoomCode);
         int UpdateInvoiceStatus(Invoice invoice);
-        InvoiceDTO GetInvoiceDetailById(long id);
+        InvoiceDTO GetInvoiceDetailById(long id, long userId, long managerId);
         public Invoice GetPreviousInvoiceByRoomId(long roomId);
         public List<Invoice> AutoCheckLateInvoices(DateTime dateTime);
         public void Add(Invoice invoice);
         public Invoice FindById(long id);
         public bool AutoCloseInvoices(DateTime dateTime);
-        IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, ref Pagination pagination);
+        IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, long managerId, ref Pagination pagination);
         InvoiceDTO UpdateRoomIdfOfInvoice(long newRoomId, long oldRoomId);
     }
 }
