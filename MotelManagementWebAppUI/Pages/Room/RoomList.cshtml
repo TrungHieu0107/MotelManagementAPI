@@ -2,11 +2,11 @@
 @model MotelManagementWebAppUI.Pages.Room.RoomListModel
 @{
     Layout = "_Layout";
-    ViewData["Title"]  = "Room list";
-}   
-<button type="button" class="btn btn-primary" onclick="$('#myModal').modal('show')">Show Modal</button>
-Create
-</button>
+    ViewData["Title"] = "Room list";
+    var newRoom = Model.NewRoom;
+}
+<div>
+    <button id="add-new-room" type="button" class="btn btn-primary">Add new</button>
 <table class="table">
     <thead>
         <tr>
@@ -28,43 +28,77 @@ Create
     <tbody>
         @foreach (var item in Model.ListRoomDTO)
         {
-                <tr>
-                    <td>
+            <tr>
+                <td>
                     @Html.DisplayFor(modelItem => item.Code)
-                    </td>
-                    <td>
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.FeeAppliedDate)
-                    </td>
-                    <td>
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.RentFee)
-                    </td>
-                    <td>
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Status)
-                    </td>
-                    <td>
-                        <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                </tr>
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Modal Title</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save</button>
-      </div>
-    </div>
-  </div>
+
+<partial name="_ValidationScriptsPartial" />
+
+<div id="popup">
+    @await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", newRoom)
 </div>
+
+</div>
+
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+<script>
+    $(document).ready(function () {
+      $("#add-new-room").click(function () {
+          console.log("click");
+        $("#myModal").modal({
+          modal: true,
+          title: "popup title",
+          width: 400,
+          height: 300,
+          draggable: true,
+          resizable: true,
+        });
+      });
+
+      $("#create-object-form").submit(function (event) {
+        event.preventDefault();
+        console.log($(this));
+        $.ajax({
+          url: "http://localhost:5001/api/Room/add-new-room",
+          type: "GET",
+          headers: {
+            "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+          },
+          data: $(this).serialize(),
+          success: function (result) {
+            $("#myModal").fadeOut();
+            // Reload the list of rooms on the main page
+            window.location.reload();
+          },
+          error: function (xhr, status, error) {
+            alert("Error creating room: " + error);
+          },
+        });
+      });
+    });
+
+</script>
+}
+
+
