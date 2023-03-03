@@ -71,7 +71,13 @@ namespace MotelManagementAPI
             services.AddTransient<TokenValidationMiddleware>();
             services.AddScoped<ITokenBlacklist, TokenBlackList>();
 
-            
+            services.AddCors(o =>
+            {
+                o.AddPolicy("CorsPolicy", builder =>
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -160,7 +166,7 @@ namespace MotelManagementAPI
             app.UseMiddleware<TokenValidationMiddleware>();
             app.UseAuthentication();
             app.UseRouting();
-
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
