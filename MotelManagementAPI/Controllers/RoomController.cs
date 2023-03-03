@@ -28,9 +28,9 @@ namespace MotelManagementAPI.Controllers
 
 
         [Authorize(Roles = "Manager")]
-        [HttpGet]
+        [HttpPost]
         [Route("add-new-room")]
-        public async Task<IActionResult> AddNewRoom(string code, long rentFee, string feeAppliedDate, int status)
+        public async Task<IActionResult> AddNewRoom(string Code, string FeeAppliedDate, long RentFee, int Status)
         {
             
             CommonResponse commonResponse = new CommonResponse();
@@ -40,7 +40,7 @@ namespace MotelManagementAPI.Controllers
                 var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
                 var userId = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value;
 
-                var result = _roomService.AddNewRoom(code, rentFee, feeAppliedDate, status, long.Parse(userId));
+                var result = _roomService.AddNewRoom(Code, RentFee, FeeAppliedDate, Status, long.Parse(userId));
                 if (result == null)
                 {
                     commonResponse.Message = "Something Went Wrong";
@@ -112,7 +112,7 @@ namespace MotelManagementAPI.Controllers
 
         [HttpGet]
         [Route("get-rooms")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Role.MANAGER)]
         public async Task<IActionResult> GetAllRoomHistoryWithFilter
         (
             string? roomCode,
