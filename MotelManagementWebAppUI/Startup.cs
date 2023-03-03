@@ -28,6 +28,7 @@ namespace MotelManagementWebAppUI
             {
                 options.Conventions.AddPageRoute("/Account/Login", "");
             });
+            services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
