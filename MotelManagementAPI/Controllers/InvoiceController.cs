@@ -27,7 +27,7 @@ namespace MotelManagementAPI.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Role.MANAGER)]
         [HttpGet]
         [Route("get-invoice-history")]
         public async Task<IActionResult> GetInvoiceHistoryOfRoom(long roomId, int? currentPage, int? pageSize)
@@ -51,7 +51,7 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Role.MANAGER)]
         [HttpGet]
         [Route("get-unpay-invocie/{roomCode}")]
         public IActionResult GetUnpayInvocie(string roomCode)
@@ -80,7 +80,7 @@ namespace MotelManagementAPI.Controllers
 
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Role.MANAGER)]
         [HttpGet]
         [Route("paid-invocie/{roomCode}")]
         public IActionResult PayInvocie(string roomCode)
@@ -112,7 +112,7 @@ namespace MotelManagementAPI.Controllers
 
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = Role.RESIDENT_MANGER)]
         [HttpGet]
         [Route("get-invoice-detail")]
         public IActionResult GetInvoiceDetail(long id)
@@ -120,7 +120,20 @@ namespace MotelManagementAPI.Controllers
             CommonResponse commonResponse = new CommonResponse();
             try
             {
-                var result = _invoiceService.GetInvoiceDetailById(id);
+                var userClaims = User as ClaimsPrincipal;
+                var roleClaim = userClaims.FindFirstValue(ClaimTypes.Role);
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long userId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
+                InvoiceDTO result = null;
+                if (roleClaim == Role.MANAGER)
+                {
+                    result = _invoiceService.GetInvoiceDetailById(id, -1, userId);
+                }
+                else if (roleClaim == Role.RESIDENT)
+                {
+                    result = _invoiceService.GetInvoiceDetailById(id, userId, -1);
+                }
 
                 if(result == null)
                 {
@@ -152,16 +165,16 @@ namespace MotelManagementAPI.Controllers
             {
                 var userClaims = User as ClaimsPrincipal;
                 var roleClaim = userClaims.FindFirstValue(ClaimTypes.Role);
-                
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long id = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
                 List<InvoiceDTO> result = null;
                 if (roleClaim == Role.MANAGER)
                 {
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, userId ?? -1, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, userId ?? -1, id, ref pagination);
                 } else if(roleClaim == Role.RESIDENT)
                 {
-                    var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-                    long id = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, id, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, id, -1, ref pagination);
                 }
 
                 commonResponse.Data = result;

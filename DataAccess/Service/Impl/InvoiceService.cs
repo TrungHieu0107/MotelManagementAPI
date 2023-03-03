@@ -162,19 +162,20 @@ namespace DataAccess.Service.Impl
             }
         }
 
-        public InvoiceDTO GetInvoiceDetailById(long id)
+        public InvoiceDTO GetInvoiceDetailById(long id, long userId, long managerId)
         {
-            var result = _invoiceRepo.GetInvoiceDetailById(id);
+            var result = _invoiceRepo.GetInvoiceDetailById(id, userId, managerId);
 
             return result;
         }
 
-        public List<InvoiceDTO> GetAllLatestInvoice(string roomCode, int status, long userId, ref Pagination pagination)
+        public List<InvoiceDTO> GetAllLatestInvoice(string roomCode, int status, long userId,long managerId, ref Pagination pagination)
         {
             var result = _invoiceRepo.GetAllInvoice(
                                                 roomCode,
                                                 status,
                                                 userId,
+                                                managerId,
                                                 ref pagination
                                                 );
 
