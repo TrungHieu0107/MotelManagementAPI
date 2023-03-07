@@ -12,7 +12,7 @@ namespace DataAccess.Service
     {
         Room UpdateStatusWhenBookingById(long managerId, long roomId, DateTime startDate);
         bool AutoUpdateBookedRoomsToActive(DateTime dateTime);
-        RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId);
+        RoomDTO AddNewRoom(string code, long rentFee, DateTime feeAppliedDate, int status, long userId);
         RoomDTO UpdateRoom(RoomDTO room, long userId);
         bool DeleteRoomById(long id);
         List<RoomDTO> GetAllRoomHistoryWithFilter
@@ -21,7 +21,7 @@ namespace DataAccess.Service
             long minFee,
             long maxFee,
             int status,
-            string appliedDateAfter,
+            DateTime appliedDateAfter,
             ref Pagination pagination, 
             long userId
         );

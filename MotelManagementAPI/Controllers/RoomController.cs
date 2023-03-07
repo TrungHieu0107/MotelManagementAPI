@@ -30,7 +30,7 @@ namespace MotelManagementAPI.Controllers
         [Authorize(Roles = "Manager")]
         [HttpPost]
         [Route("add-new-room")]
-        public async Task<IActionResult> AddNewRoom(string Code, string FeeAppliedDate, long RentFee, int Status)
+        public async Task<IActionResult> AddNewRoom(string Code, DateTime FeeAppliedDate, long RentFee, int Status)
         {
             
             CommonResponse commonResponse = new CommonResponse();
@@ -119,7 +119,7 @@ namespace MotelManagementAPI.Controllers
             long? minFee,
             long? maxFee,
             int? status,
-            string? appliedDateAfter,
+            DateTime? appliedDateAfter,
             int? currentPage,
             int? pageSize
         )
@@ -135,11 +135,11 @@ namespace MotelManagementAPI.Controllers
                 pagination.CurrentPage = currentPage ?? 1;
                 var result = _roomService.GetAllRoomHistoryWithFilter
                                 (
-                                     roomCode,
+                                     roomCode ?? null,
                                      minFee ?? -1,
                                      maxFee ?? -1,
                                      status ?? -1,
-                                     appliedDateAfter,
+                                     appliedDateAfter ?? DateTime.MinValue,
                                      ref pagination, 
                                      long.Parse(userId)
                                 );

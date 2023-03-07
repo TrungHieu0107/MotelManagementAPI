@@ -20,15 +20,30 @@
 //});
 
 //$(document).ready(function () {
-//    $('#popup').dialog({
-//        modal: true,
-//        title: 'Popup Title',
-//        width: 400,
-//        height: 300,
-//        draggable: true,
-//        resizable: false
-//    });
-//    $('#add-new-room').click(function () {
-//        $("#popup").dialog('open');
+//    $("#save-button").click(function (event) {
+//        console.log("submit");
+//        event.preventDefault();
+//        console.log($(this));
+
+//        if ($(this).valid()) {
+//            $.ajax({
+//                url: "http://localhost:5001/api/Room/add-new-room?Code=@room.Code&FeeAppliedDate=@room.FeeAppliedDate&RentFee=@room.RentFee&Status=1",
+//                type: "POST",
+//                headers: {
+//                    "Authorization": "Bearer @myCookie",
+//                },
+//                success: function (result) {
+//                    $("#myModal").fadeOut();
+//                    // Reload the list of rooms on the main page
+//                    //window.location.reload();
+//                },
+//                error: function (xhr, status, error) {
+//                    alert("Error creating room: " + error);
+//                },
+//            });
+//        }
+
 //    });
 //});
+
+

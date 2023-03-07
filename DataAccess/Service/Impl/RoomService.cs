@@ -44,7 +44,7 @@ namespace DataAccess.Service.Impl
             return _roomRepo.UpdateStatusWhenBookingById(managerId, roomId, startDate);
         }
 
-        public RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId)
+        public RoomDTO AddNewRoom(string code, long rentFee, DateTime feeAppliedDate, int status, long userId)
         {
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
 
@@ -63,14 +63,12 @@ namespace DataAccess.Service.Impl
             return _roomRepo.Insert(newRoomDTO);
         }
 
-        private RoomDTO GetRoom(string code, long rentFee, string feeAppliedDate, int status, long motelID, long id)
+        private RoomDTO GetRoom(string code, long rentFee, DateTime feeAppliedDate, int status, long motelID, long id)
         {
             RoomDTO room = new RoomDTO();
             room.Status = (RoomStatus)status;
             room.Code = code;
-            DateTime date = DateTime.ParseExact(feeAppliedDate, "yyyy-MM-dd",
-                                      System.Globalization.CultureInfo.InvariantCulture);
-            room.FeeAppliedDate = date;
+            room.FeeAppliedDate = feeAppliedDate;
             room.MotelId = motelID;
             room.RentFee = rentFee;
             if (id > 0)
@@ -172,15 +170,12 @@ namespace DataAccess.Service.Impl
             long minFee,
             long maxFee,
             int status,
-            string appliedDateAfter,
+            DateTime appliedDateAfter,
             ref Pagination pagination,
             long userId
         )
         {
-            DateTime date = appliedDateAfter != null ? DateTime.ParseExact(appliedDateAfter, "yyyy-MM-dd",
-                                      System.Globalization.CultureInfo.InvariantCulture) : DateTime.MinValue;
-
-            if (minFee > maxFee)
+            if (minFee > maxFee && minFee > 0 && maxFee > 0)
             {
                 throw new InvalidProgramException("Mix fee is greater than max fee");
             }
@@ -190,7 +185,7 @@ namespace DataAccess.Service.Impl
                 minFee,
                 maxFee,
                 (RoomStatus) status,
-                date,
+                appliedDateAfter,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId);
@@ -200,7 +195,7 @@ namespace DataAccess.Service.Impl
                 minFee,
                 maxFee,
                 (RoomStatus)status,
-                date,
+                appliedDateAfter,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId).ToList();
@@ -210,7 +205,7 @@ namespace DataAccess.Service.Impl
                 r.LatestHistory = _historyRepo.GetLatestHistoryOfRoom(r.Id);
             });
 
-            return listRoom.OrderByDescending(room => room.LatestHistory.EndDate).ToList();
+            return listRoom.OrderByDescending(room => room.LatestHistory?.EndDate).ToList();
         }
 
         public RoomDTOForDetail FindByIdForManager(long roomId, long managerId)

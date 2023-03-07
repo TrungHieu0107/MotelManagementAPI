@@ -6,55 +6,88 @@
     var newRoom = Model.NewRoom;
 }
 <div>
-    <button id="add-new-room" type="button" class="btn btn-primary">Add new</button>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ListRoomDTO[0].Code)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ListRoomDTO[0].FeeAppliedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ListRoomDTO[0].RentFee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ListRoomDTO[0].Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ListRoomDTO)
-        {
+    <div>
+        <form class="d-flex flex-column" method="post">
+            <div class="d-flex flex-row">
+                <div>
+                    <label asp-for="@Model.filterRoomOption.roomCode" class="control-label"></label>
+                    <input asp-for="@Model.filterRoomOption.roomCode" class="form-control" />
+                </div>
+                <div>
+                    <label asp-for="@Model.filterRoomOption.minFee" class="control-label"></label>
+                    <input asp-for="@Model.filterRoomOption.minFee" class="form-control" />
+                </div>
+                <div>
+                    <label asp-for="@Model.filterRoomOption.maxFee" class="control-label"></label>
+                    <input asp-for="@Model.filterRoomOption.maxFee" class="form-control" />
+                </div>
+                <div>
+                    <label asp-for="@Model.filterRoomOption.appliedDateAfter" class="control-label"></label>
+                    <input asp-for="@Model.filterRoomOption.appliedDateAfter" class="form-control" />
+                </div>
+                <div>
+                    <label asp-for="@Model.filterRoomOption.status" class="control-label"></label>
+                    <input asp-for="@Model.filterRoomOption.status" class="form-control" />
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-evenly mt-4 mb-0">
+                <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
+                <button id="add-new-room" type="button" style="width: 100px; margin: 0" class="btn btn-primary btn-user btn-block">Thêm</button>
+            </div>
+        </form>
+    </div>
+
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Code)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FeeAppliedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RentFee)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].Code)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].FeeAppliedDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].RentFee)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].Status)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (Model.ListRoomDTO != null && Model.ListRoomDTO.Count() > 0)
+            {
+                foreach (var item in Model.ListRoomDTO)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FeeAppliedDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RentFee)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 
-<partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
 
-<div id="popup">
-    @await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", newRoom)
-</div>
+    <div id="popup">
+        <partial name="~/Pages/Room/_AddRoomPartial.cshtml" model="@Model.NewRoom" />
+    </div>
 
 </div>
 
@@ -78,14 +111,18 @@
 
       $("#create-object-form").submit(function (event) {
         event.preventDefault();
-        console.log($(this));
-        $.ajax({
-          url: "http://localhost:5001/api/Room/add-new-room",
-          type: "GET",
+        let code = $("#code").val()
+        let rentFee = $("#rent-fee").val();
+        let feeApplyDate =$("#fee-applied-date").val();
+
+         if ($(this).valid()) {
+             $.ajax({
+          url: "http://localhost:5001/api/Room/add-new-room?Code=" + code + "&FeeAppliedDate= " + feeApplyDate + "&RentFee=" + rentFee + " &Status=0",
+          type: "POST",
+          data: $(this).serialize(),
           headers: {
             "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
           },
-          data: $(this).serialize(),
           success: function (result) {
             $("#myModal").fadeOut();
             // Reload the list of rooms on the main page
@@ -95,6 +132,8 @@
             alert("Error creating room: " + error);
           },
         });
+        }
+
       });
     });
 
