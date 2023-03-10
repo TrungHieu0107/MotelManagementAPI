@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,10 +31,19 @@ namespace MotelManagementWebAppUI
             });
             services.AddHttpContextAccessor();
             services.AddHttpClient();
+            services.AddControllersWithViews();
+                 
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
             });
             services.AddMemoryCache();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+               options =>
+               {
+                   options.LoginPath = "/Account/Login";
+                   options.AccessDeniedPath = "/Acount/Forbiddent/";
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +64,7 @@ namespace MotelManagementWebAppUI
             app.UseSession();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseRouting();
 
             app.UseAuthorization();

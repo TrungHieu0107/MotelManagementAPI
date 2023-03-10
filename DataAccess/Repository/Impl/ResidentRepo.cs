@@ -170,6 +170,9 @@ namespace DataAccess.Repository
             {
                 query = query.Where(p => p.FullName.Contains(Fullname));
             }
+            if (!String.IsNullOrEmpty(phone)) {
+                query = query.Where(p => p.Phone.Contains(phone));
+            }
             if (status >=0 && status <= Enum.GetNames(typeof(AccountStatus)).Length)
             {
                 query = query.Where(p => p.Status == (AccountStatus)Enum.ToObject(typeof(AccountStatus), status));
