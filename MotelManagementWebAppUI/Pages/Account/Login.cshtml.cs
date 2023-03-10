@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using BussinessObject.DTO.Common;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace MotelManagementWebAppUI.Pages.Login
 {
@@ -49,62 +50,64 @@ namespace MotelManagementWebAppUI.Pages.Login
             return Page();
         }
 
-        public async Task<IActionResult> OnPostLoginAsync()
+        public IActionResult OnPostLogin()
         {
             string token = null;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(LoginDTO);
             var httpContent = new StringContent(json, encoding: System.Text.Encoding.UTF8, "application/json");
             _httpClient.BaseAddress = new System.Uri("http://localhost:5001");
             // Create an HttpClient instance with SSL/TLS enabled
-            var responser = await _httpClient.PostAsync("/authenticate", httpContent);
+            var responser =  _httpClient.PostAsync("/authenticate", httpContent);
             
-
-            if (responser.IsSuccessStatusCode)
+            if(responser.GetAwaiter().GetResult().StatusCode == System.Net.HttpStatusCode.OK)
             {
-                token = await responser.Content.ReadAsStringAsync();
+                token = responser.GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
 
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(token);
+                int userId;
+
+                // Retrieve username from JWT token
+
+                // Retrieve role from JWT token
+                var role = jwtToken.Claims.First(c => c.Type == "role").Value;
 
                 var userPrincipal = ValidateToken(token);
                 var authenticationProperties = new AuthenticationProperties
                 {
                     ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(60)
                 };
-                await HttpContext.SignInAsync(
+                HttpContext.SignInAsync(
                  CookieAuthenticationDefaults.AuthenticationScheme,
                  userPrincipal,
                  authenticationProperties);
 
-                if (User.Identity.IsAuthenticated)
-                {
-                    HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
-                    if (User.IsInRole("Resident"))
+                HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
+
+                    if (role.Equals("Resident"))
                     {
-                        //return RedirectToPage("../Room/RoomList");
+                        return Redirect("/resident/resident/resident-detail");
                     }
-                    else if (User.IsInRole("Manager"))
+                    else if (role.Equals("Manager"))
                     {
                         return Redirect("/room/list");
                     }
-                    else if (User.IsInRole("Admin"))
+                    else if (role.Equals("Admin"))
                     {
-
+                        return Redirect("/admin/electricity/electricity-cost");
                     }
-                }
-                else
-                {
-                    // Người dùng chưa đăng nhập
-                }
-                
-                //return RedirectToPage("../Admin/ElectricityCost/ElectricityCost");
-                return RedirectToPage("../Room/RoomList");
-                //return RedirectToPage("../Manager/Resident/Resident");
+                    else
+                    {
+                        return Page();
+                    }
             }
-            else if (responser.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            else if (responser.GetAwaiter().GetResult().StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu");
-            } else if(responser.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            }
+            else if (responser.GetAwaiter().GetResult().StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                var content = await responser.Content.ReadAsStringAsync();
+                var content = responser.GetAwaiter().GetResult().Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var result = JsonConvert.DeserializeObject<CommonResponse>(content);
                 ModelState.AddModelError(string.Empty, result.Message);
             }
