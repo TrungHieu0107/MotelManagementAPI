@@ -20,6 +20,16 @@ namespace MotelManagementWebAppUI.Pages.Login
         [BindProperty]
         public LoginDTO LoginDTO { get; set; }
 
+        public IActionResult OnGet()
+        {
+            if(HttpContext.Request.Cookies["token"] != null)
+            {
+                return RedirectToPage("../Room/RoomList");
+            }
+
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostLoginAsync()
         {
             string token = null;
@@ -35,7 +45,8 @@ namespace MotelManagementWebAppUI.Pages.Login
                 token = await responser.Content.ReadAsStringAsync();
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                 //return RedirectToPage("../ElectricityCost/ElectricityCostList");
-                return RedirectToPage("../Room/RoomList");
+                return RedirectToPage("../Room/RoomList"); 
+                
             }
             else if (responser.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {

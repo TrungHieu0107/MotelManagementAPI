@@ -28,5 +28,6 @@ namespace DataAccess.Service
         RoomDTOForDetail FindByIdForManager(long roomId, long managerId);
         Room CheckBeforeBookingById(long managerId, long roomId);
         RoomDTOForDetail FindByIdForResident(long roomId, long residentId);
+        RoomDTO GetRoomForUpdating(long id, long managerId);
     }
 }

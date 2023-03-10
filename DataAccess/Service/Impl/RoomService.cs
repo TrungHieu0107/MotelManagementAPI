@@ -116,7 +116,10 @@ namespace DataAccess.Service.Impl
 
         public RoomDTO UpdateRoom(RoomDTO room, long userId)
         {
-
+            if(room.FeeAppliedDate < DateTime.Now)
+            {
+                return null;
+            }
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
 
             RoomDTO oldValue = _roomRepo.GetLatestRoomByRoomCode(room.Code);
@@ -125,11 +128,14 @@ namespace DataAccess.Service.Impl
             {
                 return null;
             }
+            room.Code = oldValue.Code;
+            room.MotelId = oldValue.MotelId;
 
             if (oldValue.FeeAppliedDate > DateTime.Now)
             {
                 oldValue.FeeAppliedDate = room.FeeAppliedDate;
                 oldValue.RentFee = room.RentFee;
+                oldValue.Status = room.Status;
                 return _roomRepo.Update(oldValue);
             }
 
@@ -143,14 +149,12 @@ namespace DataAccess.Service.Impl
                     _roomRepo.Insert(room);
                     history.RoomId = room.Id;
                     _historyRepo.Update(history);
-                    _invoiceRepo.UpdateRoomIdfOfInvoice(room.Id, oldValue.Id);
                 }
 
                 return room;
             }
             room.Id = oldValue.Id;
-            room.Code = oldValue.Code;
-            room.MotelId = oldValue.MotelId;
+            
             return _roomRepo.Update(room);
         }
 
@@ -292,6 +296,11 @@ namespace DataAccess.Service.Impl
         public Room CheckBeforeBookingById(long managerId, long roomId)
         {
             return _roomRepo.CheckAndGetBeforeBookingById(managerId, roomId);
+        }
+
+        public RoomDTO GetRoomForUpdating(long id, long managerId)
+        {
+            return _roomRepo.GetRoomByCodeForUpdating(id, managerId);
         }
     }
 }

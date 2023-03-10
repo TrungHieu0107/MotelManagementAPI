@@ -12,7 +12,6 @@ namespace BussinessObject.DTO
         [StringLength(40, MinimumLength = 8, ErrorMessage = "Password field must have minimum 8 and maximum 40 character!")]
         public string Password { get; set; }
 
-
         [Required(AllowEmptyStrings = false, ErrorMessage = "The Identity Card can not be empty")]
         [StringLength(12, MinimumLength = 12, ErrorMessage = "Identity Card field must have 12 character!")]
         [RegularExpression(@"^([0-9]{12})$", ErrorMessage = "Invalid Indentity Card Number.")]

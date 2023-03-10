@@ -3,141 +3,418 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Room list";
-    var newRoom = Model.NewRoom;
+    RoomDTO roomUpdate;
 }
-<div>
-    <div>
-        <form class="d-flex flex-column" method="post">
-            <div class="d-flex flex-row">
-                <div>
+<button type="button" id="confirm"> show</button>
+<div id="room-list">
+    <div class="mb-3">
+        <form class="d-flex flex-column" method="get">
+
+            <div class="row align-items-start">
+                <div class="col">
                     <label asp-for="@Model.filterRoomOption.roomCode" class="control-label"></label>
-                    <input asp-for="@Model.filterRoomOption.roomCode" class="form-control" />
+                    <input asp-for="@Model.filterRoomOption.roomCode" class="form-control" onchange="this.form.submit()" />
                 </div>
-                <div>
+                <div class="col">
                     <label asp-for="@Model.filterRoomOption.minFee" class="control-label"></label>
                     <input asp-for="@Model.filterRoomOption.minFee" class="form-control" />
                 </div>
-                <div>
+                <div class="col">
                     <label asp-for="@Model.filterRoomOption.maxFee" class="control-label"></label>
                     <input asp-for="@Model.filterRoomOption.maxFee" class="form-control" />
                 </div>
-                <div>
+                <div class="col">
                     <label asp-for="@Model.filterRoomOption.appliedDateAfter" class="control-label"></label>
                     <input asp-for="@Model.filterRoomOption.appliedDateAfter" class="form-control" />
                 </div>
-                <div>
+                <div class="col">
                     <label asp-for="@Model.filterRoomOption.status" class="control-label"></label>
-                    <input asp-for="@Model.filterRoomOption.status" class="form-control" />
+                    <select asp-for="@Model.filterRoomOption.status" asp-items="@Model.SelectListRoomStatus" class="form-select" onchange="this.form.submit()">
+                        <option selected="selected" value="">Tất cả</option>
+                    </select>
                 </div>
             </div>
-            <div class="d-flex align-items-center justify-content-evenly mt-4 mb-0">
+            <div class="d-flex align-items-center justify-content-evenly mt-2 mb-0">
                 <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
                 <button id="add-new-room" type="button" style="width: 100px; margin: 0" class="btn btn-primary btn-user btn-block">Thêm</button>
             </div>
         </form>
     </div>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].Code)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].FeeAppliedDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].RentFee)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ListRoomDTO[0].Status)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.ListRoomDTO != null && Model.ListRoomDTO.Count() > 0)
-            {
-                foreach (var item in Model.ListRoomDTO)
+    <div style="overflow: auto; height: 450px">
+        <table class="table table-bordered">
+            <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.Code)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.FeeAppliedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.RentFee)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.Status)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody style="" overflow-auto">
+                @if (Model.ListRoomDTO != null && Model.ListRoomDTO.Count() > 0)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Code)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FeeAppliedDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.RentFee)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Status)
-                        </td>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
+                    foreach (var item in Model.ListRoomDTO)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Code)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FeeAppliedDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RentFee)
+                            </td>
+                            <td>
+                                @Model.ListStatus.ElementAt((int)item.Status).ToString()
+                            </td>
+                            <td>
+                                <form method="post" class="d-flex justify-content-evenly">
+                                    <button type="button" asp-page-handler="Edit" onclick="updateRoom(@item.Id)">
+                                        <i class="fa-sharp fa-regular fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" asp-page-handler="Delete" onclick="confirmDeleteRooom('@item.Code', @item.Id)">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                    <button type="submit" asp-page-handler="Delete">
+                                        <i class="fa-regular fa-square-info"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="text-center">
+                        <td colspan=5 class="text-center">Không có bất kì dữ liệu nào</td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+
+            </tbody>
+            <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray">
+                <tr>
+                    <td colspan=3 class="border-0 p-0">
+                        @if (Model.filterRoomOption != null)
+                        {
+                            <form method="post" class="row justify-content-center">
+                                <input id="room-code-search" asp-for="@Model.filterRoomOption.roomCode" class="form-control" hidden />
+                                <input id="min-fee-search" asp-for="@Model.filterRoomOption.minFee" class="form-control" hidden />
+                                <input id="nax-fee-search" asp-for="@Model.filterRoomOption.maxFee" class="form-control" hidden />
+                                <input id="applied-date-after-search" asp-for="@Model.filterRoomOption.appliedDateAfter" class="form-control" hidden />
+                                <select hidden id="select-status-search" asp-for="@Model.filterRoomOption.status" asp-items="@Model.SelectListRoomStatus" class="form-select">
+                                    <option selected="selected" value="">Tất cả</option>
+                                </select>
+                                <input id="current-page-search" name="filterRoomOption.CurrentPage" value="@Model.filterRoomOption.CurrentPage" hidden />
+                                <input id="page-size-search" name="filterRoomOption.PageSize" value="@Model.filterRoomOption.PageSize" hidden />
+                                @if (Model.filterRoomOption.CurrentPage > 1)
+                                {
+                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous"><i class="fa-solid fa-angle-left"></i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled><i class="fa-solid fa-angle-left"></i></button>
+                                }
+                                <p class="col-1 text-center" style="vertical-align: middle">
+                                    @Model.filterRoomOption.CurrentPage
+                                </p>
+
+                                @if (Model.filterRoomOption.Total > Model.filterRoomOption.CurrentPage * Model.filterRoomOption.PageSize)
+                                {
+                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next"><i class="fa-solid fa-angle-right"></i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled><i class="fa-solid fa-angle-right"></i></button>
+                                }
+                            </form>
+                        }
+                    </td>
+                    <td class="border-0 p-0"></td>
+                    <td class="border-0 p-0">Tổng: @Model.filterRoomOption.Total</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
     <partial name="_ValidationScriptsPartial" />
+
+    <partial name="_Notification" />
+
 
     <div id="popup">
         <partial name="~/Pages/Room/_AddRoomPartial.cshtml" model="@Model.NewRoom" />
     </div>
 
-</div>
+
+    @*UPDATE MODAL*@
+    <div id="update-room-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật thông tin phòng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="update-object-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <input name="id" id="room-id-update" value="@Model.NewRoom.Id" hidden />
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="@Model.NewRoom.Code" class="control-label"></label>
+                                <input id="code-update" asp-for="@Model.NewRoom.Code" class="form-control" disabled />
+                                <span asp-validation-for="@Model.NewRoom.Code" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="@Model.NewRoom.RentFee" class="control-label"></label>
+                                <input id="rent-fee-update" asp-for="@Model.NewRoom.RentFee" class="form-control" />
+                                <span asp-validation-for="@Model.NewRoom.RentFee" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="@Model.NewRoom.FeeAppliedDate" class="control-label"></label>
+                                <input id="fee-applied-date-update" asp-for="@Model.NewRoom.FeeAppliedDate" class="form-control" />
+                                <span asp-validation-for="@Model.NewRoom.FeeAppliedDate" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <label asp-for="@Model.NewRoom.Status" class="control-label"></label>
+                                <select id="status-room-update" asp-for="@Model.NewRoom.Status" asp-items="@Model.SelectListRoomStatus" class="form-control" disabled>
+                                </select>
+                                <span asp-validation-for="@Model.NewRoom.Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" id="update-button">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @*CONFIRM DELETE*@
+    <div id="confrim-delete-room-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nhắc nhở</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="delete-object-form">
+                    <div class="modal-body">
+                        <div id="delete-confirm-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Không</button>
+                            <button type="button" class="btn btn-outline-warning" id="confirm-yes">Có</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
-@using Microsoft.AspNetCore.Http
-@inject IHttpContextAccessor HttpContextAccessor
-@section scripts {
-<script>
-    $(document).ready(function () {
-      $("#add-new-room").click(function () {
-          console.log("click");
-        $("#myModal").modal({
-          modal: true,
-          title: "popup title",
-          width: 400,
-          height: 300,
-          draggable: true,
-          resizable: true,
+
+
+    @using BussinessObject.DTO
+    @using BussinessObject.Status
+    @using Microsoft.AspNetCore.Http
+    @inject IHttpContextAccessor HttpContextAccessor
+    @section scripts {
+    <script>
+        $(document).ready(function () {
+            let idDelete;
+            var today = new Date().toISOString().split('T')[0];
+              $('#fee-applied-date-update').attr('min', today);
+
+          $("#add-new-room").click(function () {
+            $("#myModal").modal({
+              modal: true,
+              title: "popup title",
+              width: 400,
+              height: 300,
+              draggable: true,
+              resizable: true,
+            });
+            $(".field-validation-error").text("");
+          });
+
+          $("#create-object-form").submit(function (event) {
+            event.preventDefault();
+            let code = $("#code").val()
+            let rentFee = $("#rent-fee").val();
+            let feeApplyDate =$("#fee-applied-date").val();
+
+             if ($(this).valid()) {
+                 $.ajax({
+              url: "http://localhost:5001/api/Room/add-new-room?Code=" + code + "&FeeAppliedDate= " + feeApplyDate + "&RentFee=" + rentFee + " &Status=0",
+              type: "POST",
+              data: $(this).serialize(),
+              headers: {
+                "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+              },
+              success: function (result) {
+                $("#myModal").modal('hide');
+                // Reload the list of rooms on the main page
+                window.location.reload();
+              },
+              error: function (xhr, status, error) {
+                alert("Error creating room: " + error);
+              },
+            });
+            }
+          });
+
+           $("#update-object-form").submit(function (event) {
+            event.preventDefault();
+
+            let code = $("#code-update").val();
+            let rentFee = $("#rent-fee-update").val();
+            let feeApplyDate =$("#fee-applied-date-update").val();
+            let status = $("#status-room-update").val();
+            let id =$("#room-id-update").val();
+
+            let data = { id: id,
+                        code: code,
+                        rentFee: rentFee,
+                        feeAppliedDate: feeApplyDate,
+                        status: status
+                        };
+            console.log(data);
+
+             if ($(this).valid()) {
+                 $.ajax({
+                  url: "http://localhost:5001/api/Room/update-room",
+                  type: "POST",
+                  dataType: "json",
+                  contentType: "application/json; charset=utf-8",
+                  data: JSON.stringify(data),
+                  headers: {
+                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                  },
+                  success: function (result) {
+                    $("#update-room-modal").fadeOut();
+                    window.location.reload();
+                  },
+                  error: function (xhr, status, error) {
+                    alert("Error creating room: " + error);
+                  },
+                });
+            }
+          });
+
+          $('#confirm').on('click', function(){
+              showConfirm('<h1>Hieu</h1>', () => {
+                console.log("avc");
+                });
+            }
+          );
+
         });
-      });
 
-      $("#create-object-form").submit(function (event) {
-        event.preventDefault();
-        let code = $("#code").val()
-        let rentFee = $("#rent-fee").val();
-        let feeApplyDate =$("#fee-applied-date").val();
-
-         if ($(this).valid()) {
+        function updateRoom(id) {
              $.ajax({
-          url: "http://localhost:5001/api/Room/add-new-room?Code=" + code + "&FeeAppliedDate= " + feeApplyDate + "&RentFee=" + rentFee + " &Status=0",
-          type: "POST",
-          data: $(this).serialize(),
-          headers: {
-            "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
-          },
-          success: function (result) {
-            $("#myModal").fadeOut();
-            // Reload the list of rooms on the main page
-            window.location.reload();
-          },
-          error: function (xhr, status, error) {
-            alert("Error creating room: " + error);
-          },
-        });
+                  url: "http://localhost:5001/api/Room/get-room-by-id?id=" + id,
+                  type: "GET",
+                  headers: {
+                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                  },
+                  success: function (result) {
+                    console.log(result);
+                    if(result.data){
+                         $("#update-room-modal").modal({
+                              modal: true,
+                              title: "popup title",
+                              width: 400,
+                              height: 300,
+                              draggable: true,
+                              resizable: true,
+                            });
+
+                            let code = $("#code-update");
+                            let rentFee = $("#rent-fee-update");
+                            let feeApplyDate =$("#fee-applied-date-update");
+                            let id =$("#room-id-update");
+                            let status =$("#status-room-update");
+
+                            id.val(result?.data?.id);
+                            status.val(result?.data?.status);
+                            code.val(result?.data?.code);
+                            rentFee.val(result?.data?.rentFee);
+                            var date = new Date(result?.data?.feeAppliedDate).toISOString().split('T')[0];
+                            feeApplyDate.val(date);
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.log(error);
+                  },
+                });
+             }
+
+
+        function confirmDeleteRooom(code, id) {
+            console.log(code, id);
+            $("#confrim-delete-room-modal").modal({
+                        modal: true,
+                        width: 400,
+                        height: 300,
+                        draggable: true,
+                        resizable: true,
+                    });
+                    idDelete = id;
+            $('#delete-confirm-body').text("Bạn có muốn xóa phòng " + code + " không?");
+            $( "#confirm-yes" ).on( "click", function() {
+                deleteRoom();
+            });
         }
 
-      });
-    });
+        function deleteRoom(){
+            console.log(idDelete);
+            $.ajax({
+                url: "http://localhost:5001/api/Room/delete-room?id=" + idDelete,
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                },
+                success: function (result) {
+                    $("#confrim-delete-room-modal").modal('hide');
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    $('#notify-content').html(xhr.responseJSON.message);
+                    if(xhr.responseJSON.message){
+                        $("#notification").modal({
+                            modal: true,
+                            width: 100,
+                            height: 100,
+                            draggable: true,
+                            resizable: true,
+                        });
+                        $("#confrim-delete-room-modal").modal('hide');
+                        console.log(xhr.responseJSON.message);
 
-</script>
-}
+                    }
+
+                    console.log(error, xhr.responseJSON);
+                },
+            });
+        }
+
+    </script>
+    }
 
 

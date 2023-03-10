@@ -92,8 +92,13 @@ namespace DataAccess.Repository
                             .Where(history => history.RoomId == roomId)
                             .OrderByDescending(history => history.Id)
                             .FirstOrDefault();
+
+            if(historyLatest == null)
+            {
+                return true;
+            }
         
-            if(historyLatest.EndDate == null || historyLatest.EndDate >= DateTime.Now)
+            if(historyLatest.EndDate == null || DateTime.Now <= historyLatest.EndDate)
             {
                 return false;
             }

@@ -282,7 +282,7 @@ namespace DataAccess.Repository
             return result;
         }
 
-        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, long managerId, ref Pagination pagination)
+        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, DateTime? paidDate, long userId, long managerId, ref Pagination pagination)
         {
             pagination = pagination ?? new Pagination();
 
@@ -300,6 +300,8 @@ namespace DataAccess.Repository
                 (invoice.EndDate != null)
                 &&
                 (managerId != -1 ? invoice.Room.MotelChain.ManagerId == managerId : true)
+                && 
+                (invoice.PaidDate.HasValue ? (paidDate.HasValue ? invoice.PaidDate.Value.Date == paidDate.Value.Date : true) : false)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,

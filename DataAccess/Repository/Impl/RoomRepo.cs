@@ -25,8 +25,8 @@ namespace DataAccess.Repository
             {
                 return false;
             }
-
-            _context.Entry(room).State = EntityState.Deleted;
+            room.Status = RoomStatus.DELETED;
+            _context.Entry(room).State = EntityState.Modified;
             _context.SaveChanges();
 
             return true;
@@ -286,6 +286,23 @@ namespace DataAccess.Repository
                 Status = room.Status,
                 RentFee = room.RentFee,
             }).FirstOrDefault();
+        }
+
+        public RoomDTO GetRoomByCodeForUpdating(long id, long managerId)
+        {
+            return _context.Rooms
+                .Include(room => room.MotelChain)
+                .Where(room => 
+                room.Id.Equals(id) &&
+                room.MotelChain.ManagerId.Equals(managerId)
+                ).Select(room => new RoomDTO()
+                {
+                    Id=room.Id,
+                    FeeAppliedDate = room.FeeAppliedDate,
+                    Code = room.Code,
+                    RentFee = room.RentFee,
+                    Status = room.Status,
+                }).FirstOrDefault();;
         }
     }
 }
