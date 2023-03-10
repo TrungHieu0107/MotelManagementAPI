@@ -12,7 +12,7 @@ function showConfirm(body, func) {
         '<div class="modal-content">' +
         '<div class="modal-header">' +
         '<h5 class="modal-title">Nhắc nhở</h5>' +
-        '<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="confirm-no-button">' +
+        '<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="x-button">' +
         '<span aria-hidden="true">&times;</span>' +
         '</button>' +
         '</div>' +
@@ -55,6 +55,10 @@ function showConfirm(body, func) {
         });
 
         $('#confirm-no-button').on('click', function () {
+            $('#confirm-modal').modal('toggle');
+        });
+
+        $('#x-button').on('click', function () {
             $('#confirm-modal').modal('toggle');
         });
 

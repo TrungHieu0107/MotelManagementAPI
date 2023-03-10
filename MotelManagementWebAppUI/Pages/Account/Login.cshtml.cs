@@ -34,8 +34,11 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         public IActionResult OnGet()
         {
-           
 
+            if (HttpContext.Request.Cookies["token"] != null)
+            {
+                return RedirectToPage("../Room/RoomList");
+            }
             return Page();
         }
 
