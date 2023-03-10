@@ -13,6 +13,8 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using BussinessObject.DTO.Common;
+using Newtonsoft.Json;
 
 namespace MotelManagementWebAppUI.Pages.Login
 {
@@ -32,10 +34,7 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         public IActionResult OnGet()
         {
-            if(HttpContext.Request.Cookies["token"] != null)
-            {
-                return RedirectToPage("../Room/RoomList");
-            }
+           
 
             return Page();
         }
@@ -80,13 +79,18 @@ namespace MotelManagementWebAppUI.Pages.Login
                     // Người dùng chưa đăng nhập
                 }
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
-                //return RedirectToPage("../ElectricityCost/ElectricityCostList");
-                return RedirectToPage("../Room/RoomList"); 
-                
+                //return RedirectToPage("../Admin/ElectricityCost/ElectricityCost");
+                 //return RedirectToPage("../Room/RoomList"); 
+                return RedirectToPage("../Manager/Resident/Resident");
             }
             else if (responser.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu");
+            } else if(responser.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var content = await responser.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<CommonResponse>(content);
+                ModelState.AddModelError(string.Empty, result.Message);
             }
 
             return Page();

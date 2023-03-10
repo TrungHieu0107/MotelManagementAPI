@@ -8,7 +8,7 @@ namespace BussinessObject.DTO
     {
         public long Id { get; set; }
 
-        [RegularExpression(@"^$|^.{8,40}$", ErrorMessage = "Mật khẩu phải từ 8 tới 40 kí tự.")]
+        [RegularExpression(@"^$|^.{8,40}$", ErrorMessage = "Mật khẩu phải từ 8 tới 40 kí tự. Và không có khoản trắng")]
         public string Password { get; set; }
 
 

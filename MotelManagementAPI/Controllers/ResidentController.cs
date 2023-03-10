@@ -132,13 +132,33 @@ namespace MotelManagementAPI.Controllers
         [Route("active-resident")]
         public IActionResult ActiveResident(string idCard)
         {
-            bool result = _residentService.ActiveResident(idCard);
+            CommonResponse common = new CommonResponse();
+            try
+            {
+                bool result = _residentService.ActiveResident(idCard);
 
-            if (result)
-                return Ok("Success");
+                if (result)
+                    return Ok("Success");
 
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong please check data again");
+                else
+                {
+                    common.Message = "Something went wrong please check data again";
+                    return StatusCode(StatusCodes.Status400BadRequest, common);
+
+                }
+            }
+            catch (TaskCanceledException ex)
+            {
+               
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, common);
+            }
+            catch (Exception ex)
+            {
+                
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+            }
         }
 
 
