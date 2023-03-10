@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Pages\Resident\" />
     <Folder Include="Pages\Partial\" />
   </ItemGroup>
 

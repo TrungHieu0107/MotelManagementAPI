@@ -1,0 +1,82 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+@model MotelManagementWebAppUI.Pages.Manager.Resident.ResidentModel
+@*@using (Html.BeginForm("AddResident", "Manager", FormMethod.Post, new { id = "addResidentForm" }))
+{
+   *@
+
+
+
+    <div class="modal fade" id="addResidentModal" tabindex="-1" aria-labelledby="addResidentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addResidentModalLabel">Thêm cư dân mới</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <form id="create-resident-form">
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="form-group">
+                            <label asp-for="accountDTO.FullName" class="control-label">Họ Và Tên</label>
+                            <input id="FullName" asp-for="accountDTO.FullName" class="form-control" data-val="true" data-val-length="Họ và tên phải từ 8 đến 60 kí tự" data-val-length-max="60" data-val-length-min="8" />
+                            <span asp-validation-for="accountDTO.FullName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="accountDTO.IdentityCardNumber" class="control-label">Số chứng minh nhân dân</label>
+                            <input id="IdentityCardNumber" asp-for="accountDTO.IdentityCardNumber" class="form-control" data-val-length="Số CMND phải 12 số" data-val-length-max="12" data-val-length-min="12" />
+                            <span asp-validation-for="accountDTO.IdentityCardNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="accountDTO.Phone" class="control-label">Số điện thoại</label>
+                            <input id="Phone" asp-for="accountDTO.Phone" class="form-control" data-val-length="Số điện thoại phải 10 số" data-val-length-max="10" data-val-length-min="10" />
+                            <span asp-validation-for="accountDTO.Phone" class=" text-danger"></span>
+                        </div>
+                         <div class="form-group">
+                            <label asp-for="accountDTO.UserName" class="control-label">Tên đăng nhập</label>
+                            <input id="UserName" asp-for="accountDTO.UserName" class="form-control" data-val="true" data-val-length="Tên đăng  nhập phải từ 8 đến 40 kí tự" data-val-length-max="40" data-val-length-min="8" />
+                            <span asp-validation-for="accountDTO.UserName" class=" text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="accountDTO.Password" class="control-label">Mật Khẩu</label>
+                            <input type="password" id="Password" asp-for="accountDTO.Password" class="form-control" data-val-length="Mật Khẩu phải từ 8 đến 40 kí tự" data-val-length-max="40" data-val-length-min="8" />
+                            <span asp-validation-for="accountDTO.Password" class=" text-danger"></span>
+                        </div>
+
+                       
+                         <div class="form-group">
+                            <label asp-for="accountDTO.ConfirmPassword" class="control-label">Xác Nhận Mật Khẩu</label>
+                            <input type="password" id="confirmPassword" asp-for="accountDTO.ConfirmPassword" class="form-control" data-val-length="Mật Khẩu phải từ 8 đến 40 kí tự" data-val-length-max="40" data-val-length-min="8" />
+                            <span asp-validation-for="accountDTO.ConfirmPassword" class=" text-danger message-close"></span>
+
+                        </div>
+                       
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close-button">Close</button>
+                        <button type="submit" class="btn btn-primary" id="save-button">Save</button>
+                    </div>
+                </div>
+            </form>
+            <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+      
+            </div>
+        </div>
+  
+    </div>
+
+ 
+@*}*@
+
+
+

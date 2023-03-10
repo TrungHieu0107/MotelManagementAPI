@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@model MotelManagementWebAppUI.Pages.WaterCost.WaterCostModel
+
+
+            <div class="modal fade" id="addWaterCost" tabindex="-1" aria-labelledby="addWaterCostLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cập nhật giá tiền nước</h5>
+                           @*   <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>*@
+                        </div>
+            @{
+                int currentYear = DateTime.Today.Year;
+                int yearMax = currentYear + 10;
+            }
+            @{
+                int currentMonth = DateTime.Today.Month;
+            }
+            <form id="create-object-form">
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="form-group">
+                            <label asp-for="waterRequestDTO.Price" class="control-label">Giá</label>
+                            <input id="price" asp-for="waterRequestDTO.Price" class="form-control" min=1 />
+                            <span asp-validation-for="waterRequestDTO.Price" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="waterRequestDTO.AppliedYear" class="control-label">Năm áp dụng</label>
+                            <input id="appliedYear" asp-for="waterRequestDTO.AppliedYear" class="form-control" min="@currentYear" max="@yearMax"/>  
+                            <span asp-validation-for="waterRequestDTO.AppliedYear" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="waterRequestDTO.AppliedMonth" class="control-label">Tháng áp dụng</label>
+                            <input id="appliedMonth" asp-for="waterRequestDTO.AppliedMonth" class="form-control" min="1" max="12" />
+                            <span asp-validation-for="waterRequestDTO.AppliedMonth" class=" text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                   
+                        <button type="submit" class="btn btn-primary" id="save-button">Save</button>
+                    </div>
+                </div>
+            </form>
+            <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+
+
