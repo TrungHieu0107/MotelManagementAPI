@@ -55,7 +55,19 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
             if (!string.IsNullOrEmpty(phone))
             {
                 phone = phone.TrimStart(zeros);
+                phone = phone.Trim();
             }
+            if (!string.IsNullOrEmpty(idCard))
+            {
+                idCard = idCard.Trim();
+            }
+            if (!string.IsNullOrEmpty(Fullname))
+            {
+                Fullname = Fullname.Trim();
+            }
+
+
+            
             return await Search(idCard, phone, Fullname, status, pageSize, currentPage);
 
 

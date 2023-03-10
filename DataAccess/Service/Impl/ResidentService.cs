@@ -159,20 +159,18 @@ namespace DataAccess.Service.Impl
         }
 
 
-        private List<Invoice> checkLateInvoice(string idCard)
-        {
-            var invoices = _invoiceRepo.checkLateInvoice(idCard);
-            return invoices;
-        }
+       
+           
 
         public bool ActiveResident(string idCard)
         {
             bool check = false;
 
-            // invoice không có trạng thái late, check xem có bị trễ invoice hay không
-            List<Invoice> invoices = checkLateInvoice(idCard);
+             //check xem có bị trễ invoice hay không
+            var checkLatePayment = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null, AccountStatus.LATE_PAYMENT).FirstOrDefault();
 
-            if (invoices.Count == 0)
+
+            if (checkLatePayment == null)
             {
                 var resident = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null, AccountStatus.INACTIVE).FirstOrDefault();
                 if (resident != null)
@@ -183,7 +181,11 @@ namespace DataAccess.Service.Impl
                 }
 
 
+            } else
+            {
+                throw new TaskCanceledException("Tài khoản có hóa đơn cần thanh toán");
             }
+            
             return check;
         }
 

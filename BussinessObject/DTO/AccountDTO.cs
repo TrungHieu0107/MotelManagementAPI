@@ -5,17 +5,21 @@ namespace BussinessObject.DTO
 {
     public class AccountDTO
     {
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Tên đăng  nhập phải từ 8 đến 40 kí tự")]
-        [StringLength(40, MinimumLength = 8, ErrorMessage = "Tên đăng  nhập phải từ 8 đến 40 kí tự")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Tên đăng nhập phải từ 8 đến 40 kí tự")]
+        [StringLength(40, MinimumLength = 8, ErrorMessage = "Tên đăng nhập phải từ 8 đến 40 kí tự")]
+        [RegularExpression(@"^\S*$", ErrorMessage = "Tên đăng nhập không được chứa khoảng trắng")]
         public string UserName { get; set; }
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Mật Khẩu phải từ 8 đến 40 kí tự")]
-        [StringLength(40, MinimumLength = 8, ErrorMessage = "Mật Khẩu phải từ 8 đến 40 kí tự")]
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Mật khẩu phải từ 8 đến 40 kí tự")]
+        [StringLength(40, MinimumLength = 8, ErrorMessage = "Mật khẩu phải từ 8 đến 40 kí tự")]
+        [RegularExpression(@"^\S*$", ErrorMessage = "Mật khẩu không được chứa khoảng trắng")]
         public string Password { get; set; }
+
 
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Số CMND phải 12 số")]
         [StringLength(12, MinimumLength = 12, ErrorMessage = "Số CMND phải 12 số")]
-        [RegularExpression(@"^([0-9]{12})$", ErrorMessage = "Sai định dạng sô CMND.")]
+        [RegularExpression(@"^([0-9]{12})$", ErrorMessage = "Sai định dạng số CMND.")]
         public string IdentityCardNumber { get; set; }
 
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MotelManagementAPI.Controllers
@@ -36,8 +37,9 @@ namespace MotelManagementAPI.Controllers
                 var token = _accountService.authenticate(loginDTO);
                 if (token == null)
                 {
-                    commonResponse.Message = "UserName or Password is incorect";
+                    commonResponse.Message = "Tài khoản hoặc mật khẩu không chính xác";
                     return Unauthorized(commonResponse);
+
 
                 }
                 else
@@ -45,7 +47,15 @@ namespace MotelManagementAPI.Controllers
                     return Ok(token);
 
                 }
-            } catch (Exception ex)
+            } 
+            catch(TaskCanceledException ex)
+            {
+
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+            }
+            
+            catch (Exception ex)
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);

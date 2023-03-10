@@ -62,6 +62,7 @@
                                             let IdentityCardNumber = $("#IdentityCardNumber").val();
                                             let Phone = $("#Phone").val();
                                             let FullName = $("#FullName").val();
+                                            let ConfirmPassword = $("#confirmPassword").val()
 
 
                                             console.log($("#messageCofirm"))
@@ -78,7 +79,8 @@
                                                         Password: Password,
                                                         IdentityCardNumber: IdentityCardNumber,
                                                         Phone: Phone,
-                                                        FullName: FullName
+                                                        FullName: FullName,
+                                                        ConfirmPassword: ConfirmPassword
                                                     }),
                                                 contentType: "application/json",
                                       type: "POST",
@@ -230,7 +232,20 @@
                             @string.Format(CultureInfo.InvariantCulture, "0{0}", item.Phone.ToString())
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.Status)
+                            @if (item.Status == "ACTIVE")
+                            {
+                                <span class="text-success">Đang hoạt động</span>
+                            }
+                            else if (item.Status == "INACTIVE")
+                            {
+                                <span class="text-danger">Đã khóa</span>
+                            }
+                            else if (item.Status == "LATE_PAYMENT")
+                            {
+
+
+                                <span class="text-warning">Trễ hóa đơn</span>
+                            }
                         </td>
                         <td>
                             <button class="editBtn btn btn-primary" data-toggle="modal" data-target="#editModal" data-identitycardnumber="@item.IdentityCardNumber"><i class="fa-solid fa-user-pen"></i></button>
@@ -264,8 +279,20 @@
                             $('#EditPhone').val(residentData?.phone);
                             $('#EditPassword').val(residentData?.password);
                             $('#EditId').val(residentData?.id)
-                            
-      
+                            $("#EditStatus").val(residentData?.status);
+                            var editStatus = parseInt($("#EditStatus").val()); // Chuyển đổi giá trị của phần tử HTML thành kiểu số
+                         
+                            if (editStatus === 1) {
+                               
+                                $("#activateBtn").show();
+                            } else if (editStatus == 0) {
+                             
+                                $("#deactivateBtn").show();
+                            } else {
+
+                            }
+
+                            console.log($("#EditStatus").val())
                             console.log(residentData)
 
                             $('#editModal').modal('show');
@@ -352,9 +379,90 @@
                 });
             });
         });
+
+
+        $("#deactivateBtn").click(function () {
+         
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+            if (confirm("Bạn có chắc chắn muốn khóa tài khoản này?")) {
+                let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+                $.ajax({
+                    url: "http://localhost:5001/api/Resident/deactive-resident?idCard=" + IdentityCardNumber,
+                    contentType: "application/json",
+                    type: "PUT",
+                    headers: {
+                        "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                    },
+                    success: function (result) {
+                        $("#myModal").fadeOut();
+                        // Reload the list of rooms on the main page
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        var errorResponse = JSON.parse(xhr.responseText);
+                    var validationErrors = errorResponse.errors;
+
+                    // Create error message string
+                    var errorMessage = "One or more validation errors occurred:<br>";
+
+                    for (var key in validationErrors) {
+                        if (validationErrors.hasOwnProperty(key)) {
+                            errorMessage += validationErrors[key] + "<br>";
+                        }
+                    }
+                    var dataError = errorResponse.message;
+                    errorMessage += dataError + "<br>"
+                    // Show error message
+                    $("#error-message-ed").html(errorMessage);
+                    $("#error-message-ed").show();
+                    },
+                });
+            }
+
+
+        });
+
+        $("#activateBtn").click(function () {
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+            if (confirm("Bạn có chắc chắn muốn mở khóa tài khoản này?")) {
+                let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+                $.ajax({
+                    url: "http://localhost:5001/api/Resident/active-resident?idCard=" + IdentityCardNumber,
+                    contentType: "application/json",
+                    type: "PUT",
+                    headers: {
+                        "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                    },
+                    success: function (result) {
+                        $("#myModal").fadeOut();
+                        // Reload the list of rooms on the main page
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        var errorResponse = JSON.parse(xhr.responseText);
+                        var validationErrors = errorResponse.errors;
+
+                        // Create error message string
+                        var errorMessage = "One or more validation errors occurred:<br>";
+
+                        for (var key in validationErrors) {
+                            if (validationErrors.hasOwnProperty(key)) {
+                                errorMessage += validationErrors[key] + "<br>";
+                            }
+                        }
+                        var dataError = errorResponse.message;
+                        errorMessage += dataError + "<br>"
+                        // Show error message
+                        $("#error-message-ed").html(errorMessage);
+                        $("#error-message-ed").show();
+                    },
+                });
+            }
+
+
+        });
     </script>
-   
-    
+  
 </table>
 
 <partial name="_ValidationScriptsPartial" />
