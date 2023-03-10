@@ -84,7 +84,7 @@
     </table>
     @if(Model.Status != null)
         {
-            <form method="post" class="row justify-content-center">
+        <form method="post" class="row justify-content-center">
             <input type="hidden" name="residentId" asp-for="@Model.ResidentId" />
             <input type="hidden" name="status" asp-for="@Model.Status" />
             <input name="CurrentPage" value="@Model.ResultPagination.CurrentPage" hidden/>

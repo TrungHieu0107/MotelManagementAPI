@@ -21,8 +21,9 @@ namespace DataAccess.Service
         public Resident FindByIdentityCardNumberToBookRoom(string identityCardNumber);
         public Resident UpdateStatusWhenBookingByIdentityCardNumber(string identityCardNumber);
         public IEnumerable<ResidentDTO> getAllResident(int pageSize, int currentPage);
-        IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage);
+        IEnumerable<ResidentDTO> FillterResident(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage);
         public CommonResponse FindByIdForDetail(long residentId, int pageSize, int currentPage, string roomStatus);
         public bool BookRoom(BookingRoomRequest bookingRoomRequest, long managerId);
+        public CommonResponse FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage);
     }
 }

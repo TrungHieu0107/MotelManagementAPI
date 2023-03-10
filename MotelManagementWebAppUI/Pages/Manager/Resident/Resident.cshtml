@@ -1,6 +1,8 @@
 ﻿@page "/resident/list"
 @model MotelManagementWebAppUI.Pages.Manager.Resident.ResidentModel
 @{
+    Layout = "_Layout";
+    ViewData["Title"] = "Danh sách người thuê người thuê";
 }
 @using System.Globalization;
 
@@ -141,25 +143,25 @@
                     <div class="form-group row">
                         <label for="name" class="col-md-2 col-form-label">Họ và tên</label>
                         <div class="col-md-4">
-                                <input type="text" name="fullName" placeholder="Họ và tên">
+                                <input type="text" name="fullName" asp-for="@Model.FullName" placeholder="Họ và tên">
                         </div>
                         <label for="id_number" class="col-md-2 col-form-label">Số chứng minh nhân dân</label>
                         <div class="col-md-4">
-                                <input type="text" name="idCard" placeholder="Số chứng minh nhân dân"/>
+                                <input type="text" name="idCard" asp-for="@Model.IdCard" placeholder="Số chứng minh nhân dân"/>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="phone" class="col-md-2 col-form-label">Số điện thoại</label>
                         <div class="col-md-4">
-                                <input type="text" name="phone" placeholder="Số điện thoại">
+                                <input type="text" name="phone" asp-for="@Model.Phone" placeholder="Số điện thoại">
                         </div>
                         <label for="status" class="col-md-2 col-form-label">Trạng thái</label>
                         <div class="col-md-4">
-                                <select name="status">
+                                <select name="status" asp-for="@Model.Status">
                                 <option value=-1>Tất cả</option>
                                 <option value=0>Hoạt động</option>
-                                    <option value=1>Ngưng hoạt động</option>
-                                    <option value=2>Trễ hóa đơn</option>
+                                <option value=1>Ngưng hoạt động</option>
+                                <option value=2>Trễ hóa đơn</option>
                             </select>
                         </div>
                     </div>
@@ -228,7 +230,7 @@
                             @Html.DisplayFor(m => item.IdentityCardNumber)
                         </td>
                         <td>
-                            @string.Format(CultureInfo.InvariantCulture, "0{0}", item.Phone.ToString())
+                            @Html.DisplayFor(m => item.Phone)
                         </td>
                         <td>
                             @if (item.Status == "ACTIVE")
@@ -463,7 +465,33 @@
     </script>
   
 </table>
-
+<form method="post" class="row justify-content-center">
+            <input type="hidden" name="fullName" asp-for="@Model.FullName" />
+            <input type="hidden" name="status" asp-for="@Model.Status" />
+            <input type="hidden" name="phone" asp-for="@Model.Phone" />
+            <input type="hidden" name="idCard" asp-for="@Model.IdCard" />
+            <input name="CurrentPage" value="@Model.ResultPagination.CurrentPage" hidden/>
+            @if (Model.ResultPagination.CurrentPage > 1)
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous">Trước</button>
+            }
+            else
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled>Trước</button>
+            }
+            <span class="col-1 text-center" style="vertical-align: middle">
+                @Model.ResultPagination.CurrentPage
+            </span>
+         
+            @if (Model.ResultPagination.Total > Model.ResultPagination.CurrentPage * Model.ResultPagination.PageSize)
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next">Tiếp</button>
+            }
+            else
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled>Tiếp</button>
+            }
+</form>
 <partial name="_ValidationScriptsPartial" />
 
 

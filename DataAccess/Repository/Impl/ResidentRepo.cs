@@ -1,5 +1,6 @@
-using BussinessObject.Data;
+﻿using BussinessObject.Data;
 using BussinessObject.DTO;
+using BussinessObject.DTO.Common;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using Microsoft.EntityFrameworkCore;
@@ -192,6 +193,54 @@ namespace DataAccess.Repository
                        .Take(pageSize);
 
 
+        }
+
+        public CommonResponse FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        {
+            var query = _context.Residents.AsQueryable();
+            if (!String.IsNullOrEmpty(idCardNumber))
+            {
+                query = query.Where(p => p.IdentityCardNumber.Contains(idCardNumber));
+
+            }
+            if (!String.IsNullOrEmpty(phone))
+            {
+                query = query.Where(p => p.Phone == phone);
+            }
+            if (!String.IsNullOrEmpty(Fullname))
+            {
+                query = query.Where(p => p.FullName.Contains(Fullname));
+            }
+
+            if (status >= 0 && status <= Enum.GetNames(typeof(AccountStatus)).Length)
+            {
+                query = query.Where(p => p.Status == (AccountStatus)Enum.ToObject(typeof(AccountStatus), status));
+            }
+            var x = query.ToList();
+            List<ResidentDTO> residentDTOs = query.ToList().Select(
+                r => new ResidentDTO()
+                {
+
+                    IdentityCardNumber = r.IdentityCardNumber,
+                    FullName = r.FullName,
+                    Id = r.Id,
+                    Phone = r.Phone,
+                    Status = Enum.GetName(typeof(AccountStatus), r.Status).ToString(),
+                    Password = "",
+                    UserName = ""
+                }
+             ).ToList();
+            Pagination pagination = new Pagination();
+            pagination.PageSize = pageSize;
+            pagination.CurrentPage = currentPage;
+            pagination.Total = residentDTOs.Count;
+            residentDTOs = residentDTOs.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+
+            CommonResponse commonResponse = new CommonResponse();
+            commonResponse.Data = residentDTOs;
+            commonResponse.Pagination = pagination;
+            commonResponse.Message = "Lọc người thuê thành công";
+            return commonResponse;
         }
 
         public Resident findByPhone(String phone)

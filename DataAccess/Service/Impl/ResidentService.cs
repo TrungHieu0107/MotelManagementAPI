@@ -287,6 +287,9 @@ namespace DataAccess.Service.Impl
             return _residentRepo.GetAllResident(pageSize, currentPage);
         }
 
-       
+        public CommonResponse FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        {
+            return _residentRepo.FillterResidentWithPagination(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+        }
     }
 }

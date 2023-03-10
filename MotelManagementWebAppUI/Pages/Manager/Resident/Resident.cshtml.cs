@@ -23,24 +23,23 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
     public class ResidentModel : PageModel
     {
         private readonly HttpClient _httpClient;
-
-
-
         [BindProperty(SupportsGet = true)]
         public List<ResidentDTO> residentDTOs { get; set; }
-
-
         public ResidentDTO residentDTO { get; set; }
-
-
-        
         public AccountDTO accountDTO { get; set; }
-
-
-
-      
         public ResidentUpdateDTO residentUpdateDTO { get; set; }
-
+        [BindProperty(SupportsGet = true)]
+        public string Phone { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string IdCard { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string FullName { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int Status { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public Pagination ResultPagination { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int CurrentPage { get; set; }
 
         public ResidentModel(HttpClient httpClient)
         {
@@ -49,7 +48,7 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
 
 
         [HttpGet]
-        public async Task<IActionResult> OnGetAsync(string idCard = "", string phone = "", string Fullname = "", int status = -1, int pageSize = 10, int currentPage = 1)
+        public async Task<IActionResult> OnGetAsync(string idCard = "", string phone = "", string fullName = "", int status = -1, int pageSize = 10, int currentPage = 1)
         {
             char[] zeros = { '0' };
             if (!string.IsNullOrEmpty(phone))
@@ -61,14 +60,14 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
             {
                 idCard = idCard.Trim();
             }
-            if (!string.IsNullOrEmpty(Fullname))
+            if (!string.IsNullOrEmpty(FullName))
             {
-                Fullname = Fullname.Trim();
+                FullName = FullName.Trim();
             }
 
 
             
-            return await Search(idCard, phone, Fullname, status, pageSize, currentPage);
+            return await Search(idCard, phone, fullName, status, pageSize, currentPage);
 
 
         }
@@ -77,21 +76,20 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
 
 
         [HttpGet]
-        public async Task<IActionResult> Search(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        public async Task<IActionResult> Search(string idCard, string phone, string fullName, int status, int pageSize, int currentPage)
         {
-
-
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
-          ("Bearer", HttpContext.Request.Cookies["token"]);
-            var response = await _httpClient.GetAsync($"http://localhost:5001/api/Resident/filter-resident?idCardNumber={idCardNumber}&phone={phone}&Fullname={Fullname}&status={status}&pageSize={pageSize}&currentPage={currentPage}");
-
-
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["token"]);
+            var response = await _httpClient.GetAsync($"http://localhost:5001/api/Resident/filter-resident-with-pagination?idCardNumber={idCard}&phone={phone}&Fullname={fullName}&status={status}&pageSize={pageSize}&currentPage={currentPage}");
+            IdCard = idCard;
+            Phone = phone;
+            FullName = fullName;
+            Status = status;
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<CommonResponse>(content);
                 residentDTOs = JsonConvert.DeserializeObject<List<ResidentDTO>>(JsonConvert.SerializeObject(result.Data));
+                ResultPagination = JsonConvert.DeserializeObject<Pagination>(JsonConvert.SerializeObject(result.Pagination));
 
                 var model = new ResidentModel(_httpClient)
                 {
@@ -103,13 +101,29 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
             {
                 // return status code
                 return StatusCode((int)response.StatusCode);
-
-
             }
+        }
 
+        public async Task OnPostPreviousAsync()
+        {
+            string url = $"http://localhost:5001/api/Resident/filter-resident-with-pagination?idCardNumber={IdCard}&phone={Phone}&Fullname={FullName}&status={Status}&pageSize={10}&currentPage={CurrentPage - 1}";
+            await GetResident(url);
+        }
 
+        public async Task OnPostNextAsync()
+        {
+            string url = $"http://localhost:5001/api/Resident/filter-resident-with-pagination?idCardNumber={IdCard}&phone={Phone}&Fullname={FullName}&status={Status}&pageSize={10}&currentPage={CurrentPage + 1}";
+            await GetResident(url);
+        }
 
-
+        private async Task GetResident(string url)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["token"]);
+            var response = await _httpClient.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<CommonResponse>(content);
+            residentDTOs = JsonConvert.DeserializeObject<List<ResidentDTO>>(JsonConvert.SerializeObject(result.Data));
+            ResultPagination = JsonConvert.DeserializeObject<Pagination>(JsonConvert.SerializeObject(result.Pagination));
         }
 
         public async Task<IActionResult> OnGetEditResident(string IdentityCardNumber)

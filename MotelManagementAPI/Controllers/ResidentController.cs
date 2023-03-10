@@ -283,10 +283,24 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
-
-
             }
+        }
 
+        [HttpGet]
+        [Route("filter-resident-with-pagination")]
+        public IActionResult FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                commonResponse = _residentService.FillterResidentWithPagination(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+                return Ok(commonResponse);
+            }
+            catch (Exception ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
+            }
         }
 
         [Authorize(Roles = "Resident")]
