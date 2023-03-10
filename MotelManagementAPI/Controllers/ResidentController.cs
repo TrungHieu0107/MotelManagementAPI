@@ -249,7 +249,7 @@ namespace MotelManagementAPI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [Route("filter-resident")]
         public IActionResult FillterResident(string idCardNumber,string phone, string Fullname,int status,int pageSize, int currentPage)
         {
