@@ -19,7 +19,7 @@ namespace DataAccess.Repository
         public List<History> FindByResidentId(long residentId);
         public bool CheckEmptyRoom(long roomId);
         HistoryDTO FindByRoomId(long roomId);
-        HistoryDTO UpdateCheckoutDateForResident(long residentId, long roomId, DateTime checkoutDate);
+        HistoryDTO UpdateCheckoutDateForResident(long residentId, long managerId, long roomId, DateTime checkoutDate);
         HistoryDTO GetLatestHistoryOfRoom(long id);
     }
 }

@@ -1,4 +1,4 @@
-using BussinessObject.Data;
+﻿using BussinessObject.Data;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using DataAccess.Repository;
@@ -143,7 +143,7 @@ namespace DataAccess.Service.Impl
                     _roomRepo.Insert(room);
                     history.RoomId = room.Id;
                     _historyRepo.Update(history);
-                    _invoiceRepo.UpdateRoomIdfOfInvoice(room.Id, oldValue.Id);
+                    _invoiceRepo.UpdateRoomIdfOfInvoice(room.Id, oldValue.Id);/////////////////////////////////////////////////////////////////////////////////////
                 }
 
                 return room;
@@ -215,6 +215,7 @@ namespace DataAccess.Service.Impl
             Room latestRecord = rooms.ElementAt(1);
             RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
 
+            roomDTOForDetail.Id = roomId;
             roomDTOForDetail.Code = latestRecord.Code;
 
 
@@ -238,9 +239,32 @@ namespace DataAccess.Service.Impl
             {
                 Resident resident = history.Resident;
                 ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+                residentDTOForDetail.Id = resident.Id;
                 residentDTOForDetail.FullName = resident.FullName;
                 residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
-                residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
+                switch (latestRecord.Status)
+                {
+                    case RoomStatus.ACTIVE:
+                        {
+                            roomDTOForDetail.Status = "Đã được thuê";
+                            break;
+                        }
+                    case RoomStatus.EMPTY:
+                        {
+                            roomDTOForDetail.Status = "Trống";
+                            break;
+                        }
+                    case RoomStatus.BOOKED:
+                        {
+                            roomDTOForDetail.Status = "Đã được đặt";
+                            break;
+                        }
+                    default:
+                        {
+                            roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                            break;
+                        }
+                }
                 residentDTOForDetail.Phone = resident.Phone;
 
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
@@ -278,7 +302,28 @@ namespace DataAccess.Service.Impl
                     roomDTOForDetail.NearestNextFeeAppliedDate = latestRecord.FeeAppliedDate.ToString("dd/MM/yyyy");
                     roomDTOForDetail.NearestNextRentFee = latestRecord.RentFee.ToString();
                 }
-                roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                switch (latestRecord.Status){
+                    case RoomStatus.ACTIVE:
+                        {
+                            roomDTOForDetail.Status = "Đã được thuê";
+                            break;
+                        }
+                    case RoomStatus.EMPTY:
+                        {
+                            roomDTOForDetail.Status = "Trống";
+                            break;
+                        }
+                    case RoomStatus.BOOKED:
+                        {
+                            roomDTOForDetail.Status = "Đã được đặt";
+                            break;
+                        }
+                    default:
+                        {
+                            roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                            break;
+                        }
+                }
                 roomDTOForDetail.MotelChainName = latestRecord.MotelChain.Name;
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
                 roomDTOForDetail.EndDate = history.EndDate == null ? "-" : history.EndDate.Value.ToString("dd/MM/yyyy");
