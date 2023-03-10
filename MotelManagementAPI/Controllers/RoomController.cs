@@ -200,5 +200,33 @@ namespace MotelManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [HttpGet]
+        [Route("get-room-by-id")]
+        [Authorize (Roles = Role.MANAGER)]
+        public IActionResult GetRoomByCode(long id)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long managerId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
+                RoomDTO roomDTO = _roomService.GetRoomForUpdating(id, managerId);
+                if(roomDTO == null)
+                {
+                    response.Message = "Not found this room with id: " + id;
+                    return StatusCode(StatusCodes.Status204NoContent, response);   
+                }
+                response.Data = roomDTO;
+                response.Message = "Get room successfully";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }

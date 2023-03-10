@@ -30,6 +30,7 @@ namespace BussinessObject.DTO
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "The full name can not be empty")]
         [StringLength(60, MinimumLength = 8, ErrorMessage = "full name field must have minimum 8 and maximum 60 character!")]
+        [Display(Name = "Tên khách trọ")]
         public string FullName { get; set; }
 
         public string Status;

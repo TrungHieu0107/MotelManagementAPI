@@ -8,10 +8,19 @@ namespace BussinessObject.DTO
     public class RoomDTO
     {
         public long Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Nhập mã phòng")]
+        [Display(Name ="Mã phòng")]
         public string Code { get; set; }
+
+        [Required(ErrorMessage = "Nhập giá phòng")]
+        [Display(Name ="Giá thuê phòng")]
         public long RentFee { get; set; }
+
+        [Required(ErrorMessage = "Nhập ngày áp dụng giá phòng")]
+        [Display(Name ="Ngày bắt đầu")]
+        [DataType(DataType.Date)]
         public DateTime FeeAppliedDate { get; set; }
+        [Display(Name ="Trạng thái")]
         public RoomStatus Status { get; set; }
         public long MotelId { get; set; }
         public MotelChainDTO MotelChain { get; set; }

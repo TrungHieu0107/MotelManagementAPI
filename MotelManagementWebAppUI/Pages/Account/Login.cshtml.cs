@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObject.DTO;
 using System.Net.Http;
@@ -29,6 +29,16 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         [BindProperty]
         public LoginDTO LoginDTO { get; set; }
+
+        public IActionResult OnGet()
+        {
+            if(HttpContext.Request.Cookies["token"] != null)
+            {
+                return RedirectToPage("../Room/RoomList");
+            }
+
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostLoginAsync()
         {
@@ -70,9 +80,9 @@ namespace MotelManagementWebAppUI.Pages.Login
                     // Người dùng chưa đăng nhập
                 }
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
-               return RedirectToPage("../Manager/Resident/Resident");
-                //return RedirectToPage("../Admin/WaterCost/WaterCost");
-              // return RedirectToPage("../Admin/ElectricityCost/ElectricityCost");
+                //return RedirectToPage("../ElectricityCost/ElectricityCostList");
+                return RedirectToPage("../Room/RoomList"); 
+                
             }
             else if (responser.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {

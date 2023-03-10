@@ -155,7 +155,7 @@ namespace MotelManagementAPI.Controllers
         [Authorize(Roles = Role.RESIDENT_MANGER)]
         [HttpGet]
         [Route("get-invoices")]
-        public IActionResult GetInvoice(string? roomCode, int? status,long? userId, int? pageSize, int? currentPage)
+        public IActionResult GetInvoice(string? roomCode, int? status, DateTime? paidDate, long? userId, int? pageSize, int? currentPage)
         {
             CommonResponse commonResponse = new CommonResponse();
             Pagination pagination = new Pagination();
@@ -171,10 +171,10 @@ namespace MotelManagementAPI.Controllers
                 List<InvoiceDTO> result = null;
                 if (roleClaim == Role.MANAGER)
                 {
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, userId ?? -1, id, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, paidDate, userId ?? -1, id, ref pagination);
                 } else if(roleClaim == Role.RESIDENT)
                 {
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, id, -1, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, paidDate, id, -1, ref pagination);
                 }
 
                 commonResponse.Data = result;
