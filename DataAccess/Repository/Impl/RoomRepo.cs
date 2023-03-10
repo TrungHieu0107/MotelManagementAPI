@@ -1,4 +1,4 @@
-﻿using BussinessObject.Data;
+using BussinessObject.Data;
 using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
@@ -25,8 +25,8 @@ namespace DataAccess.Repository
             {
                 return false;
             }
-
-            _context.Entry(room).State = EntityState.Deleted;
+            room.Status = RoomStatus.DELETED;
+            _context.Entry(room).State = EntityState.Modified;
             _context.SaveChanges();
 
             return true;
@@ -295,13 +295,21 @@ namespace DataAccess.Repository
             }).FirstOrDefault();
         }
 
-        public void UpdateCheckOutDateForResident(long roomId)
+        public RoomDTO GetRoomByCodeForUpdating(long id, long managerId)
         {
-            Room room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
-            room.Status = RoomStatus.EMPTY;
-            var tracker = _context.Attach(room);
-            tracker.State = EntityState.Modified;
-            if(_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
+            return _context.Rooms
+                .Include(room => room.MotelChain)
+                .Where(room => 
+                room.Id.Equals(id) &&
+                room.MotelChain.ManagerId.Equals(managerId)
+                ).Select(room => new RoomDTO()
+                {
+                    Id=room.Id,
+                    FeeAppliedDate = room.FeeAppliedDate,
+                    Code = room.Code,
+                    RentFee = room.RentFee,
+                    Status = room.Status,
+                }).FirstOrDefault();;
         }
     }
 }

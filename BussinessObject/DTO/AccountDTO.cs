@@ -1,4 +1,4 @@
-﻿using BussinessObject.Status;
+using BussinessObject.Status;
 using System.ComponentModel.DataAnnotations;
 
 namespace BussinessObject.DTO
