@@ -28,9 +28,7 @@ namespace MotelManagementWebAppUI.Pages.Room
         public RoomListModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
-
         }
-
        
         public async Task OnGetAsync()
         {
@@ -56,7 +54,7 @@ namespace MotelManagementWebAppUI.Pages.Room
                 ("Bearer", HttpContext.Request.Cookies["token"]);
             string url = "http://localhost:5001/api/Room/get-rooms?" +
                 "roomCode=" + filterRoomOption?.roomCode +
-                "&minFee=" + filterRoomOption.minFee +
+                "&minFee=" + filterRoomOption?.minFee +
                 "&maxFee=" + filterRoomOption?.maxFee +
                 "&status=" + filterRoomOption?.status +
                 "&appliedDateAfter=" + filterRoomOption?.appliedDateAfter +
@@ -65,7 +63,7 @@ namespace MotelManagementWebAppUI.Pages.Room
             var response = await _httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<CommonResponse>(content);
-            ListRoomDTO = JsonConvert.DeserializeObject<List<RoomDTO>>(JsonConvert.SerializeObject(result.Data));
+            ListRoomDTO = JsonConvert.DeserializeObject<List<RoomDTO>> (JsonConvert.SerializeObject(result.Data));
         }
     }
 }

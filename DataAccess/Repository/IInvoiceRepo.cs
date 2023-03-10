@@ -23,5 +23,7 @@ namespace DataAccess.Repository
         public bool AutoCloseInvoices(DateTime dateTime);
         IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, long managerId, ref Pagination pagination);
         InvoiceDTO UpdateRoomIdfOfInvoice(long newRoomId, long oldRoomId);
+        public List<InvoiceDTO> GetClosedSampleInvoicesThatNotPayYetByResidentIdAndRoomId(long residentId, long roomId, DateTime checkoutDate);
+        public List<InvoiceDTO> UpdateCheckOutDateForResident(long residentId, long roomId, DateTime checkoutDate);
     }
 }

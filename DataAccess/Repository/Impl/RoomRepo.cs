@@ -1,4 +1,4 @@
-using BussinessObject.Data;
+﻿using BussinessObject.Data;
 using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
@@ -100,7 +100,7 @@ namespace DataAccess.Repository
         )
         {
 
-            var result = _context.Rooms
+            List<Room> result = _context.Rooms
                 .Include(room => room.MotelChain)
                 .Where(room =>
                               (roomCode != null ? room.Code.Contains(roomCode) : true)
@@ -111,28 +111,33 @@ namespace DataAccess.Repository
                           &&
                               (status >= 0 ? room.Status == status : true)
                           &&
+                              (room.Status != RoomStatus.INACTIVE && room.Status != RoomStatus.DELETED)
+                          &&
                               (room.FeeAppliedDate >= appliedDateAfter)
                           &&
                              (room.MotelChain.ManagerId == userId)
                         )
-                        .Select(x => new RoomDTO()
-                        {
-                            Id = x.Id,
-                            Code = x.Code,
-                            Status = x.Status,
-                            FeeAppliedDate = x.FeeAppliedDate,
-                            RentFee = x.RentFee,
-                            MotelChain = new MotelChainDTO()
-                            {
-                                Id = x.MotelChain.Id,
-                                Name = x.MotelChain.Name,
-                                Address = x.MotelChain.Address
-                            }
-                        })
                         .Skip((page - 1) * pageSize)
-                        .Take(pageSize);
-
-            return result;
+                        .Take(pageSize).ToList();
+            List<RoomDTO> resultAsDTO = new List<RoomDTO>();
+            foreach(Room room in result)
+            {
+                Room roomWithCorrectRentFeeInCurrent = _context.Rooms.Include(r => r.MotelChain).Where(
+                        r => r.Code == room.Code && r.FeeAppliedDate <= DateTime.Now &&
+                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED || r.Status == RoomStatus.EMPTY))
+                    .OrderBy(r => r.FeeAppliedDate).LastOrDefault();
+                roomWithCorrectRentFeeInCurrent = roomWithCorrectRentFeeInCurrent == null ? room : roomWithCorrectRentFeeInCurrent;
+                RoomDTO roomDTO = new RoomDTO()
+                {
+                    Id = room.Id,
+                    Code = room.Code,
+                    Status = room.Status,
+                    RentFee = roomWithCorrectRentFeeInCurrent.RentFee,
+                    FeeAppliedDate = roomWithCorrectRentFeeInCurrent.FeeAppliedDate,
+                };
+                resultAsDTO.Add(roomDTO);
+            }
+            return resultAsDTO;
         }
 
         public RoomDTO GetRoomByCode(string roomCode)
@@ -178,6 +183,8 @@ namespace DataAccess.Repository
                               (maxFee > 0 ? room.RentFee <= maxFee : true)
                           &&
                               (status >= 0 ? room.Status == status : true)
+                          &&
+                              (room.Status != RoomStatus.INACTIVE && room.Status != RoomStatus.DELETED)
                           &&
                               (room.FeeAppliedDate >= appliedDateAfter)
                           &&
@@ -230,13 +237,13 @@ namespace DataAccess.Repository
         {
             Room latestRecord = _context.Rooms.Include(r => r.MotelChain).
                 FirstOrDefault(r => r.Id == roomId && r.MotelChain.ManagerId == managerId);
-            if (latestRecord == null) throw new Exception("Room with ID: " + roomId + " doesn't exist or isn't managed by the manager.");
+            if (latestRecord == null) throw new Exception("Phòng với ID: " + roomId + " không tồn tại hoặc không thuộc kiểm soát của quản lý.");
             Room roomWithCorrectRentFeeInCurrent = _context.Rooms.Include(r => r.MotelChain).Where(
                         r => r.Code == latestRecord.Code && r.FeeAppliedDate <= DateTime.Now &&
-                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED))
+                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED || r.Status == RoomStatus.EMPTY))
                     .OrderBy(r => r.FeeAppliedDate).LastOrDefault();
             List<Room> roomList = new List<Room>();
-            roomList.Add(roomWithCorrectRentFeeInCurrent);
+            roomList.Add(roomWithCorrectRentFeeInCurrent == null ? latestRecord : roomWithCorrectRentFeeInCurrent);
             roomList.Add(latestRecord);
             return roomList;
         }
@@ -286,6 +293,15 @@ namespace DataAccess.Repository
                 Status = room.Status,
                 RentFee = room.RentFee,
             }).FirstOrDefault();
+        }
+
+        public void UpdateCheckOutDateForResident(long roomId)
+        {
+            Room room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+            room.Status = RoomStatus.EMPTY;
+            var tracker = _context.Attach(room);
+            tracker.State = EntityState.Modified;
+            if(_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
         }
     }
 }
