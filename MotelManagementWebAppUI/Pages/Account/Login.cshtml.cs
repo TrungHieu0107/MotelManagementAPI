@@ -34,11 +34,18 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         public IActionResult OnGet()
         {
-
-            if (HttpContext.Request.Cookies["token"] != null)
+            try
             {
-                return RedirectToPage("../Room/RoomList");
+                if (HttpContext.Request.Cookies["token"] != null)
+                {
+                    return Redirect("/room/list");
+                }
             }
+            catch (Exception ex)
+            {
+                return Page();
+            }
+            
             return Page();
         }
 
@@ -66,22 +73,28 @@ namespace MotelManagementWebAppUI.Pages.Login
                  CookieAuthenticationDefaults.AuthenticationScheme,
                  userPrincipal,
                  authenticationProperties);
+
                 if (User.Identity.IsAuthenticated)
                 {
+                    HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                     if (User.IsInRole("Resident"))
                     {
-                        // Người dùng có vai trò Resident
+                        //return RedirectToPage("../Room/RoomList");
                     }
-                    else
+                    else if (User.IsInRole("Manager"))
                     {
-                        // Người dùng không có vai trò Resident
+                        return Redirect("/room/list");
+                    }
+                    else if (User.IsInRole("Admin"))
+                    {
+
                     }
                 }
                 else
                 {
                     // Người dùng chưa đăng nhập
                 }
-                HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
+                
                 //return RedirectToPage("../Admin/ElectricityCost/ElectricityCost");
                 return RedirectToPage("../Room/RoomList");
                 //return RedirectToPage("../Manager/Resident/Resident");

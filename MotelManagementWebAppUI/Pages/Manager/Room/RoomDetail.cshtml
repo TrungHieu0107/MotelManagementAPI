@@ -52,7 +52,7 @@
                 <div><b>Trạng thái: </b>@Model.BookedRoom.Resident.Status</div>
                 <div><b>Ngày bắt đầu thuê: </b>@Model.BookedRoom.StartDate</div>
                 <div><b>Ngày ngừng thuê: </b>@Model.BookedRoom.EndDate</div>
-                <a asp-page="../Resident/ResidentDetail" class="btn btn-primary btn-user btn-block" style="width:fit-content; margin-top:25px;" asp-route-id="@Model.BookedRoom.Resident.Id">Xem thông tin người thuê</a> <br />
+                <a href="/resident/detail/@Model.BookedRoom.Resident.Id" class="btn btn-primary btn-user btn-block" style="width:fit-content; margin-top:25px;">Xem thông tin người thuê</a> <br />
                 <a asp-page="./CheckOutRoom" class="btn btn-danger btn-user btn-block" style="width:fit-content; margin-top:10px;" asp-route-id="@Model.BookedRoom.Resident.Id">Kết thúc thuê phòng</a>
             }
             @if (IsEmpty)
