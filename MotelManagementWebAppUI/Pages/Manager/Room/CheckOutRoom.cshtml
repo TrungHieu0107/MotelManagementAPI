@@ -5,7 +5,7 @@
     Layout = "_Layout";
     ViewData["Title"] = "Kết thúc thuê phòng";
 }
-<div>
+<div style="width:70%; margin-left:15%; margin-top:50px;">
     @if(Model.InvoiceDTOs.Count == 1)
     {
         <div>
@@ -62,7 +62,7 @@
             <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.PaidDate): </b>@Model.OldInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
 
             <b>Tiền điện</b>
-            <table class="table table-bordered" style="width:70%; margin-left:15%; margin-top:10px;">
+            <table class="table table-bordered">
                 <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
                     <tr>
                         <th>
@@ -102,11 +102,6 @@
                     </tr>
                 </tbody>
             </table>
-
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityConsumptionStart): </b>@Model.OldInvoice.ElectricityConsumptionStart kWh</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityConsumptionEnd): </b>@Model.OldInvoice.ElectricityConsumptionEnd kWh</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityCost.Price): </b>@Model.OldInvoice.ElectricityCost.Price VNĐ/kWh</div>
-            <div><b>Tổng tiền điện: </b>@Model.OldTotalElectricityCost VNĐ</div>
 
             <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.WaterConsumptionStart): </b>@Model.OldInvoice.WaterConsumptionStart m3</div>
             <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.WaterConsumptionEnd): </b>@Model.OldInvoice.WaterConsumptionEnd m3</div>

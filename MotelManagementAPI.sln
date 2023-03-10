@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotelManagementAPI", "MotelManagementAPI\MotelManagementAPI.csproj", "{D0725F69-02BD-40D7-8C44-D0E02319FC6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotelManagerWebApp", "MotelManagerWebApp\MotelManagerWebApp.csproj", "{959170C9-8E00-4BBF-98E4-704DBCF14983}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotelManagementWebAppUI", "MotelManagementWebAppUI\MotelManagementWebAppUI.csproj", "{13ADB26C-F239-481C-9156-73D17615A43A}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{D0725F69-02BD-40D7-8C44-D0E02319FC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0725F69-02BD-40D7-8C44-D0E02319FC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0725F69-02BD-40D7-8C44-D0E02319FC6B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{959170C9-8E00-4BBF-98E4-704DBCF14983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{959170C9-8E00-4BBF-98E4-704DBCF14983}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{959170C9-8E00-4BBF-98E4-704DBCF14983}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{959170C9-8E00-4BBF-98E4-704DBCF14983}.Release|Any CPU.Build.0 = Release|Any CPU
 		{13ADB26C-F239-481C-9156-73D17615A43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{13ADB26C-F239-481C-9156-73D17615A43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13ADB26C-F239-481C-9156-73D17615A43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
