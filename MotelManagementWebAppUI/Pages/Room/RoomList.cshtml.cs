@@ -1,6 +1,5 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
-using BussinessObject.Status;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,10 +8,8 @@ using MotelManagementWebAppUI.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Room
 {
@@ -96,7 +93,6 @@ namespace MotelManagementWebAppUI.Pages.Room
 
         public void OnPostNext()
         {
-
             string url = "http://localhost:5001/api/Room/get-rooms?" +
               "roomCode=" + filterRoomOption?.roomCode +
               "&minFee=" + filterRoomOption.minFee +

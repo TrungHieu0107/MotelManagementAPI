@@ -17,7 +17,7 @@ namespace BussinessObject.DTO
         public long RentFee { get; set; }
 
         [Required(ErrorMessage = "Nhập ngày áp dụng giá phòng")]
-        [Display(Name ="Ngày bắt đầu")]
+        [Display(Name ="Ngày áp dụng")]
         [DataType(DataType.Date)]
         public DateTime FeeAppliedDate { get; set; }
         [Display(Name ="Trạng thái")]
@@ -27,5 +27,13 @@ namespace BussinessObject.DTO
         public List<HistoryDTO> Histories { get; set; }
         public List<InvoiceDTO> Invoices { get; set; }
         public HistoryDTO LatestHistory { get; set; }
+
+        [Display(Name = "Giá thuê mới")]
+        [Range(1, 1000000000)]
+        public long? NearestNextRentFee { get; set; }
+
+        [Display(Name = "Ngày áp dụng giá mới")]
+        [DataType(DataType.Date)]
+        public DateTime? NearestNextFeeAppliedDate { get; set; }
     }
 }

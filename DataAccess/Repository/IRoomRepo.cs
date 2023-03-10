@@ -47,7 +47,7 @@ namespace DataAccess.Repository
         RoomDTO UpdateCheckoutDateForResident(long roomId, DateTime checkOutDate);
         RoomDTO FindById(long roomId);
 
-        RoomDTO GetRoomByCodeForUpdating(long id, long managerId);
+        RoomDTO GetRoomByIdForUpdating(long id, long managerId);
     }
 
 }
