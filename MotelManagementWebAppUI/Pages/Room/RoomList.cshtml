@@ -100,14 +100,18 @@
                             <td>
                                 @Model.ListStatus.ElementAt((int)item.Status).ToString()
                             </td>
-                            <td class="d-flex justify-content-evenly">
-                                <button type="button" asp-page-handler="Edit" onclick="updateRoom(@item.Id)">
+                            <td >
+                                <form class="d-flex justify-content-evenly">
+                                    <button type="button" asp-page-handler="Edit" onclick="updateRoom(@item.Id)">
                                     <i class="fa-sharp fa-regular fa-pen-to-square"></i>
                                 </button>
                                 <button type="button" asp-page-handler="Delete" onclick="confirmDeleteRooom('@item.Code', @item.Id)">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
-                                <a href="/room/room-detail/@item.Id"><i class="fa-regular fa-square-info"></i></a>
+                                <button type="button" onclick="window.location.href = '/room/room-detail/@item.Id'">
+                                    <i class="fa-regular fa-square-info"></i>    
+                                </button>
+                                </form>
                             </td>
                         </tr>
                     }
