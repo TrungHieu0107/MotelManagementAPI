@@ -50,10 +50,10 @@ namespace MotelManagementWebAppUI.Pages.Manager.Resident
         [HttpGet]
         public async Task<IActionResult> OnGetAsync(string idCard = "", string phone = "", string fullName = "", int status = -1, int pageSize = 10, int currentPage = 1)
         {
-            char[] zeros = { '0' };
+            
             if (!string.IsNullOrEmpty(phone))
             {
-                phone = phone.TrimStart(zeros);
+               
                 phone = phone.Trim();
             }
             if (!string.IsNullOrEmpty(idCard))

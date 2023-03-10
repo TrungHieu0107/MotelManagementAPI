@@ -165,7 +165,7 @@ namespace DataAccess.Repository
             }
             if (!String.IsNullOrEmpty(phone))
             {
-                query = query.Where(p => p.Phone == phone);
+                query = query.Where(p => p.Phone.Contains(phone));
             }
             if (!String.IsNullOrEmpty(Fullname))
             {
@@ -205,7 +205,7 @@ namespace DataAccess.Repository
             }
             if (!String.IsNullOrEmpty(phone))
             {
-                query = query.Where(p => p.Phone == phone);
+                query = query.Where(p => p.Phone.Contains(phone));
             }
             if (!String.IsNullOrEmpty(Fullname))
             {
