@@ -9,6 +9,7 @@ namespace BussinessObject.DTO
 {
     public class ResidentDTOForDetail
     {
+        public long Id { get; set; }
         public string IdentityCardNumber { get; set; }
         public string Phone { get; set; }
         public string FullName { get; set; }

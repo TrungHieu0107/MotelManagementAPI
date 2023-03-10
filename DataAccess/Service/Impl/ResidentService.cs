@@ -187,8 +187,9 @@ namespace DataAccess.Service.Impl
         {
             Resident resident = _residentRepo.FindById(residentId);
 
-            if (resident == null) throw new Exception("Resident with ID: " + residentId + " doesn't exist.");
+            if (resident == null) throw new Exception("Người thuê với ID: " + residentId + " không tồn tại.");
             ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+            residentDTOForDetail.Id = residentId;
             residentDTOForDetail.FullName = resident.FullName;
             residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
             residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
@@ -219,7 +220,7 @@ namespace DataAccess.Service.Impl
                     }
                 default:
                     {
-                        throw new Exception("Status of renting must be RENTING, USED_TO_RENT or BOOKING");
+                        throw new Exception("Trạng thái thuê phải là \"Đang thuê\", \"Đã từng thuê\" hoặc \"Đang đặt\"");
                     }
             }
 
@@ -229,6 +230,7 @@ namespace DataAccess.Service.Impl
             {
                 Room room = history.Room;
                 RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
+                roomDTOForDetail.Id = room.Id;
                 roomDTOForDetail.Code = room.Code;
                 roomDTOForDetail.MotelChainName = _motelChainRepo.FindById(room.MotelId).Name;
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
@@ -252,12 +254,12 @@ namespace DataAccess.Service.Impl
         public bool BookRoom(BookingRoomRequest bookingRoomRequest, long managerId)
         {
             Resident resident = _residentRepo.FindByIdentityCardNumberToBookRoom(bookingRoomRequest.IdentityCardNumber);
-            if (resident == null) throw new Exception("Resident with identity card number: " + bookingRoomRequest.IdentityCardNumber + " doesn't exist.");
-            if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("This resident has an invoice that is not paid yet.");
+            if (resident == null) throw new Exception("Người thuê với căn cước công dân: " + bookingRoomRequest.IdentityCardNumber + " không tòn tại.");
+            if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("Người thuê đang có hóa đơn bị trễ.");
 
             Room room = _roomRepo.CheckAndGetBeforeBookingById(managerId, bookingRoomRequest.RoomId);
-            if (room == null) throw new Exception("Room with ID: " + bookingRoomRequest.RoomId + " doesn't exist or isn't managed by the manager.");
-            if (room.Status != RoomStatus.EMPTY) throw new Exception("Booked room's status must be EMPTY.");
+            if (room == null) throw new Exception("Phòng với ID: " + bookingRoomRequest.RoomId + " không tồn tại hoặc không thuộc kiểm soát của quản lý.");
+            if (room.Status != RoomStatus.EMPTY) throw new Exception("Phòng được đặt hiện không trống");
 
             _residentRepo.UpdateStatusWhenBookingByIdentityCardNumber(bookingRoomRequest.IdentityCardNumber);
             _roomRepo.UpdateStatusWhenBookingById(managerId, bookingRoomRequest.RoomId, bookingRoomRequest.StartDate);

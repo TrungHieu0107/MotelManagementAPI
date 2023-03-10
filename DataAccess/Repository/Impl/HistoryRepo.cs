@@ -1,4 +1,4 @@
-using BussinessObject.Data;
+﻿using BussinessObject.Data;
 using BussinessObject.DTO;
 using BussinessObject.Models;
 using BussinessObject.Status;
@@ -106,11 +106,12 @@ namespace DataAccess.Repository
             throw new NotImplementedException();
         }
 
-        public HistoryDTO UpdateCheckoutDateForResident(long residentId, long roomId, DateTime checkoutDate)
+        public HistoryDTO UpdateCheckoutDateForResident(long residentId, long managerId, long roomId, DateTime checkoutDate)
         {
             var history = _context.Histories
                 .Include(history => history.Resident)
                 .Include(history => history.Room)
+                .Include(history => history.Room.MotelChain)
                 .Where(history => history.Resident.Status == AccountStatus.ACTIVE
                 && history.Room.Status == RoomStatus.ACTIVE
                 && history.ResidentId == residentId
@@ -118,7 +119,9 @@ namespace DataAccess.Repository
                 .OrderByDescending(history => history.StartDate)
                 .FirstOrDefault();
             
-            if(history == null)
+            if(history.Room.MotelChain.ManagerId != managerId) throw new Exception("Phòng với ID: " + history.RoomId + " không tồn tại hoặc không thuộc kiểm soát của quản lý.");
+
+            if (history == null)
             {
                 return null;
             }

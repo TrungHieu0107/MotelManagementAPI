@@ -1,0 +1,66 @@
+﻿@page
+@model MotelManagementWebAppUI.Pages.Room.BookRoomModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Đặt phòng";
+}
+<div style="width:100%; margin-top: 50px;margin-bottom:25px;">
+    <img src="~/image/Room.png" style="width:30%; margin-left:20%; float:left;">
+    <img src="~/image/resident.png" style="width:30%; margin-right:20%; float:right;">
+</div>
+<div style="clear:both;">
+    <div style="width:50%; float:left;padding-left:25%;">
+        <div><h3>Thông tin phòng thuê</h3></div>
+        <div><b>Mã phòng: </b>@Model.BookedRoom.Code</div>
+        <div><b>Trạng thái: </b>@Model.BookedRoom.Status</div>
+        @if (!@Model.IsTheOnlyRecord) { 
+            <div><b>Tiền thuê phòng hiện tại: </b>@Model.BookedRoom.RentFee (Áp dụng cho các lần thu tiền trước ngày @Model.BookedRoom.NearestNextFeeAppliedDate)</div>
+            <div><b>Tiền thuê phòng áp dụng cho các lần thu tiền sau ngày @Model.BookedRoom.NearestNextFeeAppliedDate</b>: @Model.BookedRoom.NearestNextRentFee</div>
+        }
+        else
+        {
+            <div><b>Tiền thuê phòng hiện tại: </b>@Model.BookedRoom.RentFee</div>
+        }
+        <div><b>Thuộc nhà trọ: </b>@Model.BookedRoom.MotelChainName</div>
+    </div>
+    <div style="width:50%; float:right; padding-left: 10%;">
+        <div><h3>Thông tin người thuê</h3></div>
+        <form method="post">
+            <input type="hidden" name="roomId" asp-for="@Model.RoomId"/>
+            <div><b>CCCD: </b><input type="phone" maxlength="12" name="identityCardNumber" asp-for="@Model.IdentityCardNumber"/></div>
+            <div style="margin-top:10px">
+            <button style="width:fit-content" type="submit" asp-page-handler="SearchResident" class="btn btn-primary btn-user btn-block">Tìm người ở</button>
+            <button style="width:fit-content; margin:0;" id="add-resident" type="button" class="btn btn-primary btn-user btn-block">Tạo tài khoản cho người thuê</button>
+            </div>
+            <span asp-validation-for="@Model.IdentityCardNumber" class="text-danger"></span>
+            
+        </form>
+        <div><b>Họ và tên người thuê: </b>@Model.Resident.FullName</div>
+        <div><b>Sđt: </b>@Model.Resident.Phone</div>
+    </div>
+</div>
+<div style="clear:both; margin-top:25px">
+    <form method="post" style="width:100%;">
+        <div style="text-align:center;">
+            <input type="hidden" name="roomId" asp-for="@Model.RoomId"/>
+            <input type="hidden" name="identityCardNumberForBooking" asp-for="@Model.IdentityCardNumberForBooking"/>
+            <div style="margin-bottom:15px">
+                <b>Ngày thuê: </b><input style="width:fit-content;" type="date" asp-for="@Model.StartDate"
+                min="@DateTime.Now.ToString("yyyy-MM-dd")" 
+                max="@DateTime.Now.AddDays(15).ToString("yyyy-MM-dd")"
+                value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                asp-format="{0:dd/MM/yyyy}"/>
+            </div>
+            @if (@Model.RoomId != 0 && @Model.ResidentId != 0)
+            {      
+                 <button style="width:fit-content;margin: auto;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="BookRoom">Đặt phòng</button>
+            }
+            else
+            {
+                 <button style="width:fit-content;margin: auto;" class="btn btn-primary btn-user btn-block" disabled="true" type="submit" asp-page-handler="BookRoom">Đặt phòng</button>   
+            }
+        </div>
+    </form>
+</div>
+
+
