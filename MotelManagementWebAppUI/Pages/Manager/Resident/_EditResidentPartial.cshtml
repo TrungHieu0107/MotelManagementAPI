@@ -1,0 +1,108 @@
+﻿@using BussinessObject.DTO;
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@model ResidentUpdateDTO
+
+
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Cập nhật thông tin cư dân</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editResidentForm" method="post" asp-page-handler="Edit" asp-model="residentUpdateDTO">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="@Model.FullName">Full Name</label>
+                        <input type="text" class="form-control" id="EditFullname"  asp-for="@Model.FullName" class="form-control" data-val="true" data-val-length="Họ và tên phải từ 8 đến 60 kí tự" data-val-length-max="60" data-val-length-min="8" />
+                        <span asp-validation-for="@Model.FullName" class="text-danger"></span>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Identity Card Number</label>
+                        <input type="text" class="form-control" id="EditIdentityCardNumber" name="IdentityCardNumber" asp-for="@Model.IdentityCardNumber" data-val-length="Số CMND phải 12 số" data-val-length-max="12" data-val-length-min="12" />
+                        <span asp-validation-for="@Model.IdentityCardNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Phone Number</label>
+                        <input type="text" class="form-control" id="EditPhone" name="Phone" asp-for="@Model.Phone" data-val-length="Số điện thoại phải 10 số" data-val-length-max="10" data-val-length-min="10" />
+                        <span asp-validation-for="@Model.Phone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="changePassword" name="ChangePassword" data-target="#passwordDiv">
+                            <label class="form-check-label" for="changePassword">
+                                Cập nhật mật khẩu
+                            </label>
+                        </div>
+                    </div>
+                    <div id="passwordDiv" style="display:none;">
+                        <div class="form-group">
+                            <label class="control-label">Mật khẩu mới</label>
+                            <input type="password" class="form-control" id="EditPassword" required asp-for="@Model.Password">
+                            <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-control" id="confirmEdPassword" asp-for="@Model.ConfirmPassword" required>
+                            <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-danger" id="deactivateBtn" style="display:none;">Khóa tài khoản</button>
+                        <button type="button" class="btn btn-success" id="activateBtn" style="display:none;">Mở khóa tài khoản</button>
+                    </div>
+
+                    <script>
+                        document.getElementById("changePassword").addEventListener("change", function () {
+                            var passwordDiv = document.getElementById("passwordDiv");
+                            if (this.checked) {
+                                passwordDiv.style.display = "block";
+                            } else {
+                                passwordDiv.style.display = "none";
+                            }
+                        });
+                    </script>
+
+                  @*  <script>
+                        $(document).ready(function () {
+                          //  var status = @Model.Status;
+                            if (status == 1) {
+                                $("#activateBtn").show();
+                            } else {
+                                $("#deactivateBtn").show();
+                            }
+
+                            $("#deactivateBtn").click(function () {
+                                $("#EditStatus").val(1);
+                                $("#editResidentForm").submit();
+                            });
+
+                            $("#activateBtn").click(function () {
+                                $("#EditStatus").val(0);
+                                $("#editResidentForm").submit();
+                            });
+                        });
+                    </script>
+*@
+
+                    <input type="hidden" asp-for="@Model.Status" />
+                    <input type="hidden" asp-for="@Model.Id"  id="EditId" name="Id"/>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save</button>
+                </div>
+            </form>
+            <div id="error-message-ed" class="alert alert-danger" style="display:none;"></div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<partial name="_ValidationScriptsPartial" />

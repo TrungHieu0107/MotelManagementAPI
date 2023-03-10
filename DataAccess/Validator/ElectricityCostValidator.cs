@@ -13,7 +13,7 @@ namespace DataAccess.Validator
                                   .NotNull().WithMessage("Price must be greater the 0");
             //RuleFor(p => p.AppliedYear).GreaterThanOrEqualTo(DateTime.Today.Year).WithMessage("Year must be equal or greater current year");
             RuleFor(p => p.AppliedMonth).GreaterThan(0).LessThan(13).WithMessage("Month must be from 1 to 12");
-            RuleFor(p => p).Must((p) => ValidateDate(p)).WithMessage("The applied must be greater or equal the 5th of the month or year");
+            RuleFor(p => p).Must((p) => ValidateDate(p)).WithMessage("The applied time must be one month after this month, and cannot be after the current month.\".");
         }
 
         private bool ValidateDate(ElectricityCostRequestDTO obj)
