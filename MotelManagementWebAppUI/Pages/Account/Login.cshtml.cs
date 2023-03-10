@@ -83,8 +83,8 @@ namespace MotelManagementWebAppUI.Pages.Login
                 }
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions { Expires = DateTime.Now.AddMinutes(60) });
                 //return RedirectToPage("../Admin/ElectricityCost/ElectricityCost");
-                 //return RedirectToPage("../Room/RoomList"); 
-                return RedirectToPage("../Manager/Resident/Resident");
+                return RedirectToPage("../Room/RoomList");
+                //return RedirectToPage("../Manager/Resident/Resident");
             }
             else if (responser.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -103,6 +103,12 @@ namespace MotelManagementWebAppUI.Pages.Login
         {
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (Request.Cookies["token"] != null)
+            {
+                Response.Cookies.Delete("token");
+            }
+
             return RedirectToPage("../Account/Login");
         }
 

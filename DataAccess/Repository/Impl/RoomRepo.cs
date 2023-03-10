@@ -35,7 +35,7 @@ namespace DataAccess.Repository
 
         public RoomDTO GetLatestRoomByRoomCode(string roomCode)
         {
-            var result = _context.Rooms.Where(room => room.Code.Equals(roomCode)).Select(room => new RoomDTO()
+            var result = _context.Rooms.Where(room => room.Code.Equals(roomCode) && room.Status == RoomStatus.ACTIVE).Select(room => new RoomDTO()
             {
                 Id = room.Id,
                 Code = room.Code,
@@ -51,8 +51,8 @@ namespace DataAccess.Repository
         {
             Room r = new Room();
             r.Status = room.Status;
-            r.RentFee = room.RentFee;
-            r.FeeAppliedDate = room.FeeAppliedDate;
+            r.RentFee = room.NearestNextRentFee.Value;
+            r.FeeAppliedDate = room.NearestNextFeeAppliedDate.Value;
             r.MotelId = room.MotelId;
             r.Code = room.Code;
 
@@ -62,8 +62,6 @@ namespace DataAccess.Repository
 
             return room;
         }
-
-
 
         RoomDTO IRoomRepo.Update(RoomDTO room)
         {
@@ -81,8 +79,11 @@ namespace DataAccess.Repository
             value.Status = room.Status;
             value.FeeAppliedDate = room.FeeAppliedDate;
             value.RentFee = room.RentFee;
-            _context.Update(value);
-            _context.SaveChanges();
+            _context.Entry(value).State = EntityState.Modified;
+            if(_context.SaveChanges() <= 0)
+            {
+                return null;
+            }
 
             return room;
         }
@@ -126,17 +127,24 @@ namespace DataAccess.Repository
                         r => r.Code == room.Code && r.FeeAppliedDate <= DateTime.Now &&
                         (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED || r.Status == RoomStatus.EMPTY))
                     .OrderBy(r => r.FeeAppliedDate).LastOrDefault();
-                roomWithCorrectRentFeeInCurrent = roomWithCorrectRentFeeInCurrent == null ? room : roomWithCorrectRentFeeInCurrent;
-                RoomDTO roomDTO = new RoomDTO()
+                RoomDTO roomDTO = new RoomDTO();
+                roomDTO.Id = room.Id;
+                roomDTO.Code = room.Code;
+                roomDTO.Status = room.Status;
+                if (roomWithCorrectRentFeeInCurrent == null)
                 {
-                    Id = room.Id,
-                    Code = room.Code,
-                    Status = room.Status,
-                    RentFee = roomWithCorrectRentFeeInCurrent.RentFee,
-                    FeeAppliedDate = roomWithCorrectRentFeeInCurrent.FeeAppliedDate,
-                };
+
+                    roomDTO.RentFee = room.RentFee;
+                    roomDTO.FeeAppliedDate = room.FeeAppliedDate;
+                } else
+                {
+                    roomDTO.NearestNextFeeAppliedDate = room.FeeAppliedDate;
+                    roomDTO.NearestNextRentFee = room.RentFee;
+                    roomDTO.RentFee = roomWithCorrectRentFeeInCurrent.RentFee;
+                    roomDTO.FeeAppliedDate = roomWithCorrectRentFeeInCurrent.FeeAppliedDate;
+                }
                 resultAsDTO.Add(roomDTO);
-            }
+        }
             return resultAsDTO;
         }
 
@@ -304,9 +312,9 @@ namespace DataAccess.Repository
             if(_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
         }
 
-        public RoomDTO GetRoomByCodeForUpdating(long id, long managerId)
+        public RoomDTO GetRoomByIdForUpdating(long id, long managerId)
         {
-            return _context.Rooms
+            var result = _context.Rooms
                 .Include(room => room.MotelChain)
                 .Where(room => 
                 room.Id.Equals(id) &&
@@ -319,6 +327,21 @@ namespace DataAccess.Repository
                     RentFee = room.RentFee,
                     Status = room.Status,
                 }).FirstOrDefault();;
+
+            if(result != null && result.FeeAppliedDate > DateTime.Now)
+            {
+               var list = _context.Rooms.Where(room => room.Code.Equals(result.Code)).OrderByDescending(room => room.FeeAppliedDate).ToList();
+
+               if(list.Count > 1)
+                {
+                    result.NearestNextRentFee = result.RentFee;
+                    result.NearestNextFeeAppliedDate = result.FeeAppliedDate;
+                    result.RentFee = list[1].RentFee;
+                    result.FeeAppliedDate = list[1].FeeAppliedDate;
+                }
+            }
+
+            return result;
         }
     }
 }

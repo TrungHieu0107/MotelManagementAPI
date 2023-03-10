@@ -1,11 +1,9 @@
-@page
+@page "/room/list"
 @model MotelManagementWebAppUI.Pages.Room.RoomListModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Room list";
-    RoomDTO roomUpdate;
 }
-<button type="button" id="confirm"> show</button>
 <div id="room-list">
     <div class="mb-3">
         <form class="d-flex flex-column" method="get">
@@ -54,6 +52,12 @@
                         @Html.DisplayNameFor(model => model.NewRoom.RentFee)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.NearestNextFeeAppliedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NewRoom.NearestNextRentFee)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.NewRoom.Status)
                     </th>
                     <th></th>
@@ -69,10 +73,29 @@
                                 @Html.DisplayFor(modelItem => item.Code)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.FeeAppliedDate)
+                                @item.FeeAppliedDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.RentFee)
+                                @String.Format(CultureInfo.InvariantCulture, "{0:#,#}", @item.RentFee)
+                            </td>
+                            <td>
+                                @if (@item.NearestNextFeeAppliedDate != null)
+                                {
+                                    <span>@item.NearestNextFeeAppliedDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</span>
+                                }
+                                else
+                                {
+                                    <span class="m-0 p-0">-</span>
+                                }
+                            </td>
+                            <td>@if (@item.NearestNextRentFee != null)
+                                {
+                                    @String.Format(CultureInfo.InvariantCulture, "{0:#,#}", @item.NearestNextRentFee.Value)
+                                }
+                                else
+                                {
+                                    <span class="m-0 p-0">-</span>
+                                }
                             </td>
                             <td>
                                 @Model.ListStatus.ElementAt((int)item.Status).ToString()
@@ -85,7 +108,7 @@
                                     <button type="button" asp-page-handler="Delete" onclick="confirmDeleteRooom('@item.Code', @item.Id)">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
-                                    <button type="submit" asp-page-handler="Delete">
+                                    <button type="submit" asp-route="@item.Id">
                                         <i class="fa-regular fa-square-info"></i>
                                     </button>
                                 </form>
@@ -162,7 +185,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Cập nhật thông tin phòng</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#update-room-modal').modal('toggle')">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -177,14 +200,14 @@
                                 <span asp-validation-for="@Model.NewRoom.Code" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="@Model.NewRoom.RentFee" class="control-label"></label>
-                                <input id="rent-fee-update" asp-for="@Model.NewRoom.RentFee" class="form-control" />
-                                <span asp-validation-for="@Model.NewRoom.RentFee" class="text-danger"></span>
+                                <label asp-for="@Model.NewRoom.NearestNextRentFee" class="control-label"></label>
+                                <input id="rent-fee-update" asp-for="@Model.NewRoom.NearestNextRentFee" class="form-control" />
+                                <span asp-validation-for="@Model.NewRoom.NearestNextRentFee" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="@Model.NewRoom.FeeAppliedDate" class="control-label"></label>
-                                <input id="fee-applied-date-update" asp-for="@Model.NewRoom.FeeAppliedDate" class="form-control" />
-                                <span asp-validation-for="@Model.NewRoom.FeeAppliedDate" class="text-danger"></span>
+                                <label asp-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="control-label"></label>
+                                <input id="fee-applied-date-update" asp-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="form-control" />
+                                <span asp-validation-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="text-danger"></span>
                             </div>
                             <div>
                                 <label asp-for="@Model.NewRoom.Status" class="control-label"></label>
@@ -194,7 +217,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#update-room-modal').modal('toggle')">Đóng</button>
                             <button type="submit" class="btn btn-primary" id="update-button">Lưu</button>
                         </div>
                     </div>
@@ -209,7 +232,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Nhắc nhở</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#confrim-delete-room-modal').modal('toggle')">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -218,7 +241,7 @@
                         <div id="delete-confirm-body">
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Không</button>
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="$('#confrim-delete-room-modal').modal('toggle')">Không</button>
                             <button type="button" class="btn btn-outline-warning" id="confirm-yes">Có</button>
                         </div>
                     </div>
@@ -226,195 +249,192 @@
             </div>
         </div>
     </div>
+</div>
 
 
 
+@using BussinessObject.DTO
+@using BussinessObject.Status
+@using Microsoft.AspNetCore.Http
+@using System.Globalization
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+<script>
+    $(document).ready(function () {
+        let idDelete;
+        var today = new Date().toISOString().split('T')[0];
+          $('#fee-applied-date-update').attr('min', today);
 
-    @using BussinessObject.DTO
-    @using BussinessObject.Status
-    @using Microsoft.AspNetCore.Http
-    @inject IHttpContextAccessor HttpContextAccessor
-    @section scripts {
-    <script>
-        $(document).ready(function () {
-            let idDelete;
-            var today = new Date().toISOString().split('T')[0];
-              $('#fee-applied-date-update').attr('min', today);
+      $("#add-new-room").click(function () {
 
-          $("#add-new-room").click(function () {
-            $("#myModal").modal({
-              modal: true,
-              title: "popup title",
-              width: 400,
-              height: 300,
-              draggable: true,
-              resizable: true,
-            });
-            $(".field-validation-error").text("");
-          });
+        $("#myModal").modal({
+          modal: true,
+          title: "popup title",
+          width: 400,
+          height: 300,
+          draggable: true,
+          resizable: true,
+        });
+        $('#myModal').modal('toggle');
+        $(".field-validation-error").text("");
 
-          $("#create-object-form").submit(function (event) {
-            event.preventDefault();
-            let code = $("#code").val()
-            let rentFee = $("#rent-fee").val();
-            let feeApplyDate =$("#fee-applied-date").val();
+         $('#myModal').on('hidden.bs.modal', () => {
+             $('#create-object-form')[0].reset();
+         })
+      });
 
-             if ($(this).valid()) {
-                 $.ajax({
-              url: "http://localhost:5001/api/Room/add-new-room?Code=" + code + "&FeeAppliedDate= " + feeApplyDate + "&RentFee=" + rentFee + " &Status=0",
+      $("#create-object-form").submit(function (event) {
+        event.preventDefault();
+        let code = $("#code").val()
+        let rentFee = $("#rent-fee").val();
+        let feeApplyDate =$("#fee-applied-date").val();
+
+         if ($(this).valid()) {
+             $.ajax({
+          url: "http://localhost:5001/api/Room/add-new-room?Code=" + code + "&FeeAppliedDate= " + feeApplyDate + "&RentFee=" + rentFee + " &Status=0",
+          type: "POST",
+          data: $(this).serialize(),
+          headers: {
+            "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+          },
+          success: function (result) {
+            $("#myModal").modal('hide');
+            // Reload the list of rooms on the main page
+            window.location.reload();
+          },
+          error: function (xhr, status, error) {
+            alert("Error creating room: " + error);
+          },
+        });
+        }
+      });
+
+       $("#update-object-form").submit(function (event) {
+        event.preventDefault();
+
+        let code = $("#code-update").val();
+        let rentFee = $("#rent-fee-update").val();
+        let feeApplyDate =$("#fee-applied-date-update").val();
+        let status = $("#status-room-update").val();
+        let id =$("#room-id-update").val();
+
+        let data = { id: id,
+                    code: code,
+                    nearestNextRentFee: rentFee,
+                    nearestNextFeeAppliedDate: feeApplyDate,
+                    status: status
+                    };
+        console.log(data);
+
+         if ($(this).valid()) {
+             $.ajax({
+              url: "http://localhost:5001/api/Room/update-room",
               type: "POST",
-              data: $(this).serialize(),
+              dataType: "json",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
               headers: {
                 "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
               },
               success: function (result) {
-                $("#myModal").modal('hide');
-                // Reload the list of rooms on the main page
+                $("#update-room-modal").modal("toggle");
                 window.location.reload();
               },
               error: function (xhr, status, error) {
                 alert("Error creating room: " + error);
               },
             });
-            }
-          });
+        }
+      });
 
-           $("#update-object-form").submit(function (event) {
-            event.preventDefault();
+      $('#confirm').on('click', function(){
+          showConfirm('<h1>Hieu</h1>', () => {
+            console.log("avc");
+            });
+        }
+      );
 
-            let code = $("#code-update").val();
-            let rentFee = $("#rent-fee-update").val();
-            let feeApplyDate =$("#fee-applied-date-update").val();
-            let status = $("#status-room-update").val();
-            let id =$("#room-id-update").val();
+    });
 
-            let data = { id: id,
-                        code: code,
-                        rentFee: rentFee,
-                        feeAppliedDate: feeApplyDate,
-                        status: status
-                        };
-            console.log(data);
+    function updateRoom(id) {
+         $.ajax({
+              url: "http://localhost:5001/api/Room/get-room-by-id?id=" + id,
+              type: "GET",
+              headers: {
+                "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+              },
+              success: function (result) {
+                console.log(result);
+                if(result.data){
+                     $("#update-room-modal").modal({
+                          modal: true,
+                          title: "popup title",
+                          width: 400,
+                          height: 300,
+                          draggable: true,
+                          resizable: true,
+                        });
+                        $('#update-room-modal').modal('toggle');
+                        let code = $("#code-update");
+                        let rentFee = $("#rent-fee-update");
+                        let feeApplyDate =$("#fee-applied-date-update");
+                        let id =$("#room-id-update");
+                        let status =$("#status-room-update");
 
-             if ($(this).valid()) {
-                 $.ajax({
-                  url: "http://localhost:5001/api/Room/update-room",
-                  type: "POST",
-                  dataType: "json",
-                  contentType: "application/json; charset=utf-8",
-                  data: JSON.stringify(data),
-                  headers: {
-                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
-                  },
-                  success: function (result) {
-                    $("#update-room-modal").fadeOut();
-                    window.location.reload();
-                  },
-                  error: function (xhr, status, error) {
-                    alert("Error creating room: " + error);
-                  },
-                });
-            }
-          });
-
-          $('#confirm').on('click', function(){
-              showConfirm('<h1>Hieu</h1>', () => {
-                console.log("avc");
-                });
-            }
-          );
-
-        });
-
-        function updateRoom(id) {
-             $.ajax({
-                  url: "http://localhost:5001/api/Room/get-room-by-id?id=" + id,
-                  type: "GET",
-                  headers: {
-                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
-                  },
-                  success: function (result) {
-                    console.log(result);
-                    if(result.data){
-                         $("#update-room-modal").modal({
-                              modal: true,
-                              title: "popup title",
-                              width: 400,
-                              height: 300,
-                              draggable: true,
-                              resizable: true,
-                            });
-
-                            let code = $("#code-update");
-                            let rentFee = $("#rent-fee-update");
-                            let feeApplyDate =$("#fee-applied-date-update");
-                            let id =$("#room-id-update");
-                            let status =$("#status-room-update");
-
-                            id.val(result?.data?.id);
-                            status.val(result?.data?.status);
-                            code.val(result?.data?.code);
-                            rentFee.val(result?.data?.rentFee);
-                            var date = new Date(result?.data?.feeAppliedDate).toISOString().split('T')[0];
-                            feeApplyDate.val(date);
-                    }
-                  },
-                  error: function (xhr, status, error) {
-                    console.log(error);
-                  },
-                });
-             }
+                        id.val(result?.data?.id);
+                        status.val(result?.data?.status);
+                        code.val(result?.data?.code);
+                        rentFee.val(result?.data?.rentFee);
+                        var date = new Date(result?.data?.feeAppliedDate).toISOString().split('T')[0];
+                        feeApplyDate.val(date);
+                }
+              },
+              error: function (xhr, status, error) {
+                console.log(error);
+              },
+            });
+         }
 
 
-        function confirmDeleteRooom(code, id) {
-            console.log(code, id);
-            $("#confrim-delete-room-modal").modal({
+    function confirmDeleteRooom(code, id) {
+        idDelete = id;
+          showConfirm("<p>Bạn có muốn xóa phòng " + code + " không?</>", () => {
+            deleteRoom();
+            });
+    }
+
+    function deleteRoom(){
+        console.log(idDelete);
+        $.ajax({
+            url: "http://localhost:5001/api/Room/delete-room?id=" + idDelete,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+            },
+            success: function (result) {
+                window.location.reload();
+            },
+            error: function (xhr, status, error) {
+                $('#notify-content').html(xhr.responseJSON.message);
+                if(xhr.responseJSON.message){
+                    $("#notification").modal({
                         modal: true,
-                        width: 400,
-                        height: 300,
+                        width: 'auto',
+                        height: 'auto',
                         draggable: true,
                         resizable: true,
                     });
-                    idDelete = id;
-            $('#delete-confirm-body').text("Bạn có muốn xóa phòng " + code + " không?");
-            $( "#confirm-yes" ).on( "click", function() {
-                deleteRoom();
-            });
-        }
+                    $("#notification").modal('toggle');
+                    console.log(xhr.responseJSON.message);
 
-        function deleteRoom(){
-            console.log(idDelete);
-            $.ajax({
-                url: "http://localhost:5001/api/Room/delete-room?id=" + idDelete,
-                type: "GET",
-                headers: {
-                    "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
-                },
-                success: function (result) {
-                    $("#confrim-delete-room-modal").modal('hide');
-                    window.location.reload();
-                },
-                error: function (xhr, status, error) {
-                    $('#notify-content').html(xhr.responseJSON.message);
-                    if(xhr.responseJSON.message){
-                        $("#notification").modal({
-                            modal: true,
-                            width: 100,
-                            height: 100,
-                            draggable: true,
-                            resizable: true,
-                        });
-                        $("#confrim-delete-room-modal").modal('hide');
-                        console.log(xhr.responseJSON.message);
+                }
 
-                    }
+                console.log(error, xhr.responseJSON);
+            },
+        });
+    }
 
-                    console.log(error, xhr.responseJSON);
-                },
-            });
-        }
-
-    </script>
+</script>
     }
 
 
