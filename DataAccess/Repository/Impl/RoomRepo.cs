@@ -311,5 +311,14 @@ namespace DataAccess.Repository
                     Status = room.Status,
                 }).FirstOrDefault();;
         }
+
+        public void UpdateCheckOutDateForResident(long roomId)
+        {
+            Room room = _context.Rooms.FirstOrDefault(r => r.Id == roomId);
+            room.Status = RoomStatus.EMPTY;
+            var tracker = _context.Attach(room);
+            tracker.State = EntityState.Modified;
+            if (_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
+        }
     }
 }
