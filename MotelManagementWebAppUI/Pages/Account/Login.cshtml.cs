@@ -39,7 +39,25 @@ namespace MotelManagementWebAppUI.Pages.Login
             {
                 if (HttpContext.Request.Cookies["token"] != null)
                 {
-                    return Redirect("/room/list");
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var jwtToken = tokenHandler.ReadJwtToken(HttpContext.Request.Cookies["token"]);
+                    var role = jwtToken.Claims.First(c => c.Type == "role").Value;
+                    if (role.Equals("Resident"))
+                    {
+                        return Redirect("/resident/resident/resident-detail");
+                    }
+                    else if (role.Equals("Manager"))
+                    {
+                        return Redirect("/room/list");
+                    }
+                    else if (role.Equals("Admin"))
+                    {
+                        return Redirect("/admin/electricity/electricity-cost");
+                    }
+                    else
+                    {
+                        return Page();
+                    }
                 }
             }
             catch (Exception ex)

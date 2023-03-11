@@ -78,14 +78,15 @@ namespace MotelManagementWebAppUI.Pages.Room
                 OldInvoice = InvoiceDTOs[0];
                 OldTotalElectricityCost = ((long)(OldInvoice.ElectricityConsumptionEnd - OldInvoice.ElectricityConsumptionStart)) * OldInvoice.ElectricityCost.Price;
                 OldTotalWaterCost = ((long)(OldInvoice.WaterConsumptionEnd - OldInvoice.WaterConsumptionStart)) * OldInvoice.WaterCost.Price;
-                OldTotal = OldTotalElectricityCost + OldTotalWaterCost + OldInvoice.Room.RentFee;
-                OldTotalRentFee = (long)(OldInvoice.Room.RentFee * (OldInvoice.EndDate.Value - OldInvoice.StartDate).TotalDays);
+                OldTotalRentFee = (long)(OldInvoice.Room.RentFee * (int)(OldInvoice.EndDate.Value - OldInvoice.StartDate).TotalDays);
+                OldTotal = OldTotalElectricityCost + OldTotalWaterCost + OldTotalRentFee;
+
                 NewInvoice = InvoiceDTOs[1];
             }
             NewTotalElectricityCost = ((long)(NewInvoice.ElectricityConsumptionEnd - NewInvoice.ElectricityConsumptionStart)) * NewInvoice.ElectricityCost.Price;
             NewTotalWaterCost = ((long)(NewInvoice.WaterConsumptionEnd - NewInvoice.WaterConsumptionStart)) * NewInvoice.WaterCost.Price;
-            NewTotal = NewTotalElectricityCost + NewTotalWaterCost + NewInvoice.Room.RentFee;
-            NewTotalRentFee = (long)(NewInvoice.Room.RentFee * (NewInvoice.EndDate.Value - NewInvoice.StartDate).TotalDays);
+            NewTotalRentFee = (long)(NewInvoice.Room.RentFee * (int)(NewInvoice.EndDate.Value - NewInvoice.StartDate).TotalDays);
+            NewTotal = NewTotalElectricityCost + NewTotalWaterCost + NewTotalRentFee;
         }
 
         public async Task<IActionResult> OnPostCheckOutAsync()
