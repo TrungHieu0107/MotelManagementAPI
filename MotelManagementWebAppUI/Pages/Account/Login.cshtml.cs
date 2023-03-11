@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication;
 using BussinessObject.DTO.Common;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace MotelManagementWebAppUI.Pages.Login
 {
@@ -117,6 +118,9 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         public async Task<IActionResult> OnGetLogoutAsync()
         {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
+             ("Bearer", HttpContext.Request.Cookies["token"]);
+            var response = await _httpClient.DeleteAsync($"http://localhost:5001/api/Account/Logout");
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 

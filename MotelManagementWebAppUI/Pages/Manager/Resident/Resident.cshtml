@@ -212,9 +212,19 @@
             if (Model.residentDTOs.Count > 0)
             {
                 int count = 0;
+                if (Model.ResultPagination.CurrentPage > 1)
+                {
+                    count = (Model.ResultPagination.CurrentPage - 1) * Model.ResultPagination.PageSize;
+                }
+                else
+                {
+                    count = Model.ResultPagination.CurrentPage - 1;
+                }
                 @foreach (var item in Model.residentDTOs)
                 {
                     count++;
+
+
 
                     <tr>
                         <td>
@@ -252,6 +262,7 @@
                             <button class="editBtn btn btn-primary" data-toggle="modal" data-target="#editModal" data-identitycardnumber="@item.IdentityCardNumber"><i class="fa-solid fa-user-pen"></i></button>
                         </td>
                     </tr>
+
                 }
             }
         }
@@ -286,11 +297,17 @@
                             if (editStatus === 1) {
                                
                                 $("#activateBtn").show();
+                                $("#deactivateBtn").hide();
                             } else if (editStatus == 0) {
                              
                                 $("#deactivateBtn").show();
-                            } else {
 
+                                $("#activateBtn").hide();
+                            } else if (editStatus === 2){
+                                  
+                                $("#deactivateBtn").show();
+
+                                $("#activateBtn").hide();
                             }
 
                             console.log($("#EditStatus").val())
