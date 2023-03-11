@@ -4,6 +4,11 @@
     Layout = "_Layout";
     ViewData["Title"] = "Đặt phòng";
 }
+
+<div id="popup">
+    @*@await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", null, new ViewDataDictionary(ViewData) { { "room", Model.NewRoom }, {"context", context } })*@
+    <partial name="~/Pages/Manager/Resident/_AddResidentPartial.cshtml" model="@Model.accountDTO" />
+</div>
 <div style="width:100%; margin-top: 50px;margin-bottom:25px;">
     <img src="~/image/Room.png" style="width:30%; margin-left:20%; float:left;">
     <img src="~/image/resident.png" style="width:30%; margin-right:20%; float:right;">
@@ -30,7 +35,7 @@
             <div><b>CCCD: </b><input type="phone" maxlength="12" name="identityCardNumber" asp-for="@Model.IdentityCardNumber"/></div>
             <div style="margin-top:10px">
             <button style="width:fit-content" type="submit" asp-page-handler="SearchResident" class="btn btn-primary btn-user btn-block">Tìm người ở</button>
-            <button style="width:fit-content; margin:0;" id="add-resident" type="button" class="btn btn-primary btn-user btn-block">Tạo tài khoản cho người thuê</button>
+                <button style="width:fit-content; margin:0;" id="add-resident" type="button" class="btn btn-primary btn-user btn-block"  data-toggle="modal" data-target="#addResidentModal">Tạo tài khoản cho người thuê</button>
             </div>
             <span asp-validation-for="@Model.IdentityCardNumber" class="text-danger"></span>
             
@@ -64,3 +69,96 @@
 </div>
 
 
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+
+
+    <script>
+        $(document).ready(function () {
+        $("#add-resident").click(function () {
+                console.log("click");
+                $("#addResidentModal").modal({
+                    modal: true,
+                    title: "popup title",
+                    width: 400,
+                    height: 300,
+                    draggable: true,
+                    resizable: true,
+
+                });
+            });
+
+            $("#create-resident-form").submit(function (event) {
+                event.preventDefault();
+                let UserName = $("#UserName").val();
+                let Password = $("#Password").val();
+                let IdentityCardNumber = $("#IdentityCardNumber").val();
+                let Phone = $("#Phone").val();
+                let FullName = $("#FullName").val();
+                let ConfirmPassword = $("#confirmPassword").val()
+
+
+                console.log($("#messageCofirm"))
+                if ($("#messageCofirm").css("color") === "rgb(255, 0, 0)") {
+                    // nếu có, ngăn chặn việc submit form
+                    event.preventDefault();
+                }
+                if ($(this).valid()) {
+
+                    $.ajax({
+                        url: "http://localhost:5001/api/Resident/add-resident",
+                        data: JSON.stringify({
+                            UserName: UserName,
+                            Password: Password,
+                            IdentityCardNumber: IdentityCardNumber,
+                            Phone: Phone,
+                            FullName: FullName,
+                            ConfirmPassword: ConfirmPassword
+                        }),
+                        contentType: "application/json",
+                        type: "POST",
+                        headers: {
+                            "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                        },
+                        success: function (result) {
+                            $("#myModal").fadeOut();
+                            // Reload the list of rooms on the main page
+                            window.location.reload();
+                        },
+                        error: function (xhr, status, error) {
+
+                            // Parse error response and get validation errors
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            var validationErrors = errorResponse.errors;
+
+                            // Create error message string
+                            var errorMessage = "One or more validation errors occurred:<br>";
+
+                            for (var key in validationErrors) {
+                                if (validationErrors.hasOwnProperty(key)) {
+                                    errorMessage += validationErrors[key] + "<br>";
+                                }
+                            }
+                            var dataError = errorResponse.message;
+                            errorMessage += dataError + "<br>"
+                            // Show error message
+                            $("#error-message").html(errorMessage);
+                            $("#error-message").show();
+                        },
+                    });
+                }
+
+            });
+        });
+
+
+
+
+    </script>
+
+
+
+
+    }
+<partial name="_ValidationScriptsPartial" />

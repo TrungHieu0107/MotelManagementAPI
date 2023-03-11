@@ -36,6 +36,8 @@ namespace MotelManagementWebAppUI.Pages.Room
         public string IdentityCardNumber { get; set; }
         [BindProperty(SupportsGet = true)]
         public string IdentityCardNumberForBooking { get; set; }
+
+        public AccountDTO accountDTO { get; set; }  
         public BookRoomModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
