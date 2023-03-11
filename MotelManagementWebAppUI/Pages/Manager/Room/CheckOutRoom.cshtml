@@ -10,28 +10,31 @@
     {
         <div>
             <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name): </b>@Model.NewInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address): </b>@Model.NewInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code): </b>@Model.NewInvoice.Room.Code</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name):  </b>@Model.NewInvoice.Room.MotelChain.Name</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address):  </b>@Model.NewInvoice.Room.MotelChain.Address</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code):  </b>@Model.NewInvoice.Room.Code</div>
 
             <div style="width:100%; text-align:left;clear:both">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.NewInvoice.Resident.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.NewInvoice.Resident.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):  </b>
+                @Model.NewInvoice.Resident.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):  </b>
+                @Model.NewInvoice.Resident.Phone</div>
             </div>
             <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):  </b>
+                @Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):  </b>
+                @Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
             </div>
-
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate): </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate): </b>@Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate): </b>@Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate): </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate): </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
+            <div style="width:100%; text-align:left;clear:both;">
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate):  </b>
+                @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate):  </b>
+                @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            </div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate):  </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate):  </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate):  </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
 
             <b>Tiền điện</b>
             <table class="table table-bordered">
@@ -141,10 +144,10 @@
                 <tbody>
                     <tr>
                         <td>
-                            @Model.NewInvoice.StartDate m3
+                            @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
-                            @Model.NewInvoice.EndDate m3
+                            @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
                             @((int)(Model.NewInvoice.EndDate.Value - Model.NewInvoice.StartDate).TotalDays) ngày
@@ -170,28 +173,31 @@
     else if(Model.InvoiceDTOs.Count == 2){
         <div>
             <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Name): </b>@Model.OldInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Address): </b>@Model.OldInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.Code): </b>@Model.OldInvoice.Room.Code</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Name):  </b>@Model.OldInvoice.Room.MotelChain.Name</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Address):  </b>@Model.OldInvoice.Room.MotelChain.Address</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.Code):  </b>@Model.OldInvoice.Room.Code</div>
 
             <div style="width:100%; text-align:left;clear:both">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.OldInvoice.Resident.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.OldInvoice.Resident.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.FullName):  </b>
+                @Model.OldInvoice.Resident.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.Phone):  </b>
+                @Model.OldInvoice.Resident.Phone</div>
             </div>
             <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.OldInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.OldInvoice.Room.MotelChain.Manager.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.FullName):  </b>
+                @Model.OldInvoice.Room.MotelChain.Manager.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.Phone):  </b>
+                @Model.OldInvoice.Room.MotelChain.Manager.Phone</div>
             </div>
-
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.CreatedDate): </b>@Model.OldInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.StartDate): </b>@Model.OldInvoice.StartDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.EndDate): </b>@Model.OldInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ExpiredDate): </b>@Model.OldInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.PaidDate): </b>@Model.OldInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
+            <div style="width:100%; text-align:left;clear:both;">
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.StartDate):  </b>
+                @Model.OldInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.EndDate):  </b>
+                @Model.OldInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            </div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.CreatedDate):  </b>@Model.OldInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ExpiredDate):  </b>@Model.OldInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.PaidDate):  </b>@Model.OldInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
 
             <b>Tiền điện</b>
             <table class="table table-bordered">
@@ -301,10 +307,10 @@
                 <tbody>
                     <tr>
                         <td>
-                            @Model.OldInvoice.StartDate m3
+                            @Model.OldInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
-                            @Model.OldInvoice.EndDate m3
+                            @Model.OldInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
                             @((int)(Model.OldInvoice.EndDate.Value - Model.OldInvoice.StartDate).TotalDays) ngày
@@ -322,29 +328,33 @@
 
             <br />
             <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name): </b>@Model.NewInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address): </b>@Model.NewInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code): </b>@Model.NewInvoice.Room.Code</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name):  </b>@Model.NewInvoice.Room.MotelChain.Name</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address):  </b>@Model.NewInvoice.Room.MotelChain.Address</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code):  </b>@Model.NewInvoice.Room.Code</div>
 
             <div style="width:100%; text-align:left;clear:both">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.NewInvoice.Resident.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.NewInvoice.Resident.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):  </b>
+                @Model.NewInvoice.Resident.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):  </b>
+                @Model.NewInvoice.Resident.Phone</div>
             </div>
             <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:13%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):</b></div>
-                <div style="width:22%;float:left;">@Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="width:7%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):</b></div>
-                <div style="width:58%;float:left;">@Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):  </b>
+                @Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
+                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):  </b>
+                @Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
             </div>
+            <div style="width:100%; text-align:left;clear:both;">
+                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate):  </b>
+                @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate):  </b>
+                @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            </div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate):  </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate):  </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate):  </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
 
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate): </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate): </b>@Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate): </b>@Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate): </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate): </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</div>
-
+            <b>Tiền điện</b>
             <b>Tiền điện</b>
             <table class="table table-bordered">
                 <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
@@ -453,10 +463,10 @@
                 <tbody>
                     <tr>
                         <td>
-                            @Model.NewInvoice.StartDate m3
+                            @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
-                            @Model.NewInvoice.EndDate m3
+                            @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
                         </td>
                         <td>
                             @((int)(Model.NewInvoice.EndDate.Value - Model.NewInvoice.StartDate).TotalDays) ngày
