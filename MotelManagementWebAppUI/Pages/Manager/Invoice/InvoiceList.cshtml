@@ -5,7 +5,16 @@
      Layout = "_LayoutManager";
     ViewData["Title"] = "Danh sách hóa đơn";
 }
-<div id="room-list">
+
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <button style="width: 110px" class="collapsed d-flex btn btn-primary justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+        <i class="fa-solid fa-filter"></i>
+        <span>Bộ lọc</span>
+        <i class="fas fa-angle-down"></i>
+    </button>
+</div>
+
+<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
     <div class="mb-3">
         <form class="d-flex flex-column" method="post">
 
@@ -26,12 +35,15 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-evenly mt-2 mb-0">
-                <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
-                <button id="add-new-room" type="button" style="width: 100px; margin: 0" class="btn btn-primary btn-user btn-block">Thêm</button>
+                <button id="search-invoice" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
             </div>
         </form>
     </div>
-    <div style="overflow: auto; height: 450px">
+</div>
+
+<div id="room-list">
+
+    <div style="overflow: auto; height: 440px">
         <table class="table table-bordered">
             <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
                 <tr>
@@ -99,11 +111,11 @@
                             <td class="d-flex justify-content-center">
                                 <form method="post">
                                     <button type="button" onclick="window.location.href = '/invoice/detail/@item.Id'">
-                                        <i class="fa-regular fa-square-info"></i>
+                                        <i class="fa-solid fa-circle-info"></i>
                                     </button>
                                 </form>
 
-                            </td>   
+                            </td>
                         </tr>
                     }
                 }
@@ -117,8 +129,15 @@
             </tbody>
             <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray">
                 <tr>
-                    <td colspan=3 class="border-0 p-0">
-                        @if (Model.filterInvoiceOption != null)
+                    <td colspan=5 class="border-0">
+                    </td>
+                    <td class="border-0"></td>
+                    <td class="border-0">Tổng: @Model.filterInvoiceOption.Total</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    @if (Model.filterInvoiceOption != null)
                         {
                             <form method="post" class="row justify-content-center">
                                 @Html.HiddenFor(model => model.filterInvoiceOption.RoomCode)
@@ -147,38 +166,32 @@
                                 }
                             </form>
                         }
-                    </td>
-                    <td class="border-0 p-0"></td>
-                    <td class="border-0 p-0">Tổng: @Model.filterInvoiceOption.Total</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+</div>
 
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
 
-    @using BussinessObject.DTO
-    @using BussinessObject.Status
-    @using Microsoft.AspNetCore.Http
-    @inject IHttpContextAccessor HttpContextAccessor
-    @section scripts {
-    <script>
-        function getInvoiceDetail (id){
-                $.ajax({
-                    url: '@Url.Page("InvoiceList", "InvoiceDetail")',
-                    type: 'GET',
-                    data: {
-                        id: id
-                    },
-                    success: function (response) {
-                        if(!response.success){
+@using BussinessObject.DTO
+@using BussinessObject.Status
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+<script>
+    function getInvoiceDetail (id){
+            $.ajax({
+                url: '@Url.Page("InvoiceList", "InvoiceDetail")',
+                type: 'GET',
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    if(!response.success){
 
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
                     }
-                });
-        }
-    </script>
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+    }
+</script>
     }

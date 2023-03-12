@@ -5,20 +5,21 @@
 @{
     Layout = "_LayoutManager";
     ViewData["Title"] = "Kết thúc thuê phòng";
-
+    var total = 0L;
     long GetTotalInvoice(InvoiceDTO i)
     {
-        var waterConsume = i.WaterConsumptionEnd - i.WaterConsumptionEnd;
+        var waterConsume = i.WaterConsumptionEnd - i.WaterConsumptionStart;
         var totalWaterCost = waterConsume * i.WaterCost.Price;
 
-        var electricityConsume = i.ElectricityConsumptionEnd - i.ElectricityConsumptionEnd;
+        var electricityConsume = i.ElectricityConsumptionEnd - i.ElectricityConsumptionStart;
         var totalElectricCost = electricityConsume * i.ElectricityCost.Price;
 
         var dayUse = (int)(i.EndDate.Value - i.StartDate).TotalDays;
         var totalRentFee = dayUse * i.Room.RentFee;
 
         var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
-        return totalInvoice.Value;
+        total += totalInvoice ?? 0;
+        return totalInvoice ?? 0;
     }
 
     var id = this.Request.RouteValues["id"] ?? 0;
@@ -112,6 +113,16 @@
                         </th>
                     </tr>
                 }
+                <tr>
+                    <td colspan=5 scope="row"></td>
+                    <th scope="row">
+                        Tổng
+                    </th>
+                    <td>
+                        @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", total)
+                    </td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -130,34 +141,34 @@
 </div>
 
 <script>
-        function viewDetailInvocie(i) {
-          $.ajax({
-            url: "/manager/room/checkout/" + @id + "?handler=SetDataModal&index=" + i,
-            type: "GET",
-            data: {
-              index: i,
-            },
-            success: function (response) {
-               console.log(response);
-              $(".view-invoice-detail-modal").html(response);
-              var invoiceModal = $('#invoice-detail-partial-modal');
-              if(invoiceModal.length > 0){
-                  invoiceModal.modal({
-                  modal: true,
-                  title: "popup title",
-                  width: 1000,
-                  height: "auto",
-                  draggable: true,
-                  resizable: true,
-                });
-                invoiceModal.modal("toggle");
-              }
-            },
-            error: function (error) {
-              console.log(error);
-            },
-          });
-        }
+    function viewDetailInvocie(i) {
+      $.ajax({
+        url: "/manager/room/checkout/" + @id + "?handler=SetDataModal&index=" + i,
+        type: "GET",
+        data: {
+          index: i,
+        },
+        success: function (response) {
+           console.log(response);
+          $(".view-invoice-detail-modal").html(response);
+          var invoiceModal = $('#invoice-detail-partial-modal');
+          if(invoiceModal.length > 0){
+              invoiceModal.modal({
+              modal: true,
+              title: "popup title",
+              width: 1000,
+              height: "auto",
+              draggable: true,
+              resizable: true,
+            });
+            invoiceModal.modal("toggle");
+          }
+        },
+        error: function (error) {
+          console.log(error);
+        },
+      });
+    }
 
 
 </script>

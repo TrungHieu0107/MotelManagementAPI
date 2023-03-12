@@ -81,7 +81,7 @@ namespace MotelManagementWebAppUI.Pages.Room
         }
 
 
-        public void OnPostPrevious()
+        public void OnPostPrevious(long index)
         {
             string url = "http://localhost:5001/api/Room/get-rooms?" +
               "roomCode=" + filterRoomOption?.roomCode +
@@ -89,12 +89,12 @@ namespace MotelManagementWebAppUI.Pages.Room
               "&maxFee=" + filterRoomOption?.maxFee +
               "&status=" + (filterRoomOption.status != null ? "" + (int)filterRoomOption.status : "") +
               "&appliedDateAfter=" + filterRoomOption?.appliedDateAfter +
-              "&currentPage=" + (filterRoomOption?.CurrentPage - 1) +
+              "&currentPage=" + (filterRoomOption?.CurrentPage - index) +
               "&pageSize=" + filterRoomOption?.PageSize;
             GetProduct(url);
         }
 
-        public void OnPostNext()
+        public void OnPostNext(long index)
         {
             string url = "http://localhost:5001/api/Room/get-rooms?" +
               "roomCode=" + filterRoomOption?.roomCode +
@@ -102,7 +102,7 @@ namespace MotelManagementWebAppUI.Pages.Room
               "&maxFee=" + filterRoomOption?.maxFee +
               "&status=" + (filterRoomOption.status != null ? "" + (int)filterRoomOption.status : "") +
               "&appliedDateAfter=" + filterRoomOption?.appliedDateAfter +
-              "&currentPage=" + (filterRoomOption?.CurrentPage + 1) +
+              "&currentPage=" + (filterRoomOption?.CurrentPage + index) +
               "&pageSize=" + filterRoomOption?.PageSize;
             GetProduct(url);
         }

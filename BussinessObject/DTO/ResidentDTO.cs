@@ -15,7 +15,7 @@ namespace BussinessObject.DTO
         public string Password { get; set; }
 
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "The Identity Card can not be empty")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Số CCCD không được trống")]
         [StringLength(12, MinimumLength = 12, ErrorMessage = "Identity Card field must have 12 character!")]
         [RegularExpression(@"^([0-9]{12})$", ErrorMessage = "Invalid Indentity Card Number.")]
         public string IdentityCardNumber { get; set; }

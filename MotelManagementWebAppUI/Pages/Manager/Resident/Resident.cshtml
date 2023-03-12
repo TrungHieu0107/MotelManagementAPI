@@ -21,10 +21,10 @@
         @*@await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", null, new ViewDataDictionary(ViewData) { { "room", Model.NewRoom }, {"context", context } })*@
         <partial name="~/Pages/Manager/Resident/_EditResidentPartial.cshtml" model="@Model.residentUpdateDTO" />
     </div>
-   
 
-   
-  
+
+
+
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -35,12 +35,12 @@
                         </button>
                         <button class="btn btn-success" id="addResidentButton" data-toggle="modal" data-target="#addResidentModal">
 
-                          
-                          @using Microsoft.AspNetCore.Http 
-                        @inject IHttpContextAccessor HttpContextAccessor 
-                        @section scripts {
 
-                   
+                            @using Microsoft.AspNetCore.Http 
+                            @inject IHttpContextAccessor HttpContextAccessor 
+                            @section scripts {
+
+
                             <script>
                                 $(document).ready(function () {
                                         $("#addResidentButton").click(function () {
@@ -52,10 +52,9 @@
                                       height: 300,
                                       draggable: true,
                                       resizable: true,
-                                    
+
                                     });
                                   });
-
                                         $("#create-resident-form").submit(function (event) {
                                             event.preventDefault();
                                             let UserName = $("#UserName").val();
@@ -72,7 +71,7 @@
                                                     event.preventDefault();
                                                 }
                                         if ($(this).valid()) {
-                                               
+
                                          $.ajax({
                                                     url: "http://localhost:5001/api/Resident/add-resident",
                                                     data: JSON.stringify({
@@ -119,11 +118,11 @@
                                   });
                                 });
 
-                                   
+
 
 
                             </script>
-                           
+
 
 
 
@@ -186,7 +185,7 @@
     });
 
 
-   
+
 
 
 
@@ -197,14 +196,14 @@
 <table class="table table-striped" id="filter">
     <thead>
         <tr>
-        
+
             <th scope="col">#</th>
             <th style="display:none;">ID</th>
             <th scope="col">Họ Và Tên</th>
             <th scope="col">Số chứng minh nhân dân</th>
             <th scope="col">Số điện thoại</th>
             <th>Trạng Thái</th>
-        
+
         </tr>
     </thead>
     <tbody>
@@ -226,42 +225,42 @@
 
 
 
-                    <tr>
-                        <td>
+                                <tr>
+                                    <td>
                             @count
-                        </td>
-                        <td style="display:none;">
+                                    </td>
+                                    <td style="display:none;">
                             @Html.DisplayFor(m => item.Id)
-                        </td>
-                        <td>
+                                    </td>
+                                    <td>
                             @Html.DisplayFor(m => item.FullName)
-                        </td>
-                        <td id="identity">
+                                    </td>
+                                    <td id="identity">
                             @Html.DisplayFor(m => item.IdentityCardNumber)
-                        </td>
-                        <td>
+                                    </td>
+                                    <td>
                             @Html.DisplayFor(m => item.Phone)
-                        </td>
-                        <td>
+                                    </td>
+                                    <td>
                             @if (item.Status == "ACTIVE")
                             {
-                                <span class="text-success">Đang hoạt động</span>
+                                                <span class="text-success">Đang hoạt động</span>
                             }
                             else if (item.Status == "INACTIVE")
                             {
-                                <span class="text-danger">Đã khóa</span>
+                                                <span class="text-danger">Đã khóa</span>
                             }
                             else if (item.Status == "LATE_PAYMENT")
                             {
 
 
-                                <span class="text-warning">Trễ hóa đơn</span>
+                                                <span class="text-warning">Trễ hóa đơn</span>
                             }
-                        </td>
-                        <td>
-                            <button class="editBtn btn btn-primary" data-toggle="modal" data-target="#editModal" data-identitycardnumber="@item.IdentityCardNumber"><i class="fa-solid fa-user-pen"></i></button>
-                        </td>
-                    </tr>
+                                    </td>
+                                    <td>
+                                        <button class="editBtn btn btn-primary" data-toggle="modal" data-target="#editModal" data-identitycardnumber="@item.IdentityCardNumber"><i class="fa-solid fa-user-pen"></i></button>
+                                    </td>
+                                </tr>
 
                 }
             }
@@ -284,8 +283,8 @@
                     success: function (response) {
                         if (response.success) {
                             var residentData = response.residentData;
-                           
-                        
+
+
                             $('#EditFullname').val(residentData?.fullName);
                             $('#EditIdentityCardNumber').val(residentData?.identityCardNumber);
                             $('#EditPhone').val(residentData?.phone);
@@ -293,18 +292,18 @@
                             $('#EditId').val(residentData?.id)
                             $("#EditStatus").val(residentData?.status);
                             var editStatus = parseInt($("#EditStatus").val()); // Chuyển đổi giá trị của phần tử HTML thành kiểu số
-                         
+
                             if (editStatus === 1) {
-                               
+
                                 $("#activateBtn").show();
                                 $("#deactivateBtn").hide();
                             } else if (editStatus == 0) {
-                             
+
                                 $("#deactivateBtn").show();
 
                                 $("#activateBtn").hide();
                             } else if (editStatus === 2){
-                                  
+
                                 $("#deactivateBtn").show();
 
                                 $("#activateBtn").hide();
@@ -334,32 +333,32 @@
                 $('#editResidentModal').removeClass('show');
             });
 
-         
+
             $('#saveChangesBtn').click(function () {
                 var form = $('#editResidentForm');
-              
+
                 form.submit(function (event) {
                     event.preventDefault();
-                   
+
                     let Password = $('#EditPassword').val();
                     let IdentityCardNumber = $('#EditIdentityCardNumber').val();
                     let Phone = $('#EditPhone').val();
                     let FullName = $('#EditFullname').val();
                     let Id =   $('#EditId').val();
                     let confimEdPassword = $('#confirmEdPassword').val();
-                    
+
                     if ($(this).valid()) {
-                    
+
                         $.ajax({
                             url: "http://localhost:5001/api/Resident/update-resident?id=" + Id,
                             data: JSON.stringify({
-                              
+
                                 Password: Password,
                                 IdentityCardNumber: IdentityCardNumber,
                                 Phone: Phone,
                                 FullName: FullName,
                                 ConfirmPassword: confimEdPassword
-                                
+
                             }),
                             contentType: "application/json",
                             type: "PUT",
@@ -400,10 +399,14 @@
 
 
         $("#deactivateBtn").click(function () {
-         
             let IdentityCardNumber = $('#EditIdentityCardNumber').val();
-            if (confirm("Bạn có chắc chắn muốn khóa tài khoản này?")) {
-                let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+            showConfirm("<p>Bạn có chắc chắn muốn khóa tài khoản này?</p>", () => {
+                deactiveResident();
+            });
+        });
+
+        function deactiveResident(){
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
                 $.ajax({
                     url: "http://localhost:5001/api/Resident/deactive-resident?idCard=" + IdentityCardNumber,
                     contentType: "application/json",
@@ -435,15 +438,16 @@
                     $("#error-message-ed").show();
                     },
                 });
-            }
-
-
-        });
+        }
 
         $("#activateBtn").click(function () {
+            showConfirm("<p>Bạn có chắc chắn muốn mở khóa tài khoản này?</p>", () => {
+                activeResident();
+            });
+        });
+
+        function activeResident(){
             let IdentityCardNumber = $('#EditIdentityCardNumber').val();
-            if (confirm("Bạn có chắc chắn muốn mở khóa tài khoản này?")) {
-                let IdentityCardNumber = $('#EditIdentityCardNumber').val();
                 $.ajax({
                     url: "http://localhost:5001/api/Resident/active-resident?idCard=" + IdentityCardNumber,
                     contentType: "application/json",
@@ -475,12 +479,9 @@
                         $("#error-message-ed").show();
                     },
                 });
-            }
-
-
-        });
+        }
     </script>
-  
+
 </table>
 <form method="post" class="row justify-content-center">
             <input type="hidden" name="fullName" asp-for="@Model.FullName" />
@@ -488,26 +489,26 @@
             <input type="hidden" name="phone" asp-for="@Model.Phone" />
             <input type="hidden" name="idCard" asp-for="@Model.IdCard" />
             <input name="CurrentPage" value="@Model.ResultPagination.CurrentPage" hidden/>
-            @if (Model.ResultPagination.CurrentPage > 1)
-            {
-                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous">Trước</button>
-            }
-            else
-            {
-                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled>Trước</button>
-            }
+    @if (Model.ResultPagination.CurrentPage > 1)
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous">Trước</button>
+    }
+    else
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled>Trước</button>
+    }
             <span class="col-1 text-center" style="vertical-align: middle">
-                @Model.ResultPagination.CurrentPage
+        @Model.ResultPagination.CurrentPage
             </span>
-         
-            @if (Model.ResultPagination.Total > Model.ResultPagination.CurrentPage * Model.ResultPagination.PageSize)
-            {
-                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next">Tiếp</button>
-            }
-            else
-            {
-                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled>Tiếp</button>
-            }
+
+    @if (Model.ResultPagination.Total > Model.ResultPagination.CurrentPage * Model.ResultPagination.PageSize)
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next">Tiếp</button>
+    }
+    else
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled>Tiếp</button>
+    }
 </form>
 <partial name="_ValidationScriptsPartial" />
 

@@ -4,18 +4,18 @@
     Layout = "_LayoutManager";
     ViewData["Title"] = "Danh sách phòng";
 }
-<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-    Layouts
-    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-</a>
-<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-    <nav class="sb-sidenav-menu-nested nav">
-        <a class="nav-link" href="layout-static.html">Static Navigation</a>
-        <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-    </nav>
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <button style="width: 110px" class="collapsed d-flex btn btn-primary justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+        <i class="fa-solid fa-filter"></i>
+        <span>Bộ lọc</span>
+        <i class="fas fa-angle-down"></i>
+    </button>
+    <button id="add-new-room" type="button" style="width: 110px; margin: 0" class="btn btn-success btn-user btn-block ms-3">
+        <i class="fa-solid fa-plus"></i>
+        Thêm
+    </button>
 </div>
-<div id="room-list">
+<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
     <div class="mb-3">
         <form class="d-flex flex-column" method="get">
 
@@ -45,12 +45,15 @@
             </div>
             <div class="d-flex align-items-center justify-content-evenly mt-2 mb-0">
                 <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
-                <button id="add-new-room" type="button" style="width: 100px; margin: 0" class="btn btn-primary btn-user btn-block">Thêm</button>
+
             </div>
         </form>
     </div>
-    <div style="overflow: auto; height: 450px">
-        <table class="table table-bordered">
+</div>
+<div id="room-list">
+
+    <div style="overflow: auto; height: 490px">
+        <table class="table table-bordered" style="overflow: auto; height: 490px">
             <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
                 <tr>
                     <th>
@@ -121,7 +124,7 @@
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                     <button type="button" onclick="window.location.href = '/room/room-detail/@item.Id'">
-                                        <i class="fa-regular fa-square-info"></i>
+                                        <i class="fa-solid fa-circle-info"></i>
                                     </button>
                                 </form>
                             </td>
@@ -131,17 +134,17 @@
                 else
                 {
                     <tr class="text-center">
-                        <td colspan=5 class="text-center">Không có bất kì dữ liệu nào</td>
+                        <td colspan=7 class="text-center">Không có bất kì dữ liệu nào</td>
                     </tr>
                 }
 
             </tbody>
-            <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray">
+            <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray; padding-top: -5px; padding-bottom: 5px">
                 <tr>
-                    <td colspan=3 class="border-0 p-0">
+                    <td colspan=5 class="border-0">
                         @if (Model.filterRoomOption != null)
                         {
-                            <form method="post" class="row justify-content-center">
+                            <form method="post" class="row justify-content-start align-items-center ms-3">
                                 <input id="room-code-search" asp-for="@Model.filterRoomOption.roomCode" class="form-control" hidden />
                                 <input id="min-fee-search" asp-for="@Model.filterRoomOption.minFee" class="form-control" hidden />
                                 <input id="nax-fee-search" asp-for="@Model.filterRoomOption.maxFee" class="form-control" hidden />
@@ -151,35 +154,44 @@
                                 </select>
                                 <input id="current-page-search" name="filterRoomOption.CurrentPage" value="@Model.filterRoomOption.CurrentPage" hidden />
                                 <input id="page-size-search" name="filterRoomOption.PageSize" value="@Model.filterRoomOption.PageSize" hidden />
-                                @if (Model.filterRoomOption.CurrentPage > 1)
+                                @for (var i = 5; i >= 1; i--)
                                 {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous"><i class="fa-solid fa-angle-left"></i></button>
+                                    if (Model.filterRoomOption.CurrentPage - i > 0)
+                                    {
+                                        <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Previous" asp-route-index="@i">
+                                            @*<i class="fa-solid fa-angle-left"></i>*@
+                                            @(Model.filterRoomOption.CurrentPage - i)
+                                        </button>
+                                    }
                                 }
-                                else
-                                {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled><i class="fa-solid fa-angle-left"></i></button>
-                                }
-                                <p class="col-1 text-center" style="vertical-align: middle">
+                                <button class="btn btn-light col-1 ms-1 me-1" style="width: 40px" type="button">
                                     @Model.filterRoomOption.CurrentPage
-                                </p>
+                                </button>
+                                @for (var i = 0; i <= 5; i++)
+                                {
+                                    if (Model.filterRoomOption.Total > (Model.filterRoomOption.CurrentPage + i) * Model.filterRoomOption.PageSize)
+                                    {
+                                        <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Next" asp-route-index="@(i + 1)">
+                                            @*<i class="fa-solid fa-angle-left"></i>*@
+                                            @(Model.filterRoomOption.CurrentPage + i + 1)
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
 
-                                @if (Model.filterRoomOption.Total > Model.filterRoomOption.CurrentPage * Model.filterRoomOption.PageSize)
-                                {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next"><i class="fa-solid fa-angle-right"></i></button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled><i class="fa-solid fa-angle-right"></i></button>
-                                }
                             </form>
                         }
                     </td>
-                    <td class="border-0 p-0"></td>
-                    <td class="border-0 p-0">Tổng: @Model.filterRoomOption.Total</td>
+                    <td class="border-0"><b>Tổng:</b></td>
+                    <td class="border-0"> @Model.filterRoomOption.Total</td>
                 </tr>
             </tfoot>
         </table>
     </div>
+
 
     <partial name="_ValidationScriptsPartial" />
 
@@ -261,8 +273,6 @@
         </div>
     </div>
 </div>
-
-
 
 @using BussinessObject.DTO
 @using BussinessObject.Status
