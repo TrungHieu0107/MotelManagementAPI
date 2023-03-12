@@ -1,5 +1,6 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Invoice
 {
+    [Authorize(Roles = "Manager")]
     public class InvoiceDetailModel : PageModel
     {
         private readonly HttpClient _httpClient;
@@ -45,13 +47,28 @@ namespace MotelManagementWebAppUI.Pages.Invoice
             return Page();
         }
 
-        public IActionResult OnGetPayInvoice(long residentId, long inoviceId)
+        public IActionResult OnGetPayInvoice(long invoiceId, string roomCode)
         {
-            return new JsonResult(new
+            string url = "http://localhost:5001/api/Invoice/paid-invocie/" + roomCode;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
+              ("Bearer", HttpContext.Request.Cookies["token"]);
+            var response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
+            if (response.IsSuccessStatusCode)
             {
-                success = false,
-                message = "Xác nhận thanh toán không thành công",
-            });
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Xác nhận thanh toán thành công",
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Xác nhận thanh toán không thành công",
+                });
+            }
         }
     }
 }

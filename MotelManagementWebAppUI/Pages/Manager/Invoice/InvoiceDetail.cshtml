@@ -3,8 +3,8 @@
 @model MotelManagementWebAppUI.Pages.Invoice.InvoiceDetailModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Invoice Details";
+    Layout = "_LayoutManager";
+    ViewData["Title"] = "Chi tiết hóa đơn";
 
     var waterConsume = Model.invoiceDTO?.WaterConsumptionEnd - Model.invoiceDTO?.WaterConsumptionStart;
     var totalWaterCost = waterConsume * Model.invoiceDTO?.WaterCost?.Price;
@@ -16,11 +16,6 @@
     var totalRentFee = dayUse * Model.invoiceDTO?.Room.RentFee;
 
     var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
-
-    var idInvoice = Model.invoiceDTO.Id;
-    var idResident = Model.invoiceDTO.Resident.Id;
-
-
 }
 @if (@Model.invoiceDTO != null)
 {
@@ -66,7 +61,10 @@
                 @Model.invoiceDTO.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
             </span>
         </div>
-        <div><b>@Html.DisplayNameFor(Model => Model.invoiceDTO.PaidDate):  </b>@Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.PaidDate):  </b>
+            <span class="col-3">@(Model.invoiceDTO.PaidDate.HasValue ? Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) : "-")</span>
+        </div>
 
         <div class="row">
             <b class="col-2">Mô tả </b>
@@ -128,10 +126,13 @@
         </div>
     </div>
     <form id="form-pay-invoice" method="post" class="d-flex justify-content-end me-3">
-        <button style="width: fit-content;"
-            class="btn btn-primary btn-user btn-block ms-3" type="button" onclick="confirmCheckPaid()">
-            Thanh toán hóa đơn
-        </button>
+        @if (!Model.invoiceDTO.PaidDate.HasValue)
+        {
+            <button style="width: fit-content;"
+                class="btn btn-primary btn-user btn-block ms-3" type="button" onclick="confirmCheckPaid()">
+                Thanh toán hóa đơn
+            </button>
+        }
         <button type="button" class="btn btn-secondary ms-3 me-3" onclick="window.location.href='/invoice-list'">Trở về</button>
     </form>
 }
@@ -163,43 +164,42 @@ else
 
 <script>
     $(document).ready(function () {
-      var modalError = $("#error-invoice-list-modal");
-      console.log(modalError);
+  var modalError = $("#error-invoice-list-modal");
+  console.log(modalError);
 
-      if (modalError) {
-        modalError.modal({
-          modal: true,
-          width: 200,
-          height: 150,
-          draggable: true,
-          resizable: true,
-        });
-
-        modalError.modal("toggle");
-      }
+  if (modalError) {
+    modalError.modal({
+      modal: true,
+      width: 200,
+      height: 150,
+      draggable: true,
+      resizable: true,
     });
 
-    function confirmCheckPaid() {
-          showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
-            payInvoice();
-            });
-    }
+    modalError.modal("toggle");
+  }
+});
 
-    function payInvoice(){
-        let data = {
-           residentId: @idResident,
-           inoviceId: @idInvoice
-        }
+function confirmCheckPaid() {
+  showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
+    payInvoice();
+  });
+}
 
-        console.log(data);
+function payInvoice(){
+  let data = {
+    invoiceId: @Model.invoiceDTO.Id,
+    roomCode: @Model.invoiceDTO.Room.Code
+  };
 
-       $.ajax({
+  console.log(data);
+
+  $.ajax({
             url: '@Url.Page("InvoiceDetail", "PayInvoice")',
             type: "GET",
             data: data,
             success: function (response) {
-              if (!response.success) {
-                $("#notify-content").html("Xác nhận thanh toán không thành công");
+                $("#notify-content").html(response.message);
                   $("#notification").modal({
                     modal: true,
                     width: "auto",
@@ -208,12 +208,15 @@ else
                     resizable: true,
                   });
                   $("#notification").modal("toggle");
-                }
+                  $("#notification").on("hidden.bs.modal" , function () {
+                      if(response.success){
+                           window.location.reload();
+                      }
+                  });
             },
             error: function (error) {
               console.log(error);
             },
         });
-    }
-
+}
 </script>

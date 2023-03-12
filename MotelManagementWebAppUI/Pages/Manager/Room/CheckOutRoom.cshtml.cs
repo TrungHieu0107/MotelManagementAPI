@@ -1,5 +1,6 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Room
 {
+    [Authorize(Roles = "Manager")]
     public class CheckOutRoomModel : PageModel
     {
         private readonly HttpClient _httpClient;
@@ -48,7 +50,7 @@ namespace MotelManagementWebAppUI.Pages.Room
         public async Task OnGetAsync(long id)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
-               ("Bearer", HttpContext.Request.Cookies["token"]);
+                ("Bearer", HttpContext.Request.Cookies["token"]);
             string url = "http://localhost:5001/api/Room/detail?" +
                 "roomId=" + id;
             var response = await _httpClient.GetAsync(url);
@@ -104,13 +106,13 @@ namespace MotelManagementWebAppUI.Pages.Room
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<CommonResponse>(content);
-                TempData["BookRoomErrorMessage"] = JsonConvert.DeserializeObject<List<ResidentDTO>>(JsonConvert.SerializeObject(result.Message));
-                return RedirectToPage("/Room/RoomDetail", new { id = RoomId.ToString() });
+                TempData["BookRoomErrorMessage"] = result.Message;
+                return RedirectToPage("RoomDetail", new { id = RoomId.ToString() });
             }
             else
             {
                 TempData["BookRoomSuccessMessage"] = "Xác nhận thanh toán hóa đơn và kết thúc thuê phòng";
-                return RedirectToPage("/Room/RoomDetail", new { id = RoomId.ToString() });
+                return RedirectToPage("RoomDetail", new { id = RoomId.ToString() });
             }
         }
 

@@ -9,9 +9,11 @@ using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MotelManagementWebAppUI.Pages.WaterCost
 {
+    [Authorize(Roles = "Admin")]
     public class WaterCostModel : PageModel
     {
 

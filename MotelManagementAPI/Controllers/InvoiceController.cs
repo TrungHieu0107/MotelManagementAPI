@@ -1,4 +1,4 @@
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.CommonConstant;
 using DataAccess.Service;
@@ -92,12 +92,12 @@ namespace MotelManagementAPI.Controllers
 
                 if (check <= 0)
                 {
-                    commonResponse.Message = "Some thing went wrong, plase check the data again";
+                    commonResponse.Message = "Có lỗi xảy ra ở máy chủ";
                     return BadRequest(commonResponse);
                 }
                 else
                 {
-                    commonResponse.Message = " Pay Successfully";
+                    commonResponse.Message = "Thanh toán hóa đơn thành công";
                     return Ok(commonResponse);
 
                 }

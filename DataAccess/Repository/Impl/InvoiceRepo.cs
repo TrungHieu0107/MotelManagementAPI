@@ -175,9 +175,10 @@ namespace DataAccess.Repository
                                     invoice.Room.Code == RoomCode
                                 && 
                                     (
-                                        invoice.Status == InvoiceStatus.NOT_PAID_YET 
-                                    ||
-                                        invoice.Status == InvoiceStatus.LATE)
+                                        invoice.Status == InvoiceStatus.NOT_PAID_YET ||
+                                        invoice.Status == InvoiceStatus.LATE
+                                    )
+                                && invoice.EndDate != null
                                     )
                           .Include(x => x.WaterCost)
                           .Include(x => x.ElectricityCost)
@@ -299,7 +300,7 @@ namespace DataAccess.Repository
                 &&
                 (managerId != -1 ? invoice.Room.MotelChain.ManagerId == managerId : true)
                 && 
-                (invoice.PaidDate.HasValue ? (paidDate.HasValue ? invoice.PaidDate.Value.Date == paidDate.Value.Date : true) : false)
+                (invoice.PaidDate.HasValue ? (paidDate.HasValue ? invoice.PaidDate.Value.Date == paidDate.Value.Date : true) : true)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,
@@ -355,7 +356,7 @@ namespace DataAccess.Repository
 
             pagination.Total = listAllInvoice.LongCount();
 
-            return listAllInvoice.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
+            return listAllInvoice.OrderByDescending(i => i.StartDate).Skip((pagination.CurrentPage - 1) * pagination.PageSize)
                 .Take(pagination.PageSize);
 
         }

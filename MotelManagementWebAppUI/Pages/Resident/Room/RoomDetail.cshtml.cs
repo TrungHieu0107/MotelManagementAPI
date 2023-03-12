@@ -1,5 +1,6 @@
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Resident.Room
 {
+    [Authorize(Roles = "Resident")]
     public class RoomDetailModel : PageModel
     {
         private readonly HttpClient _httpClient;

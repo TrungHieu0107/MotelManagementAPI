@@ -1,6 +1,7 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.Status;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Room
 {
+    [Authorize(Roles = "Manager")]
     public class BookRoomModel : PageModel
     {
         [BindProperty, DataType(DataType.Date)]
@@ -118,12 +120,12 @@ namespace MotelManagementWebAppUI.Pages.Room
                 var content = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<CommonResponse>(content);
                 TempData["BookRoomErrorMessage"] = JsonConvert.DeserializeObject<string>(JsonConvert.SerializeObject(result.Message));
-                return RedirectToPage("/Room/RoomDetail", new { id = RoomId.ToString() });
+                return RedirectToPage("RoomDetail", new { id = RoomId.ToString() });
             }
             else
             {
                 TempData["BookRoomSuccessMessage"] = "Đặt phòng thành công";
-                return RedirectToPage("/Room/RoomDetail", new { id = RoomId.ToString() });
+                return RedirectToPage("RoomDetail", new { id = RoomId.ToString() });
             }
         }
     }

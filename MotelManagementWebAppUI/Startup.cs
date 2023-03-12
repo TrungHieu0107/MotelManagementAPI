@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MotelManagementWebAppUI.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace MotelManagementWebAppUI
                options =>
                {
                    options.LoginPath = "/Account/Login";
-                   options.AccessDeniedPath = "/Acount/Forbiddent/";
+                   options.AccessDeniedPath = "/Forbiddent";
                });
         }
 
@@ -59,7 +60,7 @@ namespace MotelManagementWebAppUI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            //app.UseMiddleware<CookieMiddleware>();
             app.UseStaticFiles();
             app.UseSession();
             app.UseHttpsRedirection();

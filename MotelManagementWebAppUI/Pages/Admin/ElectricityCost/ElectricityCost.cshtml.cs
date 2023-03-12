@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MotelManagementWebAppUI.Pages.ElectricityCost
 {
-   
+   [Authorize(Roles = "Admin")]
     public class ElectricityCostModel : PageModel
     {
 

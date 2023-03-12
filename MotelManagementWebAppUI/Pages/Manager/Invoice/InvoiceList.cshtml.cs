@@ -1,5 +1,6 @@
 ﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace MotelManagementWebAppUI.Pages.Invoice
 {
+    [Authorize(Roles = "Manager")]
     public class InvoiceListModel : PageModel
     {
         private readonly HttpClient _httpClient;
