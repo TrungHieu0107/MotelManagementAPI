@@ -138,7 +138,20 @@
               index: i,
             },
             success: function (response) {
+               console.log(response);
               $(".view-invoice-detail-modal").html(response);
+              var invoiceModal = $('#invoice-detail-partial-modal');
+              if(invoiceModal.length > 0){
+                  invoiceModal.modal({
+                  modal: true,
+                  title: "popup title",
+                  width: 1000,
+                  height: "auto",
+                  draggable: true,
+                  resizable: true,
+                });
+                invoiceModal.modal("toggle");
+              }
             },
             error: function (error) {
               console.log(error);

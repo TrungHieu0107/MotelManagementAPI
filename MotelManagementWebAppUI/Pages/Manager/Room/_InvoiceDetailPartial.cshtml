@@ -24,12 +24,12 @@
 
 @if (Model != null)
 {
-    <div class="modal fade" id="invoice-detail-partial-modal" style="width: 1500px">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="modal fade" id="invoice-detail-partial-modal" >
+        <div class="modal-dialog modal-lg d-flex h-100">
+            <div class="modal-content m-auto" >
                 <div class="modal-header">
                     <h4 class="modal-title">Thông tin hóa đơn</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#invoice-detail-partial-modal').modal('toggle')">&times;</button>
                 </div>
                 <div class="modal-body">
 
@@ -134,6 +134,11 @@
                         </div>
                     </div>
 
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="$('#invoice-detail-partial-modal').modal('toggle')">
+                        Đóng
+                    </button>
                 </div>
             </div>
         </div>

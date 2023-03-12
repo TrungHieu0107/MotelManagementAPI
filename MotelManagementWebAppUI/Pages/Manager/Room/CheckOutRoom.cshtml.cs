@@ -87,6 +87,8 @@ namespace MotelManagementWebAppUI.Pages.Room
             NewTotalWaterCost = ((long)(NewInvoice.WaterConsumptionEnd - NewInvoice.WaterConsumptionStart)) * NewInvoice.WaterCost.Price;
             NewTotalRentFee = (long)(NewInvoice.Room.RentFee * (int)(NewInvoice.EndDate.Value - NewInvoice.StartDate).TotalDays);
             NewTotal = NewTotalElectricityCost + NewTotalWaterCost + NewTotalRentFee;
+
+            TempData["listInvoice"] = JsonConvert.SerializeObject(InvoiceDTOs);
         }
 
         public async Task<IActionResult> OnPostCheckOutAsync()
@@ -119,8 +121,11 @@ namespace MotelManagementWebAppUI.Pages.Room
 
         public IActionResult OnGetSetDataModal(long id, int index)
         {
-            //return Partial("_MyPartialView", InvoiceDTOs[index]);
-            return null;
+
+            InvoiceDTOs = JsonConvert.DeserializeObject<List<InvoiceDTO>>(TempData["listInvoice"].ToString());
+            TempData["listInvoice"] = JsonConvert.SerializeObject(InvoiceDTOs);
+
+            return Partial("~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml", InvoiceDTOs[index]);
         }
     }
 }
