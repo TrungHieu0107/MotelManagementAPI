@@ -14,7 +14,7 @@ namespace BussinessObject.DTO
         public long ElectricityCostId { get; set; }
         [Display(Name = "Số nước bắt đầu tính hóa đơn")]
         public int WaterConsumptionStart { get; set; }
-        [Display(Name = "Số điện kết thúc tính hóa đơn")]
+        [Display(Name = "Số nước kết thúc tính hóa đơn")]
         public int? WaterConsumptionEnd { get; set; }
         public long WaterCostId { get; set; }
 

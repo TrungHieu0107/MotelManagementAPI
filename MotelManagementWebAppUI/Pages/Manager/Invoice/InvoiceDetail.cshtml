@@ -1,16 +1,288 @@
 ﻿@page "/invoice/detail/{id}"
+@using System.Globalization
 @model MotelManagementWebAppUI.Pages.Invoice.InvoiceDetailModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Invoice Details";
+
+    var waterConsume = Model.invoiceDTO?.WaterConsumptionEnd - Model.invoiceDTO?.WaterConsumptionStart;
+    var totalWaterCost = waterConsume * Model.invoiceDTO?.WaterCost?.Price;
+
+    var electricityConsume = Model.invoiceDTO?.ElectricityConsumptionEnd - Model.invoiceDTO?.ElectricityConsumptionStart;
+    var totalElectricCost = electricityConsume * Model.invoiceDTO?.ElectricityCost?.Price;
+
+    var dayUse = (int)(Model.invoiceDTO?.EndDate.Value - Model.invoiceDTO?.StartDate)?.TotalDays;
+    var totalRentFee = dayUse * Model.invoiceDTO?.Room.RentFee;
+
+    var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+
+    var idInvoice = Model.invoiceDTO.Id;
+    var idResident = Model.invoiceDTO.Resident.Id;
+
+
+}
+@if (@Model.invoiceDTO != null)
+{
+    <div>
+        <div><h3>Thông tin hóa đơn</h3></div>
+        <div class="row">
+            <b class="col-2">Phòng trọ: </b>
+            <span class="col-10">
+                Phòng @Model.invoiceDTO.Room.Code - @Model.invoiceDTO.Room.MotelChain.Name - @Model.invoiceDTO.Room.MotelChain.Address
+            </span>
+        </div>
+
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.FullName):  </b>
+            <span class="col-3">@Model.invoiceDTO.Resident.FullName</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.Phone):  </b>
+            <span class="col-3">@Model.invoiceDTO.Resident.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.FullName):  </b>
+            <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.FullName</span>
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.Phone):  </b>
+            <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.StartDate):  </b>
+            <span class="col-3">@Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.EndDate):  </b>
+            <span class="col-3">@Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.CreatedDate):  </b>
+            <span class="col-3">
+                @Model.invoiceDTO.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+            </span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.ExpiredDate):  </b>
+            <span class="col-3">
+                @Model.invoiceDTO.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+            </span>
+        </div>
+        <div><b>@Html.DisplayNameFor(Model => Model.invoiceDTO.PaidDate):  </b>@Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+
+        <b>Tiền điện</b>
+        <table class="table table-bordered">
+            <thead style="background-color:gray" class="text-white">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.ElectricityConsumptionStart)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.ElectricityConsumptionEnd)
+                    </th>
+                    <th>
+                        Lượng tiêu thụ
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.ElectricityCost.Price)
+                    </th>
+                    <th>
+                        Tổng tiền điện
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        @Model.invoiceDTO.ElectricityConsumptionStart kWh
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.ElectricityConsumptionEnd kWh
+                    </td>
+                    <td>
+                        @electricityConsume kWh
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.ElectricityCost.Price VNĐ/kWh
+                    </td>
+                    <td>
+                        @totalElectricCost VNĐ
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <b>Tiền nước</b>
+        <table class="table table-bordered">
+            <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.WaterConsumptionStart)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.WaterConsumptionEnd)
+                    </th>
+                    <th>
+                        Lượng tiêu thụ
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.WaterCost.Price)
+                    </th>
+                    <th>
+                        Tổng tiền nước
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        @Model.invoiceDTO.WaterConsumptionStart m3
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.WaterConsumptionEnd m3
+                    </td>
+                    <td>
+                        @waterConsume m3
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.WaterCost.Price VNĐ/m3
+                    </td>
+                    <td>
+                        @totalWaterCost VNĐ
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <b>Tiền phòng</b>
+        <table class="table table-bordered">
+            <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.StartDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.EndDate)
+                    </th>
+                    <th>
+                        Số ngày ở
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(Model => Model.invoiceDTO.Room.RentFee)
+                    </th>
+                    <th>
+                        Tổng tiền phòng
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        @Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+                    </td>
+                    <td>
+                        @dayUse ngày
+                    </td>
+                    <td>
+                        @Model.invoiceDTO.Room.RentFee VNĐ/ngày
+                    </td>
+                    <td>
+                        @totalRentFee VNĐ
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row">
+            <b class="col-2">Tổng: </b>
+            <span class="col-5" id="total-invoice">@totalInvoice VNĐ</span>
+        </div>
+    </div>
+    <form id="form-pay-invoice" method="post" class="d-flex justify-content-end me-3">
+        <button style="width: fit-content;"
+            class="btn btn-primary btn-user btn-block ms-3" type="button" onclick="confirmCheckPaid()">
+            Thanh toán hóa đơn
+        </button>
+        <button type="button" class="btn btn-secondary ms-3 me-3" onclick="window.location.href='/invoice-list'">Trở về</button>
+    </form>
+}
+else
+{
+    <div id="error-invoice-list-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#error-invoice-list-modal').modal('toggle')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="delete-object-form">
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <span>Không tìm thấy hóa đơn nào</span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="window.location.href ='/invoice-list'">Đóng</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 }
 
-@*<h1>@Model.invoiceDTO.CreatedDate</h1>*@
-<div>
-    <h3>
-        Thông tin chi tiết hóa đơn
-    </h3>
-    <table>
+<script>
+    $(document).ready(function () {
+      var modalError = $("#error-invoice-list-modal");
+      console.log(modalError);
 
-    </table>
-</div>
+      if (modalError) {
+        modalError.modal({
+          modal: true,
+          width: 200,
+          height: 150,
+          draggable: true,
+          resizable: true,
+        });
+
+        modalError.modal("toggle");
+      }
+    });
+
+    function confirmCheckPaid() {
+          showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
+            payInvoice();
+            });
+    }
+
+    function payInvoice(){
+        let data = {
+           residentId: @idResident,
+           inoviceId: @idInvoice
+        }
+
+        console.log(data);
+
+       $.ajax({
+            url: '@Url.Page("InvoiceDetail", "PayInvoice")',
+            type: "GET",
+            data: data,
+            success: function (response) {
+              if (!response.success) {
+                $("#notify-content").html("Xác nhận thanh toán không thành công");
+                  $("#notification").modal({
+                    modal: true,
+                    width: "auto",
+                    height: "auto",
+                    draggable: true,
+                    resizable: true,
+                  });
+                  $("#notification").modal("toggle");
+                }
+            },
+            error: function (error) {
+              console.log(error);
+            },
+        });
+    }
+
+</script>

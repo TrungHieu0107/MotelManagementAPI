@@ -1,5 +1,7 @@
+using BussinessObject.CommonConstant;
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +15,7 @@ using System.Net.Http.Headers;
 
 namespace MotelManagementWebAppUI.Pages.Room
 {
+    [Authorize(Roles = Role.MANAGER)]
     public class RoomListModel : PageModel
     {
         private readonly HttpClient _httpClient;

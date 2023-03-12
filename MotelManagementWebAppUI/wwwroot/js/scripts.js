@@ -17,8 +17,11 @@ window.addEventListener('DOMContentLoaded', event => {
         //     document.body.classList.toggle('sb-sidenav-toggled');
         // }
         sidebarToggle.addEventListener('click', event => {
+            console.log("click");
             event.preventDefault();
             document.body.classList.toggle('sb-sidenav-toggled');
+            $('#layoutSidenav_content').css("width", "0px");
+            console.log($('#layoutSidenav_content'));
             localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
         });
     }
