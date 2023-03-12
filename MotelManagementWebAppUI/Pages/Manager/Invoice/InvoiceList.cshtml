@@ -63,15 +63,7 @@
                     {
                         <tr>
                             <td>
-                                @if (@item.CreatedDate != null)
-                                {
-                                    <span>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</span>
-                                }
-                                else
-                                {
-                                    <span class="m-0 p-0">-</span>
-                                }
-
+                                <span>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</span>
                             </td>
                             <td>
                                 @if (@item.ExpiredDate != null)
@@ -111,7 +103,7 @@
                                     </button>
                                 </form>
 
-                            </td>
+                            </td>   
                         </tr>
                     }
                 }

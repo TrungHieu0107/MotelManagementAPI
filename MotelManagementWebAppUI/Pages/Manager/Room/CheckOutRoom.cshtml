@@ -1,492 +1,150 @@
-﻿@page
+﻿@page "/manager/room/checkout/{id}"
 @using System.Globalization
+@using BussinessObject.DTO
 @model MotelManagementWebAppUI.Pages.Room.CheckOutRoomModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Kết thúc thuê phòng";
-}
-<div style="width:70%; margin-left:15%; margin-top:25px;">
-    @if(Model.InvoiceDTOs.Count == 1)
+
+    long GetTotalInvoice(InvoiceDTO i)
     {
-        <div>
-            <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name):  </b>@Model.NewInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address):  </b>@Model.NewInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code):  </b>@Model.NewInvoice.Room.Code</div>
+        var waterConsume = i.WaterConsumptionEnd - i.WaterConsumptionEnd;
+        var totalWaterCost = waterConsume * i.WaterCost.Price;
 
-            <div style="width:100%; text-align:left;clear:both">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):  </b>
-                @Model.NewInvoice.Resident.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):  </b>
-                @Model.NewInvoice.Resident.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):  </b>
-                @Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):  </b>
-                @Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate):  </b>
-                @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate):  </b>
-                @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            </div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate):  </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate):  </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate):  </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+        var electricityConsume = i.ElectricityConsumptionEnd - i.ElectricityConsumptionEnd;
+        var totalElectricCost = electricityConsume * i.ElectricityCost.Price;
 
-            <b>Tiền điện</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền điện
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.ElectricityConsumptionStart kWh
-                        </td>
-                        <td>
-                            @Model.NewInvoice.ElectricityConsumptionEnd kWh
-                        </td>
-                        <td>
-                            @(Model.NewInvoice.ElectricityConsumptionEnd - Model.NewInvoice.ElectricityConsumptionStart) kWh
-                        </td>
-                        <td>
-                            @Model.NewInvoice.ElectricityCost.Price VNĐ/kHw
-                        </td>
-                        <td>
-                            @Model.NewTotalElectricityCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        var dayUse = (int)(i.EndDate.Value - i.StartDate).TotalDays;
+        var totalRentFee = dayUse * i.Room.RentFee;
 
-            <b>Tiền nước</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền nước
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.WaterConsumptionStart m3
-                        </td>
-                        <td>
-                            @Model.NewInvoice.WaterConsumptionEnd m3
-                        </td>
-                        <td>
-                            @(Model.NewInvoice.WaterConsumptionEnd - Model.NewInvoice.WaterConsumptionStart) m3
-                        </td>
-                        <td>
-                            @Model.NewInvoice.WaterCost.Price VNĐ/m3
-                        </td>
-                        <td>
-                            @Model.NewTotalWaterCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <b>Tiền phòng</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.StartDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.EndDate)
-                        </th>
-                        <th>
-                            Số ngày ở
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.Room.RentFee)
-                        </th>
-                        <th>
-                            Tổng tiền phòng
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @((int)(Model.NewInvoice.EndDate.Value - Model.NewInvoice.StartDate).TotalDays) ngày
-                        </td>
-                        <td>
-                            @Model.NewInvoice.Room.RentFee VNĐ/ngày
-                        </td>
-                        <td>
-                            @Model.NewTotalRentFee VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewTotal): </b>@Model.NewTotal VNĐ</div>
-        </div>
-        <form method="post">
-            <input type="hidden" name="residentId" asp-for="@Model.ResidentId">
-            <input type="hidden" name="roomId" asp-for="@Model.RoomId">
-            <input type="hidden" name="checkOutDate" asp-for="@Model.CheckOutDate">
-            <button style="width:fit-content;margin: auto;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="CheckOut">Xác nhận thanh toán hóa đơn và kết thúc thuê phòng</button>  
-        </form>
+        var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+        return totalInvoice.Value;
     }
-    else if(Model.InvoiceDTOs.Count == 2){
-        <div>
-            <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Name):  </b>@Model.OldInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Address):  </b>@Model.OldInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.Code):  </b>@Model.OldInvoice.Room.Code</div>
 
-            <div style="width:100%; text-align:left;clear:both">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.FullName):  </b>
-                @Model.OldInvoice.Resident.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Resident.Phone):  </b>
-                @Model.OldInvoice.Resident.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.FullName):  </b>
-                @Model.OldInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.Room.MotelChain.Manager.Phone):  </b>
-                @Model.OldInvoice.Room.MotelChain.Manager.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.StartDate):  </b>
-                @Model.OldInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.OldInvoice.EndDate):  </b>
-                @Model.OldInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            </div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.CreatedDate):  </b>@Model.OldInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.ExpiredDate):  </b>@Model.OldInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldInvoice.PaidDate):  </b>@Model.OldInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+    var id = this.Request.RouteValues["id"] ?? 0;
 
-            <b>Tiền điện</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.ElectricityCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền điện
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.OldInvoice.ElectricityConsumptionStart kWh
-                        </td>
-                        <td>
-                            @Model.OldInvoice.ElectricityConsumptionEnd kWh
-                        </td>
-                        <td>
-                            @(Model.OldInvoice.ElectricityConsumptionEnd - Model.OldInvoice.ElectricityConsumptionStart) kWh
-                        </td>
-                        <td>
-                            @Model.OldInvoice.ElectricityCost.Price VNĐ/kHw
-                        </td>
-                        <td>
-                            @Model.OldTotalElectricityCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+}
 
-            <b>Tiền nước</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.WaterConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.WaterConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.WaterCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền nước
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.OldInvoice.WaterConsumptionStart m3
-                        </td>
-                        <td>
-                            @Model.OldInvoice.WaterConsumptionEnd m3
-                        </td>
-                        <td>
-                            @(Model.OldInvoice.WaterConsumptionEnd - Model.OldInvoice.WaterConsumptionStart) m3
-                        </td>
-                        <td>
-                            @Model.OldInvoice.WaterCost.Price VNĐ/m3
-                        </td>
-                        <td>
-                            @Model.OldTotalWaterCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <b>Tiền phòng</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.StartDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.EndDate)
-                        </th>
-                        <th>
-                            Số ngày ở
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.OldInvoice.Room.RentFee)
-                        </th>
-                        <th>
-                            Tổng tiền phòng
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.OldInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @Model.OldInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @((int)(Model.OldInvoice.EndDate.Value - Model.OldInvoice.StartDate).TotalDays) ngày
-                        </td>
-                        <td>
-                            @Model.OldInvoice.Room.RentFee VNĐ/ngày
-                        </td>
-                        <td>
-                            @Model.OldTotalRentFee VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div><b>@Html.DisplayNameFor(Model => Model.OldTotal): </b>@Model.OldTotal VNĐ</div>
-
-            <br />
-            <div><h3>Thông tin hóa đơn</h3></div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Name):  </b>@Model.NewInvoice.Room.MotelChain.Name</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Address):  </b>@Model.NewInvoice.Room.MotelChain.Address</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.Code):  </b>@Model.NewInvoice.Room.Code</div>
-
-            <div style="width:100%; text-align:left;clear:both">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.FullName):  </b>
-                @Model.NewInvoice.Resident.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Resident.Phone):  </b>
-                @Model.NewInvoice.Resident.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.FullName):  </b>
-                @Model.NewInvoice.Room.MotelChain.Manager.FullName</div>
-                <div style="float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.Room.MotelChain.Manager.Phone):  </b>
-                @Model.NewInvoice.Room.MotelChain.Manager.Phone</div>
-            </div>
-            <div style="width:100%; text-align:left;clear:both;">
-                <div style="width:37%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.StartDate):  </b>
-                @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-                <div style="width:63%;float:left;"><b>@Html.DisplayNameFor(Model => Model.NewInvoice.EndDate):  </b>
-                @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            </div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.CreatedDate):  </b>@Model.NewInvoice.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.ExpiredDate):  </b>@Model.NewInvoice.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewInvoice.PaidDate):  </b>@Model.NewInvoice.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
-
-            <b>Tiền điện</b>
-            <b>Tiền điện</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.ElectricityCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền điện
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.ElectricityConsumptionStart kWh
-                        </td>
-                        <td>
-                            @Model.NewInvoice.ElectricityConsumptionEnd kWh
-                        </td>
-                        <td>
-                            @(Model.NewInvoice.ElectricityConsumptionEnd - Model.NewInvoice.ElectricityConsumptionStart) kWh
-                        </td>
-                        <td>
-                            @Model.NewInvoice.ElectricityCost.Price VNĐ/kHw
-                        </td>
-                        <td>
-                            @Model.NewTotalElectricityCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <b>Tiền nước</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterConsumptionStart)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterConsumptionEnd)
-                        </th>
-                        <th>
-                            Lượng tiêu thụ
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.WaterCost.Price)
-                        </th>
-                        <th>
-                            Tổng tiền nước
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.WaterConsumptionStart m3
-                        </td>
-                        <td>
-                            @Model.NewInvoice.WaterConsumptionEnd m3
-                        </td>
-                        <td>
-                            @(Model.NewInvoice.WaterConsumptionEnd - Model.NewInvoice.WaterConsumptionStart) m3
-                        </td>
-                        <td>
-                            @Model.NewInvoice.WaterCost.Price VNĐ/m3
-                        </td>
-                        <td>
-                            @Model.NewTotalWaterCost VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <b>Tiền phòng</b>
-            <table class="table table-bordered">
-                <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.StartDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.EndDate)
-                        </th>
-                        <th>
-                            Số ngày ở
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(Model => Model.NewInvoice.Room.RentFee)
-                        </th>
-                        <th>
-                            Tổng tiền phòng
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Model.NewInvoice.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @Model.NewInvoice.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
-                        </td>
-                        <td>
-                            @((int)(Model.NewInvoice.EndDate.Value - Model.NewInvoice.StartDate).TotalDays) ngày
-                        </td>
-                        <td>
-                            @Model.NewInvoice.Room.RentFee VNĐ/ngày
-                        </td>
-                        <td>
-                            @Model.NewTotalRentFee VNĐ
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div><b>@Html.DisplayNameFor(Model => Model.NewTotal): </b>@Model.NewTotal VNĐ</div>
+<div>
+    <h3 class="text-center">Thông tin trả phòng</h3>
+    <div>
+        <div class="row">
+            <b class="col-2">Phòng trọ: </b>
+            <span class="col-10">
+                Phòng @Model.Room.Code - @Model.InvoiceDTOs[0].Room.MotelChain.Name - @Model.InvoiceDTOs[0].Room.MotelChain.Address
+            </span>
         </div>
-        <form method="post">
-            <input type="hidden" name="residentId" asp-for="@Model.ResidentId">
-            <input type="hidden" name="roomId" asp-for="@Model.RoomId">
-            <input type="hidden" name="checkOutDate" asp-for="@Model.CheckOutDate">
-            <button style="width:fit-content;margin: auto;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="CheckOut">Xác nhận thanh toán hóa đơn và kết thúc thuê phòng</button>  
-        </form>
-    }
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Resident.FullName):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Resident.FullName</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Resident.Phone):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Resident.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Room.MotelChain.Manager.FullName):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Room.MotelChain.Manager.FullName</span>
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Room.MotelChain.Manager.Phone):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Room.MotelChain.Manager.Phone</span>
+        </div>
+    </div>
+    <div class="row">
+        <b class="col-5">
+            Hóa đơn cần trả khi trả phòng
+        </b>
+    </div>
+    <div class="m-3">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">
+                        Hóa đơn
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].CreatedDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].ExpiredDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].StartDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].EndDate)
+                    </th>
+                    <th scope="col">
+                        Tổng tiền
+                    </th>
+                    <th scope="col">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.InvoiceDTOs)
+                {
+                    <tr>
+                        <th scope="row">
+                            @(Model.InvoiceDTOs.IndexOf(item) + 1)
+                        </th>
+                        <td>
+                            Tháng @item.StartDate.Month
+                        </td>
+                        <td>
+                            @item.CreatedDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.ExpiredDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", GetTotalInvoice(item))
+                        </td>
+                        <th scope="row">
+                            <button type="button" onclick="viewDetailInvocie(@Model.InvoiceDTOs.IndexOf(item))">
+                                <i class="fa-regular fa-square-info"></i>
+                            </button>
+                        </th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <form method="post" class="d-flex justify-content-center">
+        <input type="hidden" name="residentId" asp-for="@Model.ResidentId">
+        <input type="hidden" name="roomId" asp-for="@Model.RoomId">
+        <input type="hidden" name="checkOutDate" asp-for="@Model.CheckOutDate">
+        <button style="width:fit-content;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="CheckOut">
+            Thanh toán và trả phòng
+        </button>
+    </form>
 </div>
+<div class="view-invoice-detail-modal">
+    @*<partial name="~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml" model="@Model.InvoiceDTOs[index]" />*@
+    @*@await Html.PartialAsync("~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml")*@
+</div>
+
+<script>
+        function viewDetailInvocie(i) {
+          $.ajax({
+            url: "/manager/room/checkout/" + @id + "?handler=SetDataModal&index=" + i,
+            type: "GET",
+            data: {
+              index: i,
+            },
+            success: function (response) {
+              $(".view-invoice-detail-modal").html(response);
+            },
+            error: function (error) {
+              console.log(error);
+            },
+          });
+        }
+
+
+</script>

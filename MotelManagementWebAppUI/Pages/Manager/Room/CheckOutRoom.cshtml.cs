@@ -116,5 +116,11 @@ namespace MotelManagementWebAppUI.Pages.Room
         {
             return;
         }
+
+        public IActionResult OnGetSetDataModal(long id, int index)
+        {
+            //return Partial("_MyPartialView", InvoiceDTOs[index]);
+            return null;
+        }
     }
 }
