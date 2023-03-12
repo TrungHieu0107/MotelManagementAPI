@@ -111,5 +111,10 @@ namespace MotelManagementWebAppUI.Pages.Room
                 return RedirectToPage("/Room/RoomDetail", new { id = RoomId.ToString() });
             }
         }
+
+        public void OnPostPayInvoice()
+        {
+            return;
+        }
     }
 }

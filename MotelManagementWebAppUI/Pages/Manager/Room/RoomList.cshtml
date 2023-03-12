@@ -4,6 +4,17 @@
     Layout = "_Layout";
     ViewData["Title"] = "Room list";
 }
+<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+    Layouts
+    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+</a>
+<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+    <nav class="sb-sidenav-menu-nested nav">
+        <a class="nav-link" href="layout-static.html">Static Navigation</a>
+        <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
+    </nav>
+</div>
 <div id="room-list">
     <div class="mb-3">
         <form class="d-flex flex-column" method="get">
@@ -88,7 +99,8 @@
                                     <span class="m-0 p-0">-</span>
                                 }
                             </td>
-                            <td>@if (@item.NearestNextRentFee != null)
+                            <td>
+                                @if (@item.NearestNextRentFee != null)
                                 {
                                     @String.Format(CultureInfo.InvariantCulture, "{0:#,#}", @item.NearestNextRentFee.Value)
                                 }
@@ -100,17 +112,17 @@
                             <td>
                                 @Model.ListStatus.ElementAt((int)item.Status).ToString()
                             </td>
-                            <td >
+                            <td>
                                 <form class="d-flex justify-content-evenly">
                                     <button type="button" asp-page-handler="Edit" onclick="updateRoom(@item.Id)">
-                                    <i class="fa-sharp fa-regular fa-pen-to-square"></i>
-                                </button>
-                                <button type="button" asp-page-handler="Delete" onclick="confirmDeleteRooom('@item.Code', @item.Id)">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                                <button type="button" onclick="window.location.href = '/room/room-detail/@item.Id'">
-                                    <i class="fa-regular fa-square-info"></i>    
-                                </button>
+                                        <i class="fa-sharp fa-regular fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" asp-page-handler="Delete" onclick="confirmDeleteRooom('@item.Code', @item.Id)">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                    <button type="button" onclick="window.location.href = '/room/room-detail/@item.Id'">
+                                        <i class="fa-regular fa-square-info"></i>
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -171,7 +183,6 @@
 
     <partial name="_ValidationScriptsPartial" />
 
-    <partial name="_Notification" />
 
 
     <div id="popup">
@@ -346,13 +357,6 @@
             });
         }
       });
-
-      $('#confirm').on('click', function(){
-          showConfirm('<h1>Hieu</h1>', () => {
-            console.log("avc");
-            });
-        }
-      );
 
     });
 
