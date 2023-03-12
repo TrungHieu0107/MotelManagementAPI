@@ -29,7 +29,7 @@ namespace MotelManagementAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-      //  [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("electricity-cost/{year}/{month}/{pageSize}/{currentPage}")]
         public async Task<IActionResult> Get(int year, int month, int pageSize = 10, int currentPage = 1)
@@ -70,8 +70,8 @@ namespace MotelManagementAPI.Controllers
         /// <returns></returns>
         // [Authorize(Roles = "Manager")]
         // [Authorize(Roles = "Resident")]
-     
-        //[Authorize(Roles = "Manager")]
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("get-current-electricity-cost")]
         public async Task<IActionResult> GetCurentElectricityCost()
@@ -100,7 +100,7 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("add-electricity-cost")]
         public async Task<IActionResult> Post(ElectricityCostRequestDTO obj)

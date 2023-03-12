@@ -10,6 +10,7 @@ namespace BussinessObject.Data
         public DbSet<Manager> Managers { get; set; }
         public DbSet<MotelChain> MotelChains { get; set; }
         public DbSet<Resident> Residents { get; set; }
+        public DbSet<Admin> Admins { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<ElectricityCost> ElectricityCosts { get; set; }
