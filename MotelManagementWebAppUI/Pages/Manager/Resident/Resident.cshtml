@@ -318,8 +318,13 @@
                             alert(response.message);
                         }
                     },
-                    error: function () {
-                        alert('Failed to load resident information');
+                    error: function (xhr, status, error) {
+                        if(xhr.status === 401) {
+                            console.log("Hahahahahahahahahahhaah")
+                    // Redirect to login page
+                             window.location.replace("/Account/Login");
+                        }
+                       
                     }
                 });
             });
@@ -372,7 +377,11 @@
                                 window.location.reload();
                             },
                             error: function (xhr, status, error) {
-
+                                if (xhr.status === 401) {
+                                    console.log("Hahahahahahahahahahhaah")
+                                    // Redirect to login page
+                                    window.location.replace("/Account/Login");
+                                }
                                 // Parse error response and get validation errors
                                 var errorResponse = JSON.parse(xhr.responseText);
                                 var validationErrors = errorResponse.errors;
@@ -417,6 +426,12 @@
                         window.location.reload();
                     },
                     error: function (xhr, status, error) {
+
+                        if (xhr.status === 401) {
+                          
+                            // Redirect to login page
+                            window.location.replace("/Account/Login");
+                        }
                         var errorResponse = JSON.parse(xhr.responseText);
                     var validationErrors = errorResponse.errors;
 
@@ -457,6 +472,12 @@
                         window.location.reload();
                     },
                     error: function (xhr, status, error) {
+
+                        if (xhr.status === 401) {
+                         
+                            // Redirect to login page
+                            window.location.replace("/Account/Login");
+                        }
                         var errorResponse = JSON.parse(xhr.responseText);
                         var validationErrors = errorResponse.errors;
 

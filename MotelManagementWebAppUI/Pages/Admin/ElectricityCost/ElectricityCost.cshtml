@@ -149,7 +149,11 @@
                                                 window.location.reload();
                                             },
                                             error: function (xhr, status, error) {
-
+                                                if (xhr.status === 401) {
+                                                  
+                                                    // Redirect to login page
+                                                    window.location.replace("/Account/Login");
+                                                }
                                                 // Parse error response and get validation errors
                                                 var errorResponse = JSON.parse(xhr.responseText);
                                                 var validationErrors = errorResponse.errors;

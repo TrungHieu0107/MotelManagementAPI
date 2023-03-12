@@ -315,6 +315,11 @@
           },
           error: function (xhr, status, error) {
             alert("Error creating room: " + error);
+                                if (xhr.status === 401) {
+
+                                    // Redirect to login page
+                                    window.location.replace("/Account/Login");
+                                }
           },
         });
         }
