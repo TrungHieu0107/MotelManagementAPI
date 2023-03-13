@@ -1,4 +1,5 @@
 ﻿@page "/resident/room/room-detail/{id}"
+@using System.Globalization
 @model MotelManagementWebAppUI.Pages.Resident.Room.RoomDetailModel
 @{
     Layout = "_LayoutResident";
@@ -31,12 +32,12 @@
             <div><b>Mã phòng: </b>@Model.BookedRoom.Code</div>
             <div><b>Trạng thái: </b>@Model.BookedRoom.Status</div>
             @if (!@Model.IsTheOnlyRecord) { 
-                <div><b>Tiền thuê phòng hiện tại: </b>@Model.BookedRoom.RentFee (Áp dụng cho các lần thu tiền trước ngày @Model.BookedRoom.NearestNextFeeAppliedDate)</div>
-                <div><b>Tiền thuê phòng áp dụng cho các lần thu tiền sau ngày @Model.BookedRoom.NearestNextFeeAppliedDate: </b>@Model.BookedRoom.NearestNextRentFee</div>
+                <div><b>Tiền thuê phòng hiện tại: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.RentFee)) (Áp dụng cho các lần thu tiền trước ngày @Model.BookedRoom.NearestNextFeeAppliedDate)</div>
+                <div><b>Tiền thuê phòng áp dụng cho các lần thu tiền sau ngày @Model.BookedRoom.NearestNextFeeAppliedDate: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.NearestNextRentFee))</div>
             }
             else
             {
-                <div><b>Tiền thuê phòng hiện tại: </b>@Model.BookedRoom.RentFee</div>
+                <div><b>Tiền thuê phòng hiện tại: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.RentFee))</div>
             }
             <div><b>Thuộc nhà trọ: </b>@Model.BookedRoom.MotelChainName</div>
         </div>

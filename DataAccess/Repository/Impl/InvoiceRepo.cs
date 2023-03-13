@@ -262,6 +262,7 @@ namespace DataAccess.Repository
                     {
                         Id = invoice.Room.Id,
                         Code = invoice.Room.Code,
+                        RentFee = invoice.Room.RentFee,
                         FeeAppliedDate = invoice.Room.FeeAppliedDate,
                         MotelChain = new MotelChainDTO()
                         {

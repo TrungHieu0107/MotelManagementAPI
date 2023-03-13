@@ -90,7 +90,7 @@
                                 @item.FeeAppliedDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
                             </td>
                             <td>
-                                @String.Format(CultureInfo.InvariantCulture, "{0:#,#}", @item.RentFee)
+                                @String.Format(CultureInfo.InvariantCulture, "{0:#,#} VNĐ", @item.RentFee)
                             </td>
                             <td>
                                 @if (@item.NearestNextFeeAppliedDate != null)
@@ -105,7 +105,7 @@
                             <td>
                                 @if (@item.NearestNextRentFee != null)
                                 {
-                                    @String.Format(CultureInfo.InvariantCulture, "{0:#,#}", @item.NearestNextRentFee.Value)
+                                    @String.Format(CultureInfo.InvariantCulture, "{0:#,#} VNĐ", @item.NearestNextRentFee.Value)
                                 }
                                 else
                                 {

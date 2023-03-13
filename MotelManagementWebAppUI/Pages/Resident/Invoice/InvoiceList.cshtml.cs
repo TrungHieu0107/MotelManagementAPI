@@ -67,24 +67,24 @@ namespace MotelManagementWebAppUI.Pages.Resident.Invoice
             await GetInvoice(url);
         }
 
-        public async Task OnPostNextAsync()
+        public async Task OnPostNextAsync(long index)
         {
             string url = "/api/Invoice/get-invoices?" +
                 "roomCode=" + filterInvoiceOption?.RoomCode +
                 "&status=" + filterInvoiceOption?.Status +
                 "&paidDate=" + filterInvoiceOption?.PaidDate +
-                "&currentPage=" + (filterInvoiceOption?.CurrentPage + 1) +
+                "&currentPage=" + (filterInvoiceOption?.CurrentPage + index) +
                 "&pageSize=" + filterInvoiceOption.PageSize;
             await GetInvoice(url);
         }
 
-        public async Task OnPostPreviousAsync()
+        public async Task OnPostPreviousAsync(long index)
         {
             string url = "/api/Invoice/get-invoices?" +
                 "roomCode=" + filterInvoiceOption?.RoomCode +
                 "&status=" + filterInvoiceOption?.Status +
                 "&paidDate=" + filterInvoiceOption?.PaidDate +
-                "&currentPage=" + (filterInvoiceOption?.CurrentPage - 1) +
+                "&currentPage=" + (filterInvoiceOption?.CurrentPage - index) +
                 "&pageSize=" + filterInvoiceOption.PageSize;
             await GetInvoice(url);
         }

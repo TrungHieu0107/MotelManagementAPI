@@ -4,7 +4,15 @@
     Layout = "_LayoutResident";
     ViewData["Title"] = "Danh sách hóa đơn";
 }
-<div id="room-list">
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <button style="width: 110px" class="collapsed d-flex btn btn-primary justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+        <i class="fa-solid fa-filter"></i>
+        <span>Bộ lọc</span>
+        <i class="fas fa-angle-down"></i>
+    </button>
+</div>
+
+<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
     <div class="mb-3">
         <form class="d-flex flex-column" method="post">
 
@@ -25,12 +33,15 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-evenly mt-2 mb-0">
-                <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
-                <button id="add-new-room" type="button" style="width: 100px; margin: 0" class="btn btn-primary btn-user btn-block">Thêm</button>
+                <button id="search-invoice" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
             </div>
         </form>
     </div>
-    <div style="overflow: auto; height: 450px">
+</div>
+
+<div id="room-list">
+
+    <div style="overflow: auto; height: 550px">
         <table class="table table-bordered">
             <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
                 <tr>
@@ -55,7 +66,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody style="height: 400px" overflow-auto">
+            <tbody style="height: 500px" overflow-auto">
                 @if (Model.ListInvoice != null && Model.ListInvoice.Count() > 0)
                 {
                     foreach (var item in Model.ListInvoice)
@@ -98,11 +109,11 @@
                             <td class="d-flex justify-content-center">
                                 <form method="post">
                                     <button type="button" onclick="window.location.href = '/resident/invoice/invoice-detail/@item.Id'">
-                                        <i class="fa-regular fa-square-info"></i>
+                                        <i class="fa-solid fa-circle-info"></i>
                                     </button>
                                 </form>
 
-                            </td>   
+                            </td>
                         </tr>
                     }
                 }
@@ -116,70 +127,75 @@
             </tbody>
             <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray">
                 <tr>
-                    <td colspan=3 class="border-0 p-0">
-                        @if (Model.filterInvoiceOption != null)
-                        {
-                            <form method="post" class="row justify-content-center">
-                                @Html.HiddenFor(model => model.filterInvoiceOption.RoomCode)
-                                @Html.HiddenFor(model => model.filterInvoiceOption.Status)
-                                <input name="filterInvoiceOption.CurrentPage" value="@Model.filterInvoiceOption.CurrentPage" hidden />
-                                @Html.HiddenFor(model => model.filterInvoiceOption.PageSize)
-                                @if (Model.filterInvoiceOption.CurrentPage > 1)
+                    <td colspan=5 class="border-0 ">
+                        <form method="post" class="row justify-content-start ms-3">
+                            @Html.HiddenFor(model => model.filterInvoiceOption.RoomCode)
+                            @Html.HiddenFor(model => model.filterInvoiceOption.Status)
+                            <input name="filterInvoiceOption.CurrentPage" value="@Model.filterInvoiceOption.CurrentPage" hidden />
+                            @Html.HiddenFor(model => model.filterInvoiceOption.PageSize)
+                            @for (var i = 5; i >= 1; i--)
+                            {
+                                if (Model.filterInvoiceOption.CurrentPage - i > 0)
                                 {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous"><i class="fa-solid fa-angle-left"></i></button>
+                                    <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Previous" asp-route-index="@i">
+                                        @*<i class="fa-solid fa-angle-left"></i>*@
+                                        @(Model.filterInvoiceOption.CurrentPage - i)
+                                    </button>
+                                }
+                            }
+                            <button class="btn btn-light col-1 ms-1 me-1" style="width: 40px" type="button">
+                                @Model.filterInvoiceOption.CurrentPage
+                            </button>
+                            @for (var i = 0; i <= 5; i++)
+                            {
+                                if (Model.filterInvoiceOption.Total > (Model.filterInvoiceOption.CurrentPage + i) * Model.filterInvoiceOption.PageSize)
+                                {
+                                    <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Next" asp-route-index="@(i + 1)">
+                                        @*<i class="fa-solid fa-angle-left"></i>*@
+                                        @(Model.filterInvoiceOption.CurrentPage + i + 1)
+                                    </button>
                                 }
                                 else
                                 {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled><i class="fa-solid fa-angle-left"></i></button>
+                                    break;
                                 }
-                                <p class="col-1 text-center" style="vertical-align: middle">
-                                    @Model.filterInvoiceOption.CurrentPage
-                                </p>
-
-                                @if (Model.filterInvoiceOption.Total > Model.filterInvoiceOption.CurrentPage * Model.filterInvoiceOption.PageSize)
-                                {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next"><i class="fa-solid fa-angle-right"></i></button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled><i class="fa-solid fa-angle-right"></i></button>
-                                }
-                            </form>
-                        }
+                            }
+                        </form>
                     </td>
-                    <td class="border-0 p-0"></td>
-                    <td class="border-0 p-0">Tổng: @Model.filterInvoiceOption.Total</td>
+                    <td class="border-0 text-end"><b>Tổng:</b></td>
+                    <td class="border-0">@Model.filterInvoiceOption.Total</td>
                 </tr>
             </tfoot>
         </table>
     </div>
+</div>
 
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
 
-    @using BussinessObject.DTO
-    @using BussinessObject.Status
-    @using Microsoft.AspNetCore.Http
+@using BussinessObject.DTO
+@using BussinessObject.Status
+@using Microsoft.AspNetCore.Http
 @using System.Globalization
-    @inject IHttpContextAccessor HttpContextAccessor
-    @section scripts {
-    <script>
-        function getInvoiceDetail (id){
-                $.ajax({
-                    url: '@Url.Page("InvoiceList", "InvoiceDetail")',
-                    type: 'GET',
-                    data: {
-                        id: id
-                    },
-                    success: function (response) {
-                        if(!response.success){
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+<script>
+    function getInvoiceDetail (id){
+            $.ajax({
+                url: '@Url.Page("InvoiceList", "InvoiceDetail")',
+                type: 'GET',
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    if(!response.success){
 
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
                     }
-                });
-        }
-    </script>
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+    }
+</script>
     }
 

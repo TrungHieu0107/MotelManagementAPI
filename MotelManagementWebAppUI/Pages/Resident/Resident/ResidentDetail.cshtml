@@ -12,7 +12,20 @@
             <div><b>Họ và tên người thuê: </b>@Model.Resident.FullName</div>
             <div><b>CMND/CCCD: </b>@Model.Resident.IdentityCardNumber</div>
             <div><b>Sđt: </b>@Model.Resident.Phone</div>
-            <div><b>Trạng thái: </b>@Model.Resident.Status</div>
+            <div><b>Trạng thái: </b>@if (Model.Resident.Status == "ACTIVE")
+                            {
+                                                <span class="text-success">Đang hoạt động</span>
+                            }
+                            else if (Model.Resident.Status == "INACTIVE")
+                            {
+                                                <span class="text-danger">Đã khóa</span>
+                            }
+                            else if (Model.Resident.Status == "LATE_PAYMENT")
+                            {
+
+
+                                                <span class="text-warning">Trễ hóa đơn</span>
+                            }</div>
         </div>
     </div>
     <br />
@@ -74,7 +87,9 @@
                             @Html.DisplayFor(modelItem => item.EndDate)
                         </td>
                         <td>
-                            <a href="/resident/room/room-detail/@item.Id">Xem thông tin phòng</a>
+                            @if(@Model.Status == "RENTING"){
+                                <a href="/resident/room/room-detail/@item.Id">Xem thông tin phòng</a>
+                                }
                         </td>
                     </tr>
                 }

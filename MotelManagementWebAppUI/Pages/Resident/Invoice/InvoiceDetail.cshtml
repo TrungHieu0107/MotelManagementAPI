@@ -15,6 +15,7 @@
     var totalRentFee = dayUse * Model.invoiceDTO?.Room.RentFee;
 
     var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+    var defaultValue = "0 (VNĐ)";
 }
 @if (@Model.invoiceDTO != null)
 {
@@ -76,9 +77,9 @@
                         <th scope="col">Đơn vị</th>
                         <th scope="col">Từ</th>
                         <th scope="col">Đến</th>
-                        <th scope="col">Tồng số lượng</th>
+                        <th scope="col">Tổng số lượng</th>
                         <th scope="col">Đơn giá</th>
-                        <th scope="col">Tồng</th>
+                        <th scope="col">Tổng</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,18 +90,26 @@
                         <td>@Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
                         <td>@Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
                         <td>@dayUse</td>
-                        <td>@Model.invoiceDTO.Room.RentFee (VNĐ)</td>
-                        <td>@totalRentFee</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.Room.RentFee)
+                        </td>
+                        <td>
+                            @((totalRentFee.HasValue && @totalRentFee.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalRentFee ?? 0) : defaultValue)
+                        </td>
                     </tr>
-                    @*tiền phòng*@
+                    @*tiền điện*@
                     <tr>
                         <th scope="row">Tiền điện</th>
                         <td>kWh</td>
                         <td>@Model.invoiceDTO.ElectricityConsumptionStart</td>
                         <td>@Model.invoiceDTO.ElectricityConsumptionEnd</td>
                         <td>@electricityConsume</td>
-                        <td>@Model.invoiceDTO.ElectricityCost.Price (VNĐ)</td>
-                        <td>@totalElectricCost</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.ElectricityCost.Price)
+                        </td>
+                        <td>
+                            @((totalElectricCost.HasValue && totalElectricCost.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalElectricCost ?? 0) : defaultValue)
+                        </td>
                     </tr>
 
                     @*tiền nước*@
@@ -110,15 +119,21 @@
                         <td>@Model.invoiceDTO.WaterConsumptionStart</td>
                         <td>@Model.invoiceDTO.WaterConsumptionEnd</td>
                         <td>@waterConsume</td>
-                        <td>@Model.invoiceDTO.WaterCost.Price (VNĐ)</td>
-                        <td>@totalWaterCost</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.WaterCost.Price)
+                        </td>
+                        <td>
+                            @((totalWaterCost.HasValue && totalWaterCost.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalWaterCost ?? 0) : defaultValue)
+                        </td>
                     </tr>
                     <tr>
                         <td colspan=5 scope="row"></td>
                         <th scope="row">
                             Tổng
                         </th>
-                        <td>@(totalRentFee + totalElectricCost + totalWaterCost)</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", (totalRentFee + totalElectricCost + totalWaterCost) ?? 0)
+                        </td>
                     </tr>
                 </tbody>
             </table>
