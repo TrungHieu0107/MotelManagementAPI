@@ -5,7 +5,7 @@
 @model ResidentUpdateDTO
 
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" backdrop="static">
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -75,6 +75,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close-button">Close</button>
                 </div>
             </form>
             <div id="error-message-ed" class="alert alert-danger" style="display:none;"></div>

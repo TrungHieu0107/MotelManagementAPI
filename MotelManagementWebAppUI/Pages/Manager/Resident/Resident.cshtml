@@ -272,6 +272,7 @@
 
     <script>
         $(document).ready(function () {
+            
             $('.editBtn').click(function () {
                 var identityCardNumber = $(this).data('identitycardnumber');
                 $.ajax({
@@ -312,7 +313,18 @@
                             console.log($("#EditStatus").val())
                             console.log(residentData)
 
-                            $('#editModal').modal('show');
+                                    console.log("click");
+                            $("#editModal").modal({
+                                        modal: true,
+                                        title: "popup title",
+                                        width: 400,
+                                        height: 300,
+                                        draggable: true,
+                                        resizable: true,
+
+                                    });
+                               
+                         
                         } else {
                             alert(response.message);
                         }
@@ -330,7 +342,7 @@
                 $('.modal-backdrop').remove();
 
                 // Remove the 'show' class from the modal
-                $('#editResidentModal').removeClass('show');
+                $('#editModal').removeClass('show');
             });
 
 
