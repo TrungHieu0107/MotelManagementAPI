@@ -57,7 +57,7 @@
                                     <option value="0">Tất cả</option>
                                 }
 
-                                for (int i = currentYear; i >= 2020; i--)
+                                for (int i = currentYear + 10; i >= 2020; i--)
                                 {
                                     if (i == year)
                                     {
@@ -105,7 +105,7 @@
                     <button id="update-electricity-cost" type="button" class="btn btn-primary">Cập nhật giá tiền điện</button>
 
                     @using Microsoft.AspNetCore.Http
-@using System.Globalization;
+                    @using System.Globalization;
                     @inject IHttpContextAccessor HttpContextAccessor
                     @section scripts {
 
@@ -174,25 +174,25 @@
                                 }
 
                             });
-                        </script>
+                    </script>
 
-                            <script>
-                       $(document).ready(function () {
-                            $.ajax({
-                                url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
-                                type: "GET",
-                                headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
-                                dataType: "json",
-                                success: function (data) {
-                                    var price = data.data.price;
-                                    var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                                    $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
-                                },
-                                error: function () {
-                                    $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
-                                }
-                            });
-                        });
+                    <script>
+                        $(document).ready(function () {
+                             $.ajax({
+                                 url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
+                                 type: "GET",
+                                 headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
+                                 dataType: "json",
+                                 success: function (data) {
+                                     var price = data.data.price;
+                                     var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                     $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
+                                 },
+                                 error: function () {
+                                     $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
+                                 }
+                             });
+                         });
                     </script>
 
                     <script>
@@ -258,8 +258,6 @@
                                 @count
                             </td>
                             <td>
-                             
-                            
                                 @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)",  item.Price)
                             </td>
                             <td>
@@ -267,8 +265,6 @@
                             </td>
 
                         </tr>
-
-
                     }
                 }
             }
