@@ -25,6 +25,7 @@ namespace BussinessObject.DTO
         [Required(AllowEmptyStrings = false, ErrorMessage = "The Phone can not be empty")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone field must have 10 number!")]
         [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number.")]
+        [Display(Name ="SĐT")]
 
         public string Phone { get; set; }
 

@@ -16,6 +16,8 @@
     var totalRentFee = dayUse * Model.invoiceDTO?.Room.RentFee;
 
     var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+
+    var defaultValue = "0 (VNĐ)";
 }
 @if (@Model.invoiceDTO != null)
 {
@@ -31,16 +33,16 @@
         </div>
 
         <div class="row">
-            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.FullName):  </b>
+            <b class="col-2">Tên khách trọ:  </b>
             <span class="col-3">@Model.invoiceDTO.Resident.FullName</span>
 
-            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.Phone):  </b>
+            <b class="col-2">SĐT khách trọ:  </b>
             <span class="col-3">@Model.invoiceDTO.Resident.Phone</span>
         </div>
         <div class="row">
-            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.FullName):  </b>
+            <b class="col-2">Tên quản lý:  </b>
             <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.FullName</span>
-            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.Phone):  </b>
+            <b class="col-2">SĐT quản lý:  </b>
             <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.Phone</span>
         </div>
         <div class="row">
@@ -63,7 +65,9 @@
         </div>
         <div class="row">
             <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.PaidDate):  </b>
-            <span class="col-3">@(Model.invoiceDTO.PaidDate.HasValue ? Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) : "-")</span>
+            <span class="col-3">
+                @(Model.invoiceDTO.PaidDate.HasValue ? Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) : "-")
+            </span>
         </div>
 
         <div class="row">
@@ -90,8 +94,12 @@
                         <td>@Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
                         <td>@Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
                         <td>@dayUse</td>
-                        <td>@Model.invoiceDTO.Room.RentFee (VNĐ)</td>
-                        <td>@totalRentFee</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.Room.RentFee)
+                        </td>
+                        <td>
+                            @((totalRentFee.HasValue && @totalRentFee.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalRentFee ?? 0) : defaultValue)
+                        </td>
                     </tr>
                     @*tiền phòng*@
                     <tr>
@@ -100,8 +108,12 @@
                         <td>@Model.invoiceDTO.ElectricityConsumptionStart</td>
                         <td>@Model.invoiceDTO.ElectricityConsumptionEnd</td>
                         <td>@electricityConsume</td>
-                        <td>@Model.invoiceDTO.ElectricityCost.Price (VNĐ)</td>
-                        <td>@totalElectricCost</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.ElectricityCost.Price)
+                        </td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalElectricCost ?? 0)
+                        </td>
                     </tr>
 
                     @*tiền nước*@
@@ -111,15 +123,21 @@
                         <td>@Model.invoiceDTO.WaterConsumptionStart</td>
                         <td>@Model.invoiceDTO.WaterConsumptionEnd</td>
                         <td>@waterConsume</td>
-                        <td>@Model.invoiceDTO.WaterCost.Price (VNĐ)</td>
-                        <td>@totalWaterCost</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.WaterCost.Price)
+                        </td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalWaterCost ?? 0)
+                        </td>
                     </tr>
                     <tr>
                         <td colspan=5 scope="row"></td>
                         <th scope="row">
                             Tổng
                         </th>
-                        <td>@(totalRentFee + totalElectricCost + totalWaterCost)</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", (totalRentFee + totalElectricCost + totalWaterCost) ?? 0)
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -129,7 +147,7 @@
         @if (!Model.invoiceDTO.PaidDate.HasValue)
         {
             <button style="width: fit-content;"
-                class="btn btn-primary btn-user btn-block ms-3" type="button" onclick="confirmCheckPaid()">
+            class="btn btn-primary btn-user btn-block ms-3" type="button" onclick="confirmCheckPaid()">
                 Thanh toán hóa đơn
             </button>
         }
@@ -163,60 +181,60 @@ else
 }
 
 <script>
-    $(document).ready(function () {
-  var modalError = $("#error-invoice-list-modal");
-  console.log(modalError);
+        $(document).ready(function () {
+      var modalError = $("#error-invoice-list-modal");
+      console.log(modalError);
 
-  if (modalError) {
-    modalError.modal({
-      modal: true,
-      width: 200,
-      height: 150,
-      draggable: true,
-      resizable: true,
+      if (modalError) {
+        modalError.modal({
+          modal: true,
+          width: 200,
+          height: 150,
+          draggable: true,
+          resizable: true,
+        });
+
+        modalError.modal("toggle");
+      }
     });
 
-    modalError.modal("toggle");
-  }
-});
+    function confirmCheckPaid() {
+      showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
+        payInvoice();
+      });
+    }
 
-function confirmCheckPaid() {
-  showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
-    payInvoice();
-  });
-}
+    function payInvoice(){
+      let data = {
+        invoiceId: @Model.invoiceDTO.Id,
+        roomCode: @Model.invoiceDTO.Room.Code
+      };
 
-function payInvoice(){
-  let data = {
-    invoiceId: @Model.invoiceDTO.Id,
-    roomCode: @Model.invoiceDTO.Room.Code
-  };
+      console.log(data);
 
-  console.log(data);
-
-  $.ajax({
-            url: '@Url.Page("InvoiceDetail", "PayInvoice")',
-            type: "GET",
-            data: data,
-            success: function (response) {
-                $("#notify-content").html(response.message);
-                  $("#notification").modal({
-                    modal: true,
-                    width: "auto",
-                    height: "auto",
-                    draggable: true,
-                    resizable: true,
-                  });
-                  $("#notification").modal("toggle");
-                  $("#notification").on("hidden.bs.modal" , function () {
-                      if(response.success){
-                           window.location.reload();
-                      }
-                  });
-            },
-            error: function (error) {
-              console.log(error);
-            },
-        });
-}
+      $.ajax({
+                url: '@Url.Page("InvoiceDetail", "PayInvoice")',
+                type: "GET",
+                data: data,
+                success: function (response) {
+                    $("#notify-content").html(response.message);
+                      $("#notification").modal({
+                        modal: true,
+                        width: "auto",
+                        height: "auto",
+                        draggable: true,
+                        resizable: true,
+                      });
+                      $("#notification").modal("toggle");
+                      $("#notification").on("hidden.bs.modal" , function () {
+                          if(response.success){
+                               window.location.reload();
+                          }
+                      });
+                },
+                error: function (error) {
+                  console.log(error);
+                },
+            });
+    }
 </script>

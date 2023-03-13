@@ -27,11 +27,12 @@ namespace BussinessObject.DTO
         [Required(AllowEmptyStrings = false, ErrorMessage = "Số điện thoại phải có đủ 10 số")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Số điện thoại phải có đủ 10 số")]
         [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Vui lòng nhập đúng định dạng số điện thoại")]
-
+        [Display(Name ="SĐT")]
         public string Phone { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Họ và tên phải từ 8 đến 60 kí tự")]
         [StringLength(60, MinimumLength = 8, ErrorMessage = "Họ và tên phải từ 8 đến 60 kí tự!")]
+        [Display(Name ="Họ & Tên")]
         public string FullName { get; set; }
 
         public AccountStatus Status { get; set; }

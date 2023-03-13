@@ -322,22 +322,27 @@ namespace DataAccess.Repository
                 ).Select(room => new RoomDTO()
                 {
                     Id=room.Id,
-                    FeeAppliedDate = room.FeeAppliedDate,
+                    NearestNextFeeAppliedDate = room.FeeAppliedDate,
                     Code = room.Code,
-                    RentFee = room.RentFee,
+                    NearestNextRentFee = room.RentFee,
                     Status = room.Status,
                 }).FirstOrDefault();;
 
             if(result != null && result.FeeAppliedDate > DateTime.Now)
             {
-               var list = _context.Rooms.Where(room => room.Code.Equals(result.Code)).OrderByDescending(room => room.FeeAppliedDate).ToList();
+               var newRoom = _context.Rooms.Where(
+                        r => r.Code == result.Code 
+                        &&
+                        r.FeeAppliedDate <= DateTime.Now
+                        &&
+                        (r.Status == RoomStatus.INACTIVE || r.Status == RoomStatus.ACTIVE || r.Status == RoomStatus.BOOKED || r.Status == RoomStatus.EMPTY))
+                    .OrderByDescending(room => room.FeeAppliedDate)
+                    .FirstOrDefault();
 
-               if(list.Count > 1)
+               if(newRoom != null)
                 {
-                    result.NearestNextRentFee = result.RentFee;
-                    result.NearestNextFeeAppliedDate = result.FeeAppliedDate;
-                    result.RentFee = list[1].RentFee;
-                    result.FeeAppliedDate = list[1].FeeAppliedDate;
+                    result.NearestNextRentFee = newRoom.RentFee;
+                    result.NearestNextFeeAppliedDate = newRoom.FeeAppliedDate;
                 }
             }
 

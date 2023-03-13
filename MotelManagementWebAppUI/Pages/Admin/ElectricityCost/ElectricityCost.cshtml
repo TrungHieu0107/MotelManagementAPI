@@ -1,4 +1,4 @@
-﻿@page "/admin/electricity/electricity-cost"
+@page "/admin/electricity/electricity-cost"
 @model MotelManagementWebAppUI.Pages.ElectricityCost.ElectricityCostModel
 @{
     Layout = "_LayoutAdmin";
@@ -15,219 +15,237 @@
 </div>
 
 <partial name="_ValidationScriptsPartial" />
-      
-                <script>
-                        $(document).ready(function () {
-                            $("#update-electricity-cost").click(function () {
 
-                                $('#addElectricity').modal('show');                               
+<script>
+    $(document).ready(function () {
+        $("#update-electricity-cost").click(function () {
 
-                            });
-                           
-                        });
-                        
-                    </script>
+            $('#addElectricity').modal('show');
+
+        });
+
+    });
+
+</script>
 
 <div>
-        <table class="table table-dark">
-            <thead>
-                <tr>
-                    <th>
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>
 
-                        @{
-                            int currentYear = DateTime.Today.Year;
-                        }
-                        @{
-                            int currentMonth = DateTime.Today.Month;
-                        }
-                        @{
-                            int year = (int)ViewData["year"];
-                            int month = (int)ViewData["month"]; 
-                        }
+                    @{
+                        int currentYear = DateTime.Today.Year;
+                    }
+                    @{
+                        int currentMonth = DateTime.Today.Month;
+                    }
+                    @{
+                        int year = (int)ViewData["year"];
+                        int month = (int)ViewData["month"];
+                    }
 
-                        <form method="get">
-                            <select name="year" onchange="this.form.submit()" class="btn btn-secondary dropdown-toggle">
-                                @{
-                                    if (year == 0)
+                    <form method="get">
+                        <select name="year" onchange="this.form.submit()" class="btn btn-secondary dropdown-toggle">
+                            @{
+                                if (year == 0)
+                                {
+                                    <option value="0" selected>Tất cả</option>
+                                }
+                                else
+                                {
+                                    <option value="0">Tất cả</option>
+                                }
+
+                                for (int i = currentYear + 10; i >= 2020; i--)
+                                {
+                                    if (i == year)
                                     {
-                                        <option value="0" selected>Tất cả</option>
+                                        <option value="@i" selected>@i</option>
                                     }
                                     else
                                     {
-                                        <option value="0">Tất cả</option>
-                                    }
-
-                                    for (int i = currentYear; i >= 2020; i--)
-                                    {
-                                        if (i == year)
-                                        {
-                                            <option value="@i" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i">@i</option>
-                                        }
+                                        <option value="@i">@i</option>
                                     }
                                 }
-                            </select>
+                            }
+                        </select>
 
-                            <select name="month" onchange="this.form.submit()" class="btn btn-secondary dropdown-toggle">
-                                @{
-                                    if (month == 0)
+                        <select name="month" onchange="this.form.submit()" class="btn btn-secondary dropdown-toggle">
+                            @{
+                                if (month == 0)
+                                {
+                                    <option value="0" selected>Tất cả</option>
+                                }
+                                else
+                                {
+                                    <option value="0">Tất cả</option>
+                                }
+
+                                for (int i = 1; i <= 12; i++)
+                                {
+                                    if (i == month)
                                     {
-                                        <option value="0" selected>Tất cả</option>
+                                        <option value="@i" selected> Tháng @i</option>
                                     }
                                     else
                                     {
-                                        <option value="0">Tất cả</option>
-                                    }
-
-                                    for (int i = 1; i <= 12; i++)
-                                    {
-                                        if (i == month)
-                                        {
-                                            <option value="@i" selected> Tháng @i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i"> Tháng @i</option>
-                                        }
+                                        <option value="@i"> Tháng @i</option>
                                     }
                                 }
-                            </select>
-                        </form>
-              
-                    </th>
-                    <th>
-                        <div id="electric-cost"></div>
-                    </th>
-           <th>
+                            }
+                        </select>
+                    </form>
+
+                </th>
+                <th>
+                    <div id="electric-cost"></div>
+                </th>
+                <th>
                     <button id="update-electricity-cost" type="button" class="btn btn-primary">Cập nhật giá tiền điện</button>
 
                     @using Microsoft.AspNetCore.Http
-@using System.Globalization;
+                    @using System.Globalization;
                     @inject IHttpContextAccessor HttpContextAccessor
                     @section scripts {
 
 
-                        <script>
+                    <script>
 
 
-                            $(document).ready(function () {
-                                $("#update-electricity-cost-btn").click(function () {
-                                    console.log("click");
-                                    $("#addElectricityCost").modal({
-                                        modal: true,
-                                        title: "popup title",
-                                        width: 400,
-                                        height: 300,
-                                        draggable: true,
-                                        resizable: true,
+                        $(document).ready(function () {
+                            $("#update-electricity-cost-btn").click(function () {
+                                console.log("click");
+                                $("#addElectricityCost").modal({
+                                    modal: true,
+                                    title: "popup title",
+                                    width: 400,
+                                    height: 300,
+                                    draggable: true,
+                                    resizable: true,
 
-                                    });
                                 });
+                            });
 
 
 
-                                $("#create-object-form").submit(function (event) {
-                                    event.preventDefault();
-                                    let price = $("#price").val()
-                                    let AppliedMonth = $("#appliedMonth").val();
-                                    let AppliedYear = $("#appliedYear").val();
-                                    let Price = $("#price").val();
+                            $("#create-object-form").submit(function (event) {
+                                event.preventDefault();
+                                let price = $("#price").val()
+                                let AppliedMonth = $("#appliedMonth").val();
+                                let AppliedYear = $("#appliedYear").val();
+                                let Price = $("#price").val();
 
 
-                                    if ($(this).valid()) {
-                                        $.ajax({
-                                            url: "http://localhost:5001/api/ElectricityCost/add-electricity-cost",
-                                            data: JSON.stringify({ Price: Price, AppliedMonth: AppliedMonth, AppliedYear: AppliedYear }),
-                                            contentType: "application/json",
-                                            type: "POST",
-                                            headers: {
-                                                "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
-                                            },
-                                            success: function (result) {
-                                                $("#myModal").fadeOut();
-                                                // Reload the list of rooms on the main page
-                                                window.location.reload();
-                                            },
-                                            error: function (xhr, status, error) {
+                                if ($(this).valid()) {
+                                    $.ajax({
+                                        url: "http://localhost:5001/api/ElectricityCost/add-electricity-cost",
+                                        data: JSON.stringify({ Price: Price, AppliedMonth: AppliedMonth, AppliedYear: AppliedYear }),
+                                        contentType: "application/json",
+                                        type: "POST",
+                                        headers: {
+                                            "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                                        },
+                                        success: function (result) {
+                                            $("#myModal").fadeOut();
+                                            // Reload the list of rooms on the main page
+                                            window.location.reload();
+                                        },
+                                        error: function (xhr, status, error) {
 
-                                                // Parse error response and get validation errors
-                                                var errorResponse = JSON.parse(xhr.responseText);
-                                                var validationErrors = errorResponse.errors;
+                                            // Parse error response and get validation errors
+                                            var errorResponse = JSON.parse(xhr.responseText);
+                                            var validationErrors = errorResponse.errors;
 
                                                 // Create error message string
                                                 var errorMessage = "Có lỗi xảy ra:<br>";
 
-                                                for (var key in validationErrors) {
-                                                    if (validationErrors.hasOwnProperty(key)) {
-                                                        errorMessage += validationErrors[key] + "<br>";
-                                                    }
+                                            for (var key in validationErrors) {
+                                                if (validationErrors.hasOwnProperty(key)) {
+                                                    errorMessage += validationErrors[key] + "<br>";
                                                 }
+                                            }
 
-                                                // Show error message
-                                                $("#error-message").html(errorMessage);
-                                                $("#error-message").show();
-                                            },
-                                        });
-                                    }
-
-                                });
-                            });
-                        </script>
-
-                            <script>
-                       $(document).ready(function () {
-                            $.ajax({
-                                url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
-                                type: "GET",
-                                headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
-                                dataType: "json",
-                                success: function (data) {
-                                    var price = data.data.price;
-                                    var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                                    $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
-                                },
-                                error: function () {
-                                    $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
+                                            // Show error message
+                                            $("#error-message").html(errorMessage);
+                                            $("#error-message").show();
+                                        },
+                                    });
                                 }
+
                             });
-                        });
+                    </script>
 
-            
-                                </script>
-                            } 
-            </th>
+                    <script>
+                        $(document).ready(function () {
+                             $.ajax({
+                                 url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
+                                 type: "GET",
+                                 headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
+                                 dataType: "json",
+                                 success: function (data) {
+                                     var price = data.data.price;
+                                     var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                     $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
+                                 },
+                                 error: function () {
+                                     $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
+                                 }
+                             });
+                         });
+                    </script>
 
-            
-                       
-               
+                    <script>
+                        $(document).ready(function () {
+                             $.ajax({
+                                 url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
+                                 type: "GET",
+                                 headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
+                                 dataType: "json",
+                                 success: function (data) {
+                                     var price = data.data.price;
+                                     var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                     $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
+                                 },
+                                 error: function () {
+                                     $("#electric-cost").html("Error: Unable to retrieve current water cost");
+                                 }
+                             });
+                         });
 
-                </tr>
-            </thead>
-            
+
+                    </script>
+                    }
+                </th>
+
+
+
+
+
+            </tr>
+        </thead>
+
     </table>
-    </div>
-    
-  @*  display table*@
-    <div>
-        <table class="table">
-    <thead class="thead-dark">
-    <tr>
-            <th>
-               No
-            </th>
-            <th>
-                Giá(VND)
-            </th>
-            <th>
-                Ngày Áp Dụng
-            </th>
-     </tr>
-      </thead>
+</div>
 
-    <tbody>
+@*  display table*@
+<div>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    No
+                </th>
+                <th>
+                    Giá(VND)
+                </th>
+                <th>
+                    Ngày Áp Dụng
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
             @{
                 if (Model.electricityCostDTOs.Count > 0)
                 {
@@ -240,8 +258,6 @@
                                 @count
                             </td>
                             <td>
-                             
-                            
                                 @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)",  item.Price)
                             </td>
                             <td>
@@ -249,15 +265,13 @@
                             </td>
 
                         </tr>
-
-
                     }
                 }
             }
-    </tbody>
+        </tbody>
 
 
-</table>
+    </table>
 
 </div>
 

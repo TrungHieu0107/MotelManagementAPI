@@ -118,7 +118,7 @@ namespace DataAccess.Service.Impl
 
         public RoomDTO UpdateRoom(RoomDTO room, long userId)
         {
-            if (room.NearestNextFeeAppliedDate < DateTime.Now)
+                if (room.NearestNextFeeAppliedDate < DateTime.Now)
             {
                 return null;
             }
