@@ -29,17 +29,29 @@
 
                         <div class="form-group">
                             <label asp-for="waterRequestDTO.Price" class="control-label">Giá</label>
-                            <input id="price" asp-for="waterRequestDTO.Price" class="form-control" min=1 />
+                            <input id="price" asp-for="waterRequestDTO.Price" class="form-control"
+                                   data-val="true"
+                                   data-val-range="Giá tiền phải lớn hơn hoặc bằng 1"
+                                   data-val-range-min="1" />
                             <span asp-validation-for="waterRequestDTO.Price" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="waterRequestDTO.AppliedYear" class="control-label">Năm áp dụng</label>
-                            <input id="appliedYear" asp-for="waterRequestDTO.AppliedYear" class="form-control" min="@currentYear" max="@yearMax"/>  
+                            <input id="appliedYear" asp-for="waterRequestDTO.AppliedYear" class="form-control" 
+                                 data-val="true"
+                                   data-val-range="Năm áp dụng giá tiền phải lớn hơn hoặc bằng từ @currentYear trở đi và không quá 10 năm"
+                                   data-val-range-min="@currentYear"
+                                   data-val-range-max="@yearMax" />
+                             
                             <span asp-validation-for="waterRequestDTO.AppliedYear" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="waterRequestDTO.AppliedMonth" class="control-label">Tháng áp dụng</label>
-                            <input id="appliedMonth" asp-for="waterRequestDTO.AppliedMonth" class="form-control" min="1" max="12" />
+                            <input id="appliedMonth" asp-for="waterRequestDTO.AppliedMonth" class="form-control"
+                                   data-val="true"
+                                   data-val-range="Tháng  áp dụng giá tiền phải trong khoang từ tháng 1 đến tháng 12"
+                                   data-val-range-min="1"
+                                   data-val-range-max="12" />
                             <span asp-validation-for="waterRequestDTO.AppliedMonth" class=" text-danger"></span>
                         </div>
                     </div>

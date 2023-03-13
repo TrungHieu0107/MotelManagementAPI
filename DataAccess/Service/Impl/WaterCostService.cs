@@ -67,7 +67,7 @@ namespace DataAccess.Service.Impl
                 var waterCostDTO = JsonConvert.DeserializeObject<WaterCostDTO>(serialized);
                 return waterCostDTO;
             }
-            else throw new Exception("Can not update water cost");
+            else throw new Exception("Cập nhật giá nước không thành công");
          
         }
 

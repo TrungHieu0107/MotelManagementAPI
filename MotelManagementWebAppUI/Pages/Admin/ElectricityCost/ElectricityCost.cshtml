@@ -105,6 +105,7 @@
                     <button id="update-electricity-cost" type="button" class="btn btn-primary">Cập nhật giá tiền điện</button>
 
                     @using Microsoft.AspNetCore.Http
+@using System.Globalization;
                     @inject IHttpContextAccessor HttpContextAccessor
                     @section scripts {
 
@@ -157,7 +158,7 @@
                                                 var validationErrors = errorResponse.errors;
 
                                                 // Create error message string
-                                                var errorMessage = "One or more validation errors occurred:<br>";
+                                                var errorMessage = "Có lỗi xảy ra:<br>";
 
                                                 for (var key in validationErrors) {
                                                     if (validationErrors.hasOwnProperty(key)) {
@@ -189,7 +190,7 @@
                                     $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
                                 },
                                 error: function () {
-                                    $("#electric-cost").html("Error: Unable to retrieve current water cost");
+                                    $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
                                 }
                             });
                         });
@@ -239,7 +240,9 @@
                                 @count
                             </td>
                             <td>
-                                @Html.DisplayFor(m => item.Price)
+                             
+                            
+                                @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)",  item.Price)
                             </td>
                             <td>
                                 @Html.DisplayFor(m => item.AppliedDate)
