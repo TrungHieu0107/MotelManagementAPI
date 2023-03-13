@@ -58,7 +58,7 @@ namespace DataAccess.Repository
 
         public List<History> GetHistoriesOfBookedUpToDateRooms(DateTime dateTime)
         {
-            return _context.Histories.Include(h => h.Room).Where(h => h.Room.Status == RoomStatus.BOOKED && h.StartDate <= dateTime).ToList();
+            return _context.Histories.Include(h => h.Room).Where(h => h.Room.Status == RoomStatus.BOOKED && h.StartDate <= dateTime.AddMinutes(59).AddHours(23)).ToList();
         }
 
         public List<History> GetNullEndDateHistories(DateTime dateTime)

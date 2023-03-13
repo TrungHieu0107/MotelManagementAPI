@@ -61,7 +61,7 @@ namespace DataAccess.Repository
             return _context.Invoices.
                 Where(i =>
                 i.EndDate == null &&
-                i.StartDate <= dateTime.AddMinutes(5).AddMonths(-1)
+                i.StartDate <= dateTime.AddDays(-1)
                 ).ToList();
         }
 
