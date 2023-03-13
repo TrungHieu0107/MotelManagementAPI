@@ -17,6 +17,7 @@ using BussinessObject.DTO.Common;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 
 namespace MotelManagementWebAppUI.Pages.Login
 {

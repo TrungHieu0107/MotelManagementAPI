@@ -52,8 +52,8 @@
 </div>
 <div id="room-list">
 
-    <div style="overflow: auto; height: 490px">
-        <table class="table table-bordered" style="overflow: auto; height: 490px">
+    <div style="overflow: auto; height: 550px">
+        <table class="table table-bordered" style="overflow: auto; height: 550px">
             <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
                 <tr>
                     <th>
@@ -398,8 +398,8 @@
                         id.val(result?.data?.id);
                         status.val(result?.data?.status);
                         code.val(result?.data?.code);
-                        rentFee.val(result?.data?.rentFee);
-                        var date = new Date(result?.data?.feeAppliedDate).toISOString().split('T')[0];
+                        rentFee.val(result?.data?.nearestNextRentFee);
+                        var date = new Date(result?.data?.nearestNextFeeAppliedDate).toISOString().split('T')[0];
                         feeApplyDate.val(date);
                 }
               },
