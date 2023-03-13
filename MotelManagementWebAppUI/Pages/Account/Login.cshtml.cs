@@ -36,6 +36,16 @@ namespace MotelManagementWebAppUI.Pages.Login
 
         public IActionResult OnGet()
         {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
+             ("Bearer", HttpContext.Request.Cookies["token"]);
+            var response = _httpClient.DeleteAsync($"http://localhost:5001/api/Account/Logout");
+
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (Request.Cookies["token"] != null)
+            {
+                Response.Cookies.Delete("token");
+            }
             try
             {
                 if (HttpContext.Request.Cookies["token"] != null)
@@ -57,7 +67,6 @@ namespace MotelManagementWebAppUI.Pages.Login
                     }
                     else
                     {
-
                         return Page();
                     }
                 }

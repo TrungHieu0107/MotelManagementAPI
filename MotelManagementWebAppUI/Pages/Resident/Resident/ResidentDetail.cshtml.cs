@@ -28,7 +28,7 @@ namespace MotelManagementWebAppUI.Pages.Resident.Resident
         {
             _httpClient = httpClient;
         }
-        public async Task OnGetAsync(long id)
+        public void OnGet()
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
                 ("Bearer", HttpContext.Request.Cookies["token"]);
@@ -36,9 +36,9 @@ namespace MotelManagementWebAppUI.Pages.Resident.Resident
                 "pageSize=5" +
                 "&currentPage=1" +
                 "&roomStatus=RENTING";
-            var response = await _httpClient.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<CommonResponse>(content);
+            var response = _httpClient.GetAsync(url).GetAwaiter().GetResult();
+            var content = response.Content;
+            var result = JsonConvert.DeserializeObject<CommonResponse>(content.ReadAsStringAsync().GetAwaiter().GetResult());
             Status = "RENTING";
             Resident = JsonConvert.DeserializeObject<ResidentDTOForDetail>(JsonConvert.SerializeObject(result.Data));
             ResultPagination = JsonConvert.DeserializeObject<Pagination>(JsonConvert.SerializeObject(result.Pagination));
