@@ -78,7 +78,7 @@ namespace DataAccess.Service.Impl
                 return electricityCostDTO;
 
             }
-            else throw new Exception("Update electricity cost unsucessfully");
+            else throw new Exception("Cập nhật giá điện không thành công");
            
         }
 

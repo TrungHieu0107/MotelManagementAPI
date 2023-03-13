@@ -47,7 +47,7 @@ namespace MotelManagementAPI.Controllers
 
                 if (electricityCost == null)
                 {
-                    common.Message = "Some thing went wrong";
+                    common.Message = "Đã có lỗi xảy ra, vui lòng reload lại trang";
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace MotelManagementAPI.Controllers
 
                 if (electricityCost == null)
                 {
-                    common.Message = "Not Found";
+                    common.Message = "Không tìm thấy";
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace MotelManagementAPI.Controllers
 
                 var result = electricityCostService.UpdateElectricity(obj);
                 if (result == null)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Đã có lỗi xảy ra");
 
                 return Ok("Added Successfully");
             }

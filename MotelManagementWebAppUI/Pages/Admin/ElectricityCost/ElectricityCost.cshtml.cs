@@ -23,7 +23,7 @@ namespace MotelManagementWebAppUI.Pages.ElectricityCost
         int CURRENT_MONTH = DateTime.Today.Month;
         int CURRENT_YEAR = DateTime.Today.Year;
 
-
+     
 
         [BindProperty(SupportsGet = true)]
         public List<ElectricityCostDTO> electricityCostDTOs { get; set; }
@@ -45,7 +45,9 @@ namespace MotelManagementWebAppUI.Pages.ElectricityCost
             if(month == -1)
             
                 month = CURRENT_MONTH;
-            
+
+
+
            return await search(year, month,pageSize, currentPage);
 
         }
@@ -83,9 +85,9 @@ namespace MotelManagementWebAppUI.Pages.ElectricityCost
 
 
             }
-            // return RedirectToPage();
-            //return RedirectToPage("ElectricityCost");
+          
         }
+
 
     }
 }

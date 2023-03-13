@@ -97,13 +97,13 @@ namespace DataAccess.Service.Impl
                
             }else if(checkExistUserName != null)
             {
-                throw new TaskCanceledException("This username already exist");
+                throw new TaskCanceledException("Tên đăng nhập đã tồn tại");
 
             } else if(checkExistIdCardNumber != null) {
-                throw new TaskCanceledException("This resident already exist");
+                throw new TaskCanceledException("Số chứng minh thư đã tồn tại");
             } else if(checkExistPhone != null)
             {
-                throw new TaskCanceledException("This phone is already exist");
+                throw new TaskCanceledException("Số điện thoại đã tồn tại");
             }
 
             return check;
