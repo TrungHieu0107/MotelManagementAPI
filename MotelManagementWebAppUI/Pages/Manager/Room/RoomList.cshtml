@@ -363,7 +363,19 @@
                 window.location.reload();
               },
               error: function (xhr, status, error) {
-                alert("Error creating room: " + error);
+                $('#notify-content').html(xhr.responseJSON.message);
+                if(xhr.responseJSON.message){
+                    $("#notification").modal({
+                        modal: true,
+                        width: 'auto',
+                        height: 'auto',
+                        draggable: true,
+                        resizable: true,
+                    });
+                    $("#notification").modal('toggle');
+                    console.log(xhr.responseJSON.message);
+
+                }
               },
             });
         }
