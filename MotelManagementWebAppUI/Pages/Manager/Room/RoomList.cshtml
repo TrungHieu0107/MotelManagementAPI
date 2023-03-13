@@ -229,8 +229,8 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="control-label"></label>
-                                <input id="fee-applied-date-update" asp-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="form-control" />
-                                <span asp-validation-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="text-danger"></span>
+                                <input id="fee-applied-date-update" asp-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="form-control"/>
+                                <span  id="fee-applied-date-update-error" asp-validation-for="@Model.NewRoom.NearestNextFeeAppliedDate" class="text-danger"></span>
                             </div>
                             <div>
                                 <label asp-for="@Model.NewRoom.Status" class="control-label"></label>
@@ -285,6 +285,7 @@
         let idDelete;
         var today = new Date().toISOString().split('T')[0];
           $('#fee-applied-date-update').attr('min', today);
+          $('#fee-applied-date').attr('min', today);
 
       $("#add-new-room").click(function () {
 
@@ -399,7 +400,7 @@
                         status.val(result?.data?.status);
                         code.val(result?.data?.code);
                         rentFee.val(result?.data?.nearestNextRentFee);
-                        var date = new Date(result?.data?.nearestNextFeeAppliedDate).toISOString().split('T')[0];
+                        var date = new Date().toISOString().split('T')[0];
                         feeApplyDate.val(date);
                 }
               },

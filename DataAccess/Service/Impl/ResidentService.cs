@@ -119,11 +119,11 @@ namespace DataAccess.Service.Impl
             
             if ( phoneCheck != null && id != phoneCheck.Id   )
             {
-                throw new TaskCanceledException("Phone must be unique");
+                throw new TaskCanceledException("Số điện thoại đã tồn tại");
             }
             else if (idCardCheck != null && id != idCardCheck.Id)
             {
-                throw new TaskCanceledException("Indentity cart number must be unique");
+                throw new TaskCanceledException("Số chứng minh thư đã tồn tại");
             }
             else
             {

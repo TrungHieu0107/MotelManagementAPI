@@ -1,4 +1,4 @@
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.CommonConstant;
 using DataAccess.Service;
@@ -69,6 +69,11 @@ namespace MotelManagementAPI.Controllers
                 var userId = claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value;
 
                 var result = _roomService.UpdateRoom(room, long.Parse(userId));
+                if(result == null)
+                {
+                    commonResponse.Message = "Cập nhật thông tin không thành công";
+                    return StatusCode(StatusCodes.Status400BadRequest, commonResponse);
+                }
                 commonResponse.Data = result;
                 return Ok(commonResponse);
             }

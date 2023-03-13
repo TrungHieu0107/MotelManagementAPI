@@ -164,6 +164,7 @@
                                       },
                                       error: function (xhr, status, error) {
 
+                                              
                                                     // Parse error response and get validation errors
                                                     var errorResponse = JSON.parse(xhr.responseText);
                                                     var validationErrors = errorResponse.errors;
