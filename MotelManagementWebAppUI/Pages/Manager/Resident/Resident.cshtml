@@ -1,0 +1,529 @@
+﻿@page "/manager/resident/resident"
+@model MotelManagementWebAppUI.Pages.Manager.Resident.ResidentModel
+@{
+    Layout = "_LayoutManager";
+    ViewData["Title"] = "Danh sách người thuê";
+}
+@using System.Globalization;
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+<div>
+    <div id="popup">
+        @*@await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", null, new ViewDataDictionary(ViewData) { { "room", Model.NewRoom }, {"context", context } })*@
+        <partial name="~/Pages/Manager/Resident/_AddResidentPartial.cshtml" model="@Model.accountDTO" />
+    </div>
+    <div id="popup1">
+        @*@await Html.PartialAsync("~/Pages/Room/_AddRoomPartial.cshtml", null, new ViewDataDictionary(ViewData) { { "room", Model.NewRoom }, {"context", context } })*@
+        <partial name="~/Pages/Manager/Resident/_EditResidentPartial.cshtml" model="@Model.residentUpdateDTO" />
+    </div>
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex">
+                        <button class="btn btn-primary mr-2" id="filterToggle">
+                            <i class="fas fa-filter"></i> Bộ lọc
+                        </button>
+                        <button class="btn btn-success" id="addResidentButton" data-toggle="modal" data-target="#addResidentModal">
+
+
+                            @using Microsoft.AspNetCore.Http 
+                            @inject IHttpContextAccessor HttpContextAccessor 
+                            @section scripts {
+
+
+                            <script>
+                                $(document).ready(function () {
+                                        $("#addResidentButton").click(function () {
+                                      console.log("click");
+                                            $("#addResidentModal").modal({
+                                      modal: true,
+                                      title: "popup title",
+                                      width: 400,
+                                      height: 300,
+                                      draggable: true,
+                                      resizable: true,
+
+                                    });
+                                  });
+                                        $("#create-resident-form").submit(function (event) {
+                                            event.preventDefault();
+                                            let UserName = $("#UserName").val();
+                                            let Password = $("#Password").val();
+                                            let IdentityCardNumber = $("#IdentityCardNumber").val();
+                                            let Phone = $("#Phone").val();
+                                            let FullName = $("#FullName").val();
+                                            let ConfirmPassword = $("#confirmPassword").val()
+
+
+                                            console.log($("#messageCofirm"))
+                                             if ($("#messageCofirm").css("color") === "rgb(255, 0, 0)") {
+                                                    // nếu có, ngăn chặn việc submit form
+                                                    event.preventDefault();
+                                                }
+                                        if ($(this).valid()) {
+
+                                         $.ajax({
+                                                    url: "http://localhost:5001/api/Resident/add-resident",
+                                                    data: JSON.stringify({
+                                                        UserName: UserName,
+                                                        Password: Password,
+                                                        IdentityCardNumber: IdentityCardNumber,
+                                                        Phone: Phone,
+                                                        FullName: FullName,
+                                                        ConfirmPassword: ConfirmPassword
+                                                    }),
+                                                contentType: "application/json",
+                                      type: "POST",
+                                      headers: {
+                                        "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                                      },
+                                      success: function (result) {
+                                        $("#myModal").fadeOut();
+                                        // Reload the list of rooms on the main page
+                                        window.location.reload();
+                                      },
+                                      error: function (xhr, status, error) {
+
+                                                    // Parse error response and get validation errors
+                                                    var errorResponse = JSON.parse(xhr.responseText);
+                                                    var validationErrors = errorResponse.errors;
+
+                                                    // Create error message string
+                                                    var errorMessage = "Đã có lỗi xảy ra:<br>";
+
+                                                    for (var key in validationErrors) {
+                                                        if (validationErrors.hasOwnProperty(key)) {
+                                                            errorMessage += validationErrors[key] + "<br>";
+                                                        }
+                                                    }
+                                                        var dataError = errorResponse.message;
+                                                        errorMessage += dataError+ "<br>"
+                                                    // Show error message
+                                                    $("#error-message").html(errorMessage);
+                                                    $("#error-message").show();
+                                      },    
+                                    });
+                                    }
+
+                                  });
+                                });
+
+
+
+
+                            </script>
+
+
+
+
+                            }
+
+
+                            <i class="fas fa-plus"></i> Tạo mới
+                        </button>
+                    </div>
+                    <div id="filterStatus" class="d-none">
+                        <span>Bộ lọc đang được hiển thị</span>
+                    </div>
+                </div>
+                <div id="filterForm" class="d-none">
+                    <h3>Bộ lọc</h3>
+                <form>
+                    <div class="form-group row">
+                        <label for="name" class="col-md-2 col-form-label">Họ và tên</label>
+                        <div class="col-md-4">
+                                <input type="text" name="fullName" asp-for="@Model.FullName" placeholder="Họ và tên">
+                        </div>
+                        <label for="id_number" class="col-md-2 col-form-label">Số chứng minh nhân dân</label>
+                        <div class="col-md-4">
+                                <input type="text" name="idCard" asp-for="@Model.IdCard" placeholder="Số chứng minh nhân dân"/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="phone" class="col-md-2 col-form-label">Số điện thoại</label>
+                        <div class="col-md-4">
+                                <input type="text" name="phone" asp-for="@Model.Phone" placeholder="Số điện thoại">
+                        </div>
+                        <label for="status" class="col-md-2 col-form-label">Trạng thái</label>
+                        <div class="col-md-4">
+                                <select name="status" asp-for="@Model.Status">
+                                <option value=-1>Tất cả</option>
+                                <option value=0>Hoạt động</option>
+                                <option value=1>Ngưng hoạt động</option>
+                                <option value=2>Trễ hóa đơn</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12 text-right">
+                            <button type="submit" class="btn btn-primary">Lọc</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    var filterToggle = document.getElementById("filterToggle");
+    var filterForm = document.getElementById("filterForm");
+
+    filterToggle.addEventListener("click", function () {
+        filterForm.classList.toggle("d-none");
+    });
+
+
+
+
+
+
+</script>
+
+
+
+<table class="table table-striped" id="filter">
+    <thead>
+        <tr>
+
+            <th scope="col">#</th>
+            <th style="display:none;">ID</th>
+            <th scope="col">Họ Và Tên</th>
+            <th scope="col">Số chứng minh nhân dân</th>
+            <th scope="col">Số điện thoại</th>
+            <th>Trạng Thái</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.residentDTOs.Count > 0)
+            {
+                int count = 0;
+                if (Model.ResultPagination.CurrentPage > 1)
+                {
+                    count = (Model.ResultPagination.CurrentPage - 1) * Model.ResultPagination.PageSize;
+                }
+                else
+                {
+                    count = Model.ResultPagination.CurrentPage - 1;
+                }
+                @foreach (var item in Model.residentDTOs)
+                {
+                    count++;
+
+
+
+                                <tr>
+                                    <td>
+                            @count
+                                    </td>
+                                    <td style="display:none;">
+                            @Html.DisplayFor(m => item.Id)
+                                    </td>
+                                    <td>
+                            @Html.DisplayFor(m => item.FullName)
+                                    </td>
+                                    <td id="identity">
+                            @Html.DisplayFor(m => item.IdentityCardNumber)
+                                    </td>
+                                    <td>
+                            @Html.DisplayFor(m => item.Phone)
+                                    </td>
+                                    <td>
+                            @if (item.Status == "ACTIVE")
+                            {
+                                                <span class="text-success">Đang hoạt động</span>
+                            }
+                            else if (item.Status == "INACTIVE")
+                            {
+                                                <span class="text-danger">Đã khóa</span>
+                            }
+                            else if (item.Status == "LATE_PAYMENT")
+                            {
+
+
+                                                <span class="text-warning">Trễ hóa đơn</span>
+                            }
+                                    </td>
+                                    <td>
+                                        <button class="editBtn btn btn-primary" data-toggle="modal" data-target="#editModal" data-identitycardnumber="@item.IdentityCardNumber"><i class="fa-solid fa-user-pen"></i></button>
+                                    </td>
+                                </tr>
+
+                }
+            }
+        }
+    </tbody>
+
+    <!-- Modal -->
+
+
+    <script>
+        $(document).ready(function () {
+            
+            $('.editBtn').click(function () {
+                var identityCardNumber = $(this).data('identitycardnumber');
+                $.ajax({
+                    url: '@Url.Page("Resident", "EditResident")',
+                    type: 'GET',
+                    data: {
+                        IdentityCardNumber: identityCardNumber
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            var residentData = response.residentData;
+
+
+                            $('#EditFullname').val(residentData?.fullName);
+                            $('#EditIdentityCardNumber').val(residentData?.identityCardNumber);
+                            $('#EditPhone').val(residentData?.phone);
+                            $('#EditPassword').val(residentData?.password);
+                            $('#EditId').val(residentData?.id)
+                            $("#EditStatus").val(residentData?.status);
+                            var editStatus = parseInt($("#EditStatus").val()); // Chuyển đổi giá trị của phần tử HTML thành kiểu số
+
+                            if (editStatus === 1) {
+
+                                $("#activateBtn").show();
+                                $("#deactivateBtn").hide();
+                            } else if (editStatus == 0) {
+
+                                $("#deactivateBtn").show();
+
+                                $("#activateBtn").hide();
+                            } else if (editStatus === 2){
+
+                                $("#deactivateBtn").show();
+
+                                $("#activateBtn").hide();
+                            }
+
+                            console.log($("#EditStatus").val())
+                            console.log(residentData)
+
+                                    console.log("click");
+                            $("#editModal").modal({
+                                        modal: true,
+                                        title: "popup title",
+                                        width: 400,
+                                        height: 300,
+                                        draggable: true,
+                                        resizable: true,
+
+                                    });
+                               
+                         
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Failed to load resident information');
+                    }
+                });
+            });
+            $('.btn-close').click(function () {
+                // Remove the 'modal-open' class from the body
+                $('body').removeClass('modal-open');
+
+                // Remove the 'modal-backdrop' div
+                $('.modal-backdrop').remove();
+
+                // Remove the 'show' class from the modal
+                $('#editModal').removeClass('show');
+            });
+
+
+            $('#saveChangesBtn').click(function () {
+                var form = $('#editResidentForm');
+
+                form.submit(function (event) {
+                    event.preventDefault();
+
+                    let Password = $('#EditPassword').val();
+                    let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+                    let Phone = $('#EditPhone').val();
+                    let FullName = $('#EditFullname').val();
+                    let Id =   $('#EditId').val();
+                    let confimEdPassword = $('#confirmEdPassword').val();
+
+                    if ($(this).valid()) {
+
+                        $.ajax({
+                            url: "http://localhost:5001/api/Resident/update-resident?id=" + Id,
+                            data: JSON.stringify({
+
+                                Password: Password,
+                                IdentityCardNumber: IdentityCardNumber,
+                                Phone: Phone,
+                                FullName: FullName,
+                                ConfirmPassword: confimEdPassword
+
+                            }),
+                            contentType: "application/json",
+                            type: "PUT",
+                            headers: {
+                                "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                            },
+                            success: function (result) {
+                                $("#myModal").fadeOut();
+                                // Reload the list of rooms on the main page
+                                window.location.reload();
+                            },
+                            error: function (xhr, status, error) {
+
+                                // Parse error response and get validation errors
+                                var errorResponse = JSON.parse(xhr.responseText);
+                                var validationErrors = errorResponse.errors;
+
+                                // Create error message string
+                                var errorMessage = "Đã có lỗi xảy ra:<br>";
+
+                                for (var key in validationErrors) {
+                                    if (validationErrors.hasOwnProperty(key)) {
+                                        errorMessage += validationErrors[key] + "<br>";
+                                    }
+                                }
+                                var dataError = errorResponse.message;
+                                errorMessage += dataError + "<br>"
+                                // Show error message
+                                $("#error-message-ed").html(errorMessage);
+                                $("#error-message-ed").show();
+                            },
+                        });
+                    }
+
+                });
+            });
+        });
+
+
+        $("#deactivateBtn").click(function () {
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+            showConfirm("<p>Bạn có chắc chắn muốn khóa tài khoản này?</p>", () => {
+                deactiveResident();
+            });
+        });
+
+        function deactiveResident(){
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+                $.ajax({
+                    url: "http://localhost:5001/api/Resident/deactive-resident?idCard=" + IdentityCardNumber,
+                    contentType: "application/json",
+                    type: "PUT",
+                    headers: {
+                        "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                    },
+                    success: function (result) {
+                        $("#myModal").fadeOut();
+                        // Reload the list of rooms on the main page
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        var errorResponse = JSON.parse(xhr.responseText);
+                    var validationErrors = errorResponse.errors;
+
+                    // Create error message string
+                    var errorMessage = "One or more validation errors occurred:<br>";
+
+                    for (var key in validationErrors) {
+                        if (validationErrors.hasOwnProperty(key)) {
+                            errorMessage += validationErrors[key] + "<br>";
+                        }
+                    }
+                    var dataError = errorResponse.message;
+                    errorMessage += dataError + "<br>"
+                    // Show error message
+                    $("#error-message-ed").html(errorMessage);
+                    $("#error-message-ed").show();
+                    },
+                });
+        }
+
+        $("#activateBtn").click(function () {
+            showConfirm("<p>Bạn có chắc chắn muốn mở khóa tài khoản này?</p>", () => {
+                activeResident();
+            });
+        });
+
+        function activeResident(){
+            let IdentityCardNumber = $('#EditIdentityCardNumber').val();
+                $.ajax({
+                    url: "http://localhost:5001/api/Resident/active-resident?idCard=" + IdentityCardNumber,
+                    contentType: "application/json",
+                    type: "PUT",
+                    headers: {
+                        "Authorization": "Bearer @HttpContext.Request.Cookies["token"]",
+                    },
+                    success: function (result) {
+                        $("#myModal").fadeOut();
+                        // Reload the list of rooms on the main page
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        var errorResponse = JSON.parse(xhr.responseText);
+                        var validationErrors = errorResponse.errors;
+
+                        // Create error message string
+                        var errorMessage = "Đã có lỗi xảy ra:<br>";
+
+                        for (var key in validationErrors) {
+                            if (validationErrors.hasOwnProperty(key)) {
+                                errorMessage += validationErrors[key] + "<br>";
+                            }
+                        }
+                        var dataError = errorResponse.message;
+                        errorMessage += dataError + "<br>"
+                        // Show error message
+                        $("#error-message-ed").html(errorMessage);
+                        $("#error-message-ed").show();
+                    },
+                });
+        }
+    </script>
+
+</table>
+<form method="post" class="row justify-content-center">
+            <input type="hidden" name="fullName" asp-for="@Model.FullName" />
+            <input type="hidden" name="status" asp-for="@Model.Status" />
+            <input type="hidden" name="phone" asp-for="@Model.Phone" />
+            <input type="hidden" name="idCard" asp-for="@Model.IdCard" />
+            <input name="CurrentPage" value="@Model.ResultPagination.CurrentPage" hidden/>
+    @if (Model.ResultPagination.CurrentPage > 1)
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous">Trước</button>
+    }
+    else
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled>Trước</button>
+    }
+            <span class="col-1 text-center" style="vertical-align: middle">
+        @Model.ResultPagination.CurrentPage
+            </span>
+
+    @if (Model.ResultPagination.Total > Model.ResultPagination.CurrentPage * Model.ResultPagination.PageSize)
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next">Tiếp</button>
+    }
+    else
+    {
+                    <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled>Tiếp</button>
+    }
+</form>
+<partial name="_ValidationScriptsPartial" />
+
+
+
+

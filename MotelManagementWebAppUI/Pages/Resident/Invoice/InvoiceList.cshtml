@@ -1,0 +1,201 @@
+﻿@page "/resident/invoice/invoice-list"
+@model MotelManagementWebAppUI.Pages.Resident.Invoice.InvoiceListModel
+@{
+    Layout = "_LayoutResident";
+    ViewData["Title"] = "Danh sách hóa đơn";
+}
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <button style="width: 110px" class="collapsed d-flex btn btn-primary justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+        <i class="fa-solid fa-filter"></i>
+        <span>Bộ lọc</span>
+        <i class="fas fa-angle-down"></i>
+    </button>
+</div>
+
+<div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+    <div class="mb-3">
+        <form class="d-flex flex-column" method="post">
+
+            <div class="row align-items-start">
+                <div class="col">
+                    <label asp-for="@Model.filterInvoiceOption.RoomCode" class="control-label"></label>
+                    <input asp-for="@Model.filterInvoiceOption.RoomCode" class="form-control" />
+                </div>
+                <div class="col">
+                    <label asp-for="@Model.filterInvoiceOption.PaidDate" class="control-label"></label>
+                    <input asp-for="@Model.filterInvoiceOption.PaidDate" class="form-control" />
+                </div>
+                <div class="col">
+                    <label asp-for="@Model.filterInvoiceOption.Status" class="control-label"></label>
+                    <select asp-for="@Model.filterInvoiceOption.Status" asp-items="@Model.SelectLisInvoiceStatus" class="form-select">
+                        <option selected="selected" value="">Tất cả</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-evenly mt-2 mb-0">
+                <button id="search-invoice" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="room-list">
+
+    <div style="overflow: auto; height: 550px">
+        <table class="table table-bordered">
+            <thead style="position: sticky; top: 0; z-index: 999; background-color:gray" class="text-white">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].CreatedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].ExpiredDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].Room.Code)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].Resident.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].PaidDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ListInvoice[0].Status)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody style="height: 500px" overflow-auto">
+                @if (Model.ListInvoice != null && Model.ListInvoice.Count() > 0)
+                {
+                    foreach (var item in Model.ListInvoice)
+                    {
+                        <tr>
+                            <td>
+                                <span>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</span>
+                            </td>
+                            <td>
+                                @if (@item.ExpiredDate != null)
+                                {
+                                    <span>@item.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</span>
+                                }
+                                else
+                                {
+                                    <span class="m-0 p-0">-</span>
+                                }
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Room.Code)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Resident.FullName)
+                            </td>
+                            <td>
+                                @if (@item.PaidDate != null)
+                                {
+                                    <span>@item.PaidDate.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)</span>
+                                }
+                                else
+                                {
+                                    <span class="m-0 p-0">-</span>
+                                }
+
+                            </td>
+                            <td>
+                                @Model.ListInvocieStatus.ElementAt((int)item.Status).ToString()
+                            </td>
+                            <td class="d-flex justify-content-center">
+                                <form method="post">
+                                    <button type="button" onclick="window.location.href = '/resident/invoice/invoice-detail/@item.Id'">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="text-center">
+                        <td colspan=5 class="text-center">Không có bất kì dữ liệu nào</td>
+                    </tr>
+                }
+
+            </tbody>
+            <tfoot style="position: sticky; inset-block-end: 0; z-index: 999; background-color:gray">
+                <tr>
+                    <td colspan=5 class="border-0 ">
+                        <form method="post" class="row justify-content-start ms-3">
+                            @Html.HiddenFor(model => model.filterInvoiceOption.RoomCode)
+                            @Html.HiddenFor(model => model.filterInvoiceOption.Status)
+                            <input name="filterInvoiceOption.CurrentPage" value="@Model.filterInvoiceOption.CurrentPage" hidden />
+                            @Html.HiddenFor(model => model.filterInvoiceOption.PageSize)
+                            @for (var i = 5; i >= 1; i--)
+                            {
+                                if (Model.filterInvoiceOption.CurrentPage - i > 0)
+                                {
+                                    <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Previous" asp-route-index="@i">
+                                        @*<i class="fa-solid fa-angle-left"></i>*@
+                                        @(Model.filterInvoiceOption.CurrentPage - i)
+                                    </button>
+                                }
+                            }
+                            <button class="btn btn-light col-1 ms-1 me-1" style="width: 40px" type="button">
+                                @Model.filterInvoiceOption.CurrentPage
+                            </button>
+                            @for (var i = 0; i <= 5; i++)
+                            {
+                                if (Model.filterInvoiceOption.Total > (Model.filterInvoiceOption.CurrentPage + i) * Model.filterInvoiceOption.PageSize)
+                                {
+                                    <button class="btn btn-dark col-1 ms-1 me-1" style="width: 40px" type="submit" asp-page-handler="Next" asp-route-index="@(i + 1)">
+                                        @*<i class="fa-solid fa-angle-left"></i>*@
+                                        @(Model.filterInvoiceOption.CurrentPage + i + 1)
+                                    </button>
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        </form>
+                    </td>
+                    <td class="border-0 text-end"><b>Tổng:</b></td>
+                    <td class="border-0">@Model.filterInvoiceOption.Total</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+
+@using BussinessObject.DTO
+@using BussinessObject.Status
+@using Microsoft.AspNetCore.Http
+@using System.Globalization
+@inject IHttpContextAccessor HttpContextAccessor
+@section scripts {
+<script>
+    function getInvoiceDetail (id){
+            $.ajax({
+                url: '@Url.Page("InvoiceList", "InvoiceDetail")',
+                type: 'GET',
+                data: {
+                    id: id
+                },
+                success: function (response) {
+                    if(!response.success){
+
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+    }
+</script>
+    }
+

@@ -1,7 +1,8 @@
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.Models;
 using DataAccess.Repository;
 using DataAccess.Security;
+using System.Threading.Tasks;
 
 namespace DataAccess.Service.Impl
 {
@@ -34,6 +35,11 @@ namespace DataAccess.Service.Impl
 
             }
            
+            if(account.Status == BussinessObject.Status.AccountStatus.INACTIVE)
+            {
+                throw new TaskCanceledException("Tài khoản đã bị khóa");
+            }
+
             string role = null;
             role = account.GetType().Name.ToString();
             if (role.Equals("Manager"))

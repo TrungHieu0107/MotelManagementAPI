@@ -44,11 +44,13 @@ namespace DataAccess.Service.Impl
             return _roomRepo.UpdateStatusWhenBookingById(managerId, roomId, startDate);
         }
 
-        public RoomDTO AddNewRoom(string code, long rentFee, string feeAppliedDate, int status, long userId)
+        public RoomDTO AddNewRoom(string code, long rentFee, DateTime feeAppliedDate, int status, long userId)
         {
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
 
             RoomDTO newRoomDTO = GetRoom(code, rentFee, feeAppliedDate, status, motelID, -1);
+            newRoomDTO.NearestNextRentFee = newRoomDTO.RentFee;
+            newRoomDTO.NearestNextFeeAppliedDate = newRoomDTO.FeeAppliedDate;
 
             if (checkValidationRoom(newRoomDTO))
             {
@@ -63,14 +65,12 @@ namespace DataAccess.Service.Impl
             return _roomRepo.Insert(newRoomDTO);
         }
 
-        private RoomDTO GetRoom(string code, long rentFee, string feeAppliedDate, int status, long motelID, long id)
+        private RoomDTO GetRoom(string code, long rentFee, DateTime feeAppliedDate, int status, long motelID, long id)
         {
             RoomDTO room = new RoomDTO();
             room.Status = (RoomStatus)status;
             room.Code = code;
-            DateTime date = DateTime.ParseExact(feeAppliedDate, "yyyy-MM-dd",
-                                      System.Globalization.CultureInfo.InvariantCulture);
-            room.FeeAppliedDate = date;
+            room.FeeAppliedDate = feeAppliedDate;
             room.MotelId = motelID;
             room.RentFee = rentFee;
             if (id > 0)
@@ -118,7 +118,10 @@ namespace DataAccess.Service.Impl
 
         public RoomDTO UpdateRoom(RoomDTO room, long userId)
         {
-
+                if (room.NearestNextFeeAppliedDate < DateTime.Now)
+            {
+                return null;
+            }
             var motelID = _motelChainRepo.GetMotelWithManagerId(userId)?.Id ?? -1;
 
             RoomDTO oldValue = _roomRepo.GetLatestRoomByRoomCode(room.Code);
@@ -127,39 +130,38 @@ namespace DataAccess.Service.Impl
             {
                 return null;
             }
+            room.Code = oldValue.Code;
+            room.MotelId = oldValue.MotelId;
 
             if (oldValue.FeeAppliedDate > DateTime.Now)
             {
-                oldValue.FeeAppliedDate = room.FeeAppliedDate;
-                oldValue.RentFee = room.RentFee;
+                oldValue.FeeAppliedDate = room.NearestNextFeeAppliedDate.Value;
+                oldValue.RentFee = room.NearestNextRentFee.Value;
+                oldValue.Status = room.Status;
                 return _roomRepo.Update(oldValue);
             }
 
-            if (!oldValue.RentFee.Equals(room.RentFee))
-            {
-                HistoryDTO history = _historyRepo.GetLatestHistoryByRoomId(room.Id);
+            HistoryDTO history = _historyRepo.GetLatestHistoryByRoomId(room.Id);
 
-                oldValue.Status = RoomStatus.INACTIVE;
-                if (_roomRepo.Update(oldValue).Status == RoomStatus.INACTIVE)
+            oldValue.Status = RoomStatus.INACTIVE;
+            if (_roomRepo.Update(oldValue).Status == RoomStatus.INACTIVE)
+            {
+                _roomRepo.Insert(room);
+                if (history != null)
                 {
-                    _roomRepo.Insert(room);
                     history.RoomId = room.Id;
                     _historyRepo.Update(history);
-                    _invoiceRepo.UpdateRoomIdfOfInvoice(room.Id, oldValue.Id);
                 }
-
-                return room;
             }
-            room.Id = oldValue.Id;
-            room.Code = oldValue.Code;
-            room.MotelId = oldValue.MotelId;
-            return _roomRepo.Update(room);
+
+            return room;
         }
 
         public bool DeleteRoomById(long id)
         {
             bool isEmpty = _historyRepo.CheckEmptyRoom(id);
-            if (isEmpty){
+            if (isEmpty)
+            {
                 return _roomRepo.DeleteRomById(id);
             }
 
@@ -172,15 +174,12 @@ namespace DataAccess.Service.Impl
             long minFee,
             long maxFee,
             int status,
-            string appliedDateAfter,
+            DateTime appliedDateAfter,
             ref Pagination pagination,
             long userId
         )
         {
-            DateTime date = appliedDateAfter != null ? DateTime.ParseExact(appliedDateAfter, "yyyy-MM-dd",
-                                      System.Globalization.CultureInfo.InvariantCulture) : DateTime.MinValue;
-
-            if (minFee > maxFee)
+            if (minFee > maxFee && minFee > 0 && maxFee > 0)
             {
                 throw new InvalidProgramException("Mix fee is greater than max fee");
             }
@@ -189,8 +188,8 @@ namespace DataAccess.Service.Impl
                 roomCode,
                 minFee,
                 maxFee,
-                (RoomStatus) status,
-                date,
+                (RoomStatus)status,
+                appliedDateAfter,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId);
@@ -200,7 +199,7 @@ namespace DataAccess.Service.Impl
                 minFee,
                 maxFee,
                 (RoomStatus)status,
-                date,
+                appliedDateAfter,
                 pagination.CurrentPage,
                 pagination.PageSize,
                 userId).ToList();
@@ -210,7 +209,7 @@ namespace DataAccess.Service.Impl
                 r.LatestHistory = _historyRepo.GetLatestHistoryOfRoom(r.Id);
             });
 
-            return listRoom.OrderByDescending(room => room.LatestHistory.EndDate).ToList();
+            return listRoom.OrderByDescending(room => room.LatestHistory?.EndDate).ToList();
         }
 
         public RoomDTOForDetail FindByIdForManager(long roomId, long managerId)
@@ -220,6 +219,7 @@ namespace DataAccess.Service.Impl
             Room latestRecord = rooms.ElementAt(1);
             RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
 
+            roomDTOForDetail.Id = roomId;
             roomDTOForDetail.Code = latestRecord.Code;
 
 
@@ -243,9 +243,32 @@ namespace DataAccess.Service.Impl
             {
                 Resident resident = history.Resident;
                 ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+                residentDTOForDetail.Id = resident.Id;
                 residentDTOForDetail.FullName = resident.FullName;
                 residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
-                residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
+                switch (latestRecord.Status)
+                {
+                    case RoomStatus.ACTIVE:
+                        {
+                            roomDTOForDetail.Status = "Đã được thuê";
+                            break;
+                        }
+                    case RoomStatus.EMPTY:
+                        {
+                            roomDTOForDetail.Status = "Trống";
+                            break;
+                        }
+                    case RoomStatus.BOOKED:
+                        {
+                            roomDTOForDetail.Status = "Đã được đặt";
+                            break;
+                        }
+                    default:
+                        {
+                            roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                            break;
+                        }
+                }
                 residentDTOForDetail.Phone = resident.Phone;
 
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
@@ -283,7 +306,29 @@ namespace DataAccess.Service.Impl
                     roomDTOForDetail.NearestNextFeeAppliedDate = latestRecord.FeeAppliedDate.ToString("dd/MM/yyyy");
                     roomDTOForDetail.NearestNextRentFee = latestRecord.RentFee.ToString();
                 }
-                roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                switch (latestRecord.Status)
+                {
+                    case RoomStatus.ACTIVE:
+                        {
+                            roomDTOForDetail.Status = "Đã được thuê";
+                            break;
+                        }
+                    case RoomStatus.EMPTY:
+                        {
+                            roomDTOForDetail.Status = "Trống";
+                            break;
+                        }
+                    case RoomStatus.BOOKED:
+                        {
+                            roomDTOForDetail.Status = "Đã được đặt";
+                            break;
+                        }
+                    default:
+                        {
+                            roomDTOForDetail.Status = Enum.GetName(typeof(RoomStatus), latestRecord.Status);
+                            break;
+                        }
+                }
                 roomDTOForDetail.MotelChainName = latestRecord.MotelChain.Name;
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
                 roomDTOForDetail.EndDate = history.EndDate == null ? "-" : history.EndDate.Value.ToString("dd/MM/yyyy");
@@ -291,12 +336,17 @@ namespace DataAccess.Service.Impl
                 return roomDTOForDetail;
             }
             else throw new Exception("Room with ID: " + roomId + " doesn't exist or isn't renting by the resident.");
-                        
+
         }
 
         public Room CheckBeforeBookingById(long managerId, long roomId)
         {
             return _roomRepo.CheckAndGetBeforeBookingById(managerId, roomId);
+        }
+
+        public RoomDTO GetRoomForUpdating(long id, long managerId)
+        {
+            return _roomRepo.GetRoomByIdForUpdating(id, managerId);
         }
     }
 }

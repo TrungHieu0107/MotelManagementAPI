@@ -1,4 +1,4 @@
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.CommonConstant;
 using DataAccess.Service;
@@ -92,12 +92,12 @@ namespace MotelManagementAPI.Controllers
 
                 if (check <= 0)
                 {
-                    commonResponse.Message = "Some thing went wrong, plase check the data again";
+                    commonResponse.Message = "Có lỗi xảy ra ở máy chủ";
                     return BadRequest(commonResponse);
                 }
                 else
                 {
-                    commonResponse.Message = " Pay Successfully";
+                    commonResponse.Message = "Thanh toán hóa đơn thành công";
                     return Ok(commonResponse);
 
                 }
@@ -155,7 +155,7 @@ namespace MotelManagementAPI.Controllers
         [Authorize(Roles = Role.RESIDENT_MANGER)]
         [HttpGet]
         [Route("get-invoices")]
-        public IActionResult GetInvoice(string? roomCode, int? status,long? userId, int? pageSize, int? currentPage)
+        public IActionResult GetInvoice(string? roomCode, int? status, DateTime? paidDate, long? userId, int? pageSize, int? currentPage)
         {
             CommonResponse commonResponse = new CommonResponse();
             Pagination pagination = new Pagination();
@@ -171,10 +171,10 @@ namespace MotelManagementAPI.Controllers
                 List<InvoiceDTO> result = null;
                 if (roleClaim == Role.MANAGER)
                 {
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, userId ?? -1, id, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, paidDate, userId ?? -1, id, ref pagination);
                 } else if(roleClaim == Role.RESIDENT)
                 {
-                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, id, -1, ref pagination);
+                    result = _invoiceService.GetAllLatestInvoice(roomCode, status ?? -1, paidDate, id, -1, ref pagination);
                 }
 
                 commonResponse.Data = result;

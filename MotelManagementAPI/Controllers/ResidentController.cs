@@ -1,4 +1,4 @@
-using BussinessObject.DTO;
+﻿using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.Models;
 using BussinessObject.Status;
@@ -49,10 +49,10 @@ namespace MotelManagementAPI.Controllers
             {
                 try
                 {
-                    if (pageSize < 1 || currentPage < 1) throw new Exception("Page size and current page must be >= 1");
+                    if (pageSize < 1 || currentPage < 1) throw new Exception("Cỡ trang và số trang phải lớn hơn 0");
                     if(roleClaim == "Manager")
                     {
-                        if (residentId == null) throw new Exception("Resident ID must not empty.");
+                        if (residentId == null) throw new Exception("ID người thuê không được để trống.");
                         return Ok(_residentService.FindByIdForDetail(residentId.Value, pageSize, currentPage, roomStatus));
                     }
                     else
@@ -132,13 +132,33 @@ namespace MotelManagementAPI.Controllers
         [Route("active-resident")]
         public IActionResult ActiveResident(string idCard)
         {
-            bool result = _residentService.ActiveResident(idCard);
+            CommonResponse common = new CommonResponse();
+            try
+            {
+                bool result = _residentService.ActiveResident(idCard);
 
-            if (result)
-                return Ok("Success");
+                if (result)
+                    return Ok("Success");
 
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong please check data again");
+                else
+                {
+                    common.Message = "Something went wrong please check data again";
+                    return StatusCode(StatusCodes.Status400BadRequest, common);
+
+                }
+            }
+            catch (TaskCanceledException ex)
+            {
+               
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status400BadRequest, common);
+            }
+            catch (Exception ex)
+            {
+                
+                common.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, common);
+            }
         }
 
 
@@ -207,6 +227,7 @@ namespace MotelManagementAPI.Controllers
                 try
                 {
                     _residentService.BookRoom(bookingRoomRequest, managerId);
+                    resident = _residentService.FindByIdentityCardNumberToBookRoom(bookingRoomRequest.IdentityCardNumber);
                     _invoiceService.AddInitialInvoice(resident.Id, bookingRoomRequest.RoomId, startDate);
                 }
                 catch (Exception ex)
@@ -216,7 +237,7 @@ namespace MotelManagementAPI.Controllers
                 }
 
                 response.Data = bookingRoomRequest.RoomId;
-                response.Message = "Booked room successfully.";
+                response.Message = "Đặt phòng thành công";
 
                 return Ok(response);
             }
@@ -242,14 +263,12 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
-
-
             }
 
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [Route("filter-resident")]
         public IActionResult FillterResident(string idCardNumber,string phone, string Fullname,int status,int pageSize, int currentPage)
         {
@@ -264,10 +283,24 @@ namespace MotelManagementAPI.Controllers
             {
                 commonResponse.Message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
-
-
             }
+        }
 
+        [HttpGet]
+        [Route("filter-resident-with-pagination")]
+        public IActionResult FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        {
+            CommonResponse commonResponse = new CommonResponse();
+            try
+            {
+                commonResponse = _residentService.FillterResidentWithPagination(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+                return Ok(commonResponse);
+            }
+            catch (Exception ex)
+            {
+                commonResponse.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, commonResponse);
+            }
         }
 
         [Authorize(Roles = "Resident")]

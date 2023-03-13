@@ -1,0 +1,128 @@
+﻿@page "/resident/resident/resident-detail"
+@model MotelManagementWebAppUI.Pages.Resident.Resident.ResidentDetailModel
+@{
+    Layout = "_LayoutResident";
+    ViewData["Title"] = "Chi tiết người thuê";
+}
+<div style="width:100%; margin-top: 50px;">
+    <div>
+        <img src="~/image/resident.png" style="width:30%; margin-left:20%; float:left;">
+        <div style="width:fit-content; margin-left:10%; float:left;">
+            <div><h3>Thông tin người thuê</h3></div>
+            <div><b>Họ và tên người thuê: </b>@Model.Resident.FullName</div>
+            <div><b>CMND/CCCD: </b>@Model.Resident.IdentityCardNumber</div>
+            <div><b>Sđt: </b>@Model.Resident.Phone</div>
+            <div><b>Trạng thái: </b>@if (Model.Resident.Status == "ACTIVE")
+                            {
+                                                <span class="text-success">Đang hoạt động</span>
+                            }
+                            else if (Model.Resident.Status == "INACTIVE")
+                            {
+                                                <span class="text-danger">Đã khóa</span>
+                            }
+                            else if (Model.Resident.Status == "LATE_PAYMENT")
+                            {
+
+
+                                                <span class="text-warning">Trễ hóa đơn</span>
+                            }</div>
+        </div>
+    </div>
+    <br />
+<div style="clear:both;">
+    <div><h3 style="margin-left:15%;">Lịch sử thuê phòng</h3></div>
+    <div style="margin-left:15%;">
+        <form class="d-flex flex-column" method="post">
+            <div class="d-flex flex-row">
+                <div style="width:100%">
+                    <b style="float:left">Trạng thái thuê:</b> 
+                    <select style="float:left; width:fit-content; margin-left:5px; margin-right: 5px;" class="form-control" name="status" asp-for="@Model.Status">
+                        <option value="RENTING">Đang thuê</option>
+                        <option value="USED_TO_RENT">Đã từng thuê</option>
+                        <option value="BOOKING">Đã đặt</option>
+                    </select>
+                <button id="search-room" type="submit" style="width: 100px" class="btn btn-primary btn-user btn-block" asp-page-handler="Search">Tìm kiếm</button>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <table class="table" style="width:70%; margin-left:15%; margin-top:10px;">
+        <thead>
+            <tr>
+                <th>
+                    Nhà trọ
+                </th>
+                <th>
+                    Mã phòng
+                </th>
+                <th>
+                    Ngày bắt đầu thuê
+                </th>
+                <th>
+                    Ngày ngừng thuê
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Resident != null && Model.Resident.RoomDTOForDetails.Count() > 0)
+            {
+                foreach (var item in Model.Resident.RoomDTOForDetails)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MotelChainName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EndDate)
+                        </td>
+                        <td>
+                            @if(@Model.Status == "RENTING"){
+                                <a href="/resident/room/room-detail/@item.Id">Xem thông tin phòng</a>
+                                }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    @if(Model.Status != null)
+        {
+        <form method="post" class="row justify-content-center">
+            <input type="hidden" name="status" asp-for="@Model.Status" />
+            <input name="CurrentPage" value="@Model.ResultPagination.CurrentPage" hidden/>
+            @if (Model.ResultPagination.CurrentPage > 1)
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous">Trước</button>
+            }
+            else
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Previous" disabled>Trước</button>
+            }
+            <span class="col-1 text-center" style="vertical-align: middle">
+                @Model.ResultPagination.CurrentPage
+            </span>
+         
+            @if (Model.ResultPagination.Total > Model.ResultPagination.CurrentPage * Model.ResultPagination.PageSize)
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next">Tiếp</button>
+            }
+            else
+            {
+                <button class="btn btn-dark col-1" type="submit" asp-page-handler="Next" disabled>Tiếp</button>
+            }
+        </form>
+        }
+    </div>
+</div>
+    

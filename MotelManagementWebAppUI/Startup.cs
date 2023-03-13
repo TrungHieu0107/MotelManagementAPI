@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MotelManagementWebAppUI.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +32,19 @@ namespace MotelManagementWebAppUI
             });
             services.AddHttpContextAccessor();
             services.AddHttpClient();
+            services.AddControllersWithViews();
+                 
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
             });
             services.AddMemoryCache();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+               options =>
+               {
+                   options.LoginPath = "/Account/Login";
+                   options.AccessDeniedPath = "/Forbiddent";
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,12 +60,12 @@ namespace MotelManagementWebAppUI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            //app.UseMiddleware<CookieMiddleware>();
             app.UseStaticFiles();
             app.UseSession();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseRouting();
 
             app.UseAuthorization();

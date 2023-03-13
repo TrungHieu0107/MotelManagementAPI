@@ -1,4 +1,5 @@
 using BussinessObject.DTO;
+using BussinessObject.DTO.Common;
 using BussinessObject.Models;
 using BussinessObject.Status;
 using System;
@@ -23,7 +24,7 @@ namespace DataAccess.Repository
         public IEnumerable<ResidentDTO> GetAllResident(int pageSize, int currentPage);
 
         IEnumerable<ResidentDTO>  FillterResident(string idCardNumber, string phone, string Fullname,int status, int pageSize, int currentPage);
-
+        public CommonResponse FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage);
         Resident findByPhone(String phone);
     }
 }

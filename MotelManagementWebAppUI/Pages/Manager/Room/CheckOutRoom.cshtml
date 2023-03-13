@@ -1,0 +1,174 @@
+﻿@page "/manager/room/checkout/{id}"
+@using System.Globalization
+@using BussinessObject.DTO
+@model MotelManagementWebAppUI.Pages.Room.CheckOutRoomModel
+@{
+    Layout = "_LayoutManager";
+    ViewData["Title"] = "Kết thúc thuê phòng";
+    var total = 0L;
+    long GetTotalInvoice(InvoiceDTO i)
+    {
+        var waterConsume = i.WaterConsumptionEnd - i.WaterConsumptionStart;
+        var totalWaterCost = waterConsume * i.WaterCost.Price;
+
+        var electricityConsume = i.ElectricityConsumptionEnd - i.ElectricityConsumptionStart;
+        var totalElectricCost = electricityConsume * i.ElectricityCost.Price;
+
+        var dayUse = (int)(i.EndDate.Value - i.StartDate).TotalDays;
+        var totalRentFee = dayUse * i.Room.RentFee;
+
+        var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+        total += totalInvoice ?? 0;
+        return totalInvoice ?? 0;
+    }
+
+    var id = this.Request.RouteValues["id"] ?? 0;
+
+}
+
+<div>
+    <h3 class="text-center">Thông tin trả phòng</h3>
+    <div>
+        <div class="row">
+            <b class="col-2">Phòng trọ: </b>
+            <span class="col-10">
+                Phòng @Model.Room.Code - @Model.InvoiceDTOs[0].Room.MotelChain.Name - @Model.InvoiceDTOs[0].Room.MotelChain.Address
+            </span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Resident.FullName):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Resident.FullName</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Resident.Phone):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Resident.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Room.MotelChain.Manager.FullName):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Room.MotelChain.Manager.FullName</span>
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].Room.MotelChain.Manager.Phone):  </b>
+            <span class="col-3">@Model.InvoiceDTOs[0].Room.MotelChain.Manager.Phone</span>
+        </div>
+    </div>
+    <div class="row">
+        <b class="col-5">
+            Hóa đơn cần trả khi trả phòng
+        </b>
+    </div>
+    <div class="m-3">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">
+                        Hóa đơn
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].CreatedDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].ExpiredDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].StartDate)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(Model => Model.InvoiceDTOs[0].EndDate)
+                    </th>
+                    <th scope="col">
+                        Tổng tiền
+                    </th>
+                    <th scope="col">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.InvoiceDTOs)
+                {
+                    <tr>
+                        <th scope="row">
+                            @(Model.InvoiceDTOs.IndexOf(item) + 1)
+                        </th>
+                        <td>
+                            Tháng @item.StartDate.Month
+                        </td>
+                        <td>
+                            @item.CreatedDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.ExpiredDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @item.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", GetTotalInvoice(item))
+                        </td>
+                        <th scope="row">
+                            <button type="button" onclick="viewDetailInvocie(@Model.InvoiceDTOs.IndexOf(item))">
+                                <i class="fa-regular fa-square-info"></i>
+                            </button>
+                        </th>
+                    </tr>
+                }
+                <tr>
+                    <td colspan=5 scope="row"></td>
+                    <th scope="row">
+                        Tổng
+                    </th>
+                    <td>
+                        @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", total)
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <form method="post" class="d-flex justify-content-center">
+        <input type="hidden" name="residentId" asp-for="@Model.ResidentId">
+        <input type="hidden" name="roomId" asp-for="@Model.RoomId">
+        <input type="hidden" name="checkOutDate" asp-for="@Model.CheckOutDate">
+        <button style="width:fit-content;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="CheckOut">
+            Thanh toán và trả phòng
+        </button>
+    </form>
+</div>
+<div class="view-invoice-detail-modal">
+    @*<partial name="~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml" model="@Model.InvoiceDTOs[index]" />*@
+    @*@await Html.PartialAsync("~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml")*@
+</div>
+
+<script>
+    function viewDetailInvocie(i) {
+      $.ajax({
+        url: "/manager/room/checkout/" + @id + "?handler=SetDataModal&index=" + i,
+        type: "GET",
+        data: {
+          index: i,
+        },
+        success: function (response) {
+           console.log(response);
+          $(".view-invoice-detail-modal").html(response);
+          var invoiceModal = $('#invoice-detail-partial-modal');
+          if(invoiceModal.length > 0){
+              invoiceModal.modal({
+              modal: true,
+              title: "popup title",
+              width: 1000,
+              height: "auto",
+              draggable: true,
+              resizable: true,
+            });
+            invoiceModal.modal("toggle");
+          }
+        },
+        error: function (error) {
+          console.log(error);
+        },
+      });
+    }
+
+
+</script>

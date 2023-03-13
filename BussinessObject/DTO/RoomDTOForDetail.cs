@@ -9,6 +9,7 @@ namespace BussinessObject.DTO
 {
     public class RoomDTOForDetail
     {
+        public long Id { get; set; }
         public string Code { get; set; }
         public string Status { get; set; }
         public string RentFee { get; set; }

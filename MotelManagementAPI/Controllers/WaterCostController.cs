@@ -27,7 +27,7 @@ namespace MotelManagementAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("water-cost/{year}/{month}/{pageSize}/{currentPage}")]
         public async Task<IActionResult> Get(int year, int month, int currentPage, int pageSize)
@@ -65,7 +65,7 @@ namespace MotelManagementAPI.Controllers
         /// lấy giá tiền của tiền nuoc hiện tại
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("get-current-water-cost")]
         public async Task<IActionResult> GetCurentWaterCost()
@@ -74,6 +74,7 @@ namespace MotelManagementAPI.Controllers
             CommonResponse common = new CommonResponse();
             if (waterCost == null)
             {
+               
                 common.Message = "Not Found";
             }
             else
@@ -83,7 +84,8 @@ namespace MotelManagementAPI.Controllers
             }
             return Ok(common);
         }
-        [Authorize(Roles = "Manager")]
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("add-water-cost")]
         public async Task<IActionResult> Post(WaterRequestDTO obj)

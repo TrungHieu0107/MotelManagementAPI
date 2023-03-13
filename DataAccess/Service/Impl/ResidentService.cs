@@ -97,13 +97,13 @@ namespace DataAccess.Service.Impl
                
             }else if(checkExistUserName != null)
             {
-                throw new TaskCanceledException("This username already exist");
+                throw new TaskCanceledException("Tên đăng nhập đã tồn tại");
 
             } else if(checkExistIdCardNumber != null) {
-                throw new TaskCanceledException("This resident already exist");
+                throw new TaskCanceledException("Số chứng minh thư đã tồn tại");
             } else if(checkExistPhone != null)
             {
-                throw new TaskCanceledException("This phone is already exist");
+                throw new TaskCanceledException("Số điện thoại đã tồn tại");
             }
 
             return check;
@@ -136,8 +136,12 @@ namespace DataAccess.Service.Impl
 
                     resident.IdentityCardNumber = account.IdentityCardNumber;
 
+                    if (!string.IsNullOrEmpty(account.Password))
+                    {
+                        resident.Password = PasswordHasher.Hash(account.Password);
 
-                    resident.Password = PasswordHasher.Hash(account.Password);
+                    }
+                   
                     resident.FullName = account.FullName;
                     resident.Phone = account.Phone;
 
@@ -155,20 +159,18 @@ namespace DataAccess.Service.Impl
         }
 
 
-        private List<Invoice> checkLateInvoice(string idCard)
-        {
-            var invoices = _invoiceRepo.checkLateInvoice(idCard);
-            return invoices;
-        }
+       
+           
 
         public bool ActiveResident(string idCard)
         {
             bool check = false;
 
-            // invoice không có trạng thái late, check xem có bị trễ invoice hay không
-            List<Invoice> invoices = checkLateInvoice(idCard);
+             //check xem có bị trễ invoice hay không
+            var checkLatePayment = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null, AccountStatus.LATE_PAYMENT).FirstOrDefault();
 
-            if (invoices.Count == 0)
+
+            if (checkLatePayment == null)
             {
                 var resident = _residentRepo.GetResidentByIdentityCardNumberAndStatusAndUserName(idCard, null, AccountStatus.INACTIVE).FirstOrDefault();
                 if (resident != null)
@@ -179,7 +181,11 @@ namespace DataAccess.Service.Impl
                 }
 
 
+            } else
+            {
+                throw new TaskCanceledException("Tài khoản có hóa đơn cần thanh toán");
             }
+            
             return check;
         }
 
@@ -187,8 +193,9 @@ namespace DataAccess.Service.Impl
         {
             Resident resident = _residentRepo.FindById(residentId);
 
-            if (resident == null) throw new Exception("Resident with ID: " + residentId + " doesn't exist.");
+            if (resident == null) throw new Exception("Người thuê với ID: " + residentId + " không tồn tại.");
             ResidentDTOForDetail residentDTOForDetail = new ResidentDTOForDetail();
+            residentDTOForDetail.Id = residentId;
             residentDTOForDetail.FullName = resident.FullName;
             residentDTOForDetail.IdentityCardNumber = resident.IdentityCardNumber;
             residentDTOForDetail.Status = Enum.GetName(typeof(AccountStatus), resident.Status);
@@ -219,7 +226,7 @@ namespace DataAccess.Service.Impl
                     }
                 default:
                     {
-                        throw new Exception("Status of renting must be RENTING, USED_TO_RENT or BOOKING");
+                        throw new Exception("Trạng thái thuê phải là \"Đang thuê\", \"Đã từng thuê\" hoặc \"Đang đặt\"");
                     }
             }
 
@@ -229,6 +236,7 @@ namespace DataAccess.Service.Impl
             {
                 Room room = history.Room;
                 RoomDTOForDetail roomDTOForDetail = new RoomDTOForDetail();
+                roomDTOForDetail.Id = room.Id;
                 roomDTOForDetail.Code = room.Code;
                 roomDTOForDetail.MotelChainName = _motelChainRepo.FindById(room.MotelId).Name;
                 roomDTOForDetail.StartDate = history.StartDate.ToString("dd/MM/yyyy");
@@ -252,12 +260,12 @@ namespace DataAccess.Service.Impl
         public bool BookRoom(BookingRoomRequest bookingRoomRequest, long managerId)
         {
             Resident resident = _residentRepo.FindByIdentityCardNumberToBookRoom(bookingRoomRequest.IdentityCardNumber);
-            if (resident == null) throw new Exception("Resident with identity card number: " + bookingRoomRequest.IdentityCardNumber + " doesn't exist.");
-            if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("This resident has an invoice that is not paid yet.");
+            if (resident == null) throw new Exception("Người thuê với căn cước công dân: " + bookingRoomRequest.IdentityCardNumber + " không tòn tại.");
+            if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("Người thuê đang có hóa đơn bị trễ.");
 
             Room room = _roomRepo.CheckAndGetBeforeBookingById(managerId, bookingRoomRequest.RoomId);
-            if (room == null) throw new Exception("Room with ID: " + bookingRoomRequest.RoomId + " doesn't exist or isn't managed by the manager.");
-            if (room.Status != RoomStatus.EMPTY) throw new Exception("Booked room's status must be EMPTY.");
+            if (room == null) throw new Exception("Phòng với ID: " + bookingRoomRequest.RoomId + " không tồn tại hoặc không thuộc kiểm soát của quản lý.");
+            if (room.Status != RoomStatus.EMPTY) throw new Exception("Phòng được đặt hiện không trống");
 
             _residentRepo.UpdateStatusWhenBookingByIdentityCardNumber(bookingRoomRequest.IdentityCardNumber);
             _roomRepo.UpdateStatusWhenBookingById(managerId, bookingRoomRequest.RoomId, bookingRoomRequest.StartDate);
@@ -279,6 +287,9 @@ namespace DataAccess.Service.Impl
             return _residentRepo.GetAllResident(pageSize, currentPage);
         }
 
-       
+        public CommonResponse FillterResidentWithPagination(string idCardNumber, string phone, string Fullname, int status, int pageSize, int currentPage)
+        {
+            return _residentRepo.FillterResidentWithPagination(idCardNumber, phone, Fullname, status, pageSize, currentPage);
+        }
     }
 }

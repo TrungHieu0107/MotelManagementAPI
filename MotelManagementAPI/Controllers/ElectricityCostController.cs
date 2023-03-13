@@ -29,7 +29,7 @@ namespace MotelManagementAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("electricity-cost/{year}/{month}/{pageSize}/{currentPage}")]
         public async Task<IActionResult> Get(int year, int month, int pageSize = 10, int currentPage = 1)
@@ -47,7 +47,7 @@ namespace MotelManagementAPI.Controllers
 
                 if (electricityCost == null)
                 {
-                    common.Message = "Some thing went wrong";
+                    common.Message = "Đã có lỗi xảy ra, vui lòng reload lại trang";
                 }
                 else
                 {
@@ -70,8 +70,8 @@ namespace MotelManagementAPI.Controllers
         /// <returns></returns>
         // [Authorize(Roles = "Manager")]
         // [Authorize(Roles = "Resident")]
-     
-        //[Authorize(Roles = "Manager")]
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("get-current-electricity-cost")]
         public async Task<IActionResult> GetCurentElectricityCost()
@@ -83,7 +83,7 @@ namespace MotelManagementAPI.Controllers
 
                 if (electricityCost == null)
                 {
-                    common.Message = "Not Found";
+                    common.Message = "Không tìm thấy";
                 }
                 else
                 {
@@ -100,7 +100,7 @@ namespace MotelManagementAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("add-electricity-cost")]
         public async Task<IActionResult> Post(ElectricityCostRequestDTO obj)
@@ -113,7 +113,7 @@ namespace MotelManagementAPI.Controllers
 
                 var result = electricityCostService.UpdateElectricity(obj);
                 if (result == null)
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Something Went Wrong");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Đã có lỗi xảy ra");
 
                 return Ok("Added Successfully");
             }

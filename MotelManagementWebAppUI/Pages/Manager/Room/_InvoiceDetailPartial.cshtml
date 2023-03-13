@@ -1,0 +1,151 @@
+﻿@using BussinessObject.DTO
+@using System.Globalization
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    var waterConsume = Model.WaterConsumptionEnd - Model.WaterConsumptionStart;
+    var totalWaterCost = waterConsume * Model.WaterCost?.Price;
+
+    var electricityConsume = Model.ElectricityConsumptionEnd - Model.ElectricityConsumptionStart;
+    var totalElectricCost = electricityConsume * Model.ElectricityCost?.Price;
+
+    var dayUse = (int)(Model.EndDate.Value - Model.StartDate).TotalDays;
+    var totalRentFee = dayUse * Model.Room.RentFee;
+
+    var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+
+    var idInvoice = Model.Id;
+    var idResident = Model.Resident.Id;
+}
+
+@model InvoiceDTO
+
+@if (Model != null)
+{
+    <div class="modal fade" id="invoice-detail-partial-modal" >
+        <div class="modal-dialog modal-lg d-flex">
+            <div class="modal-content m-auto" >
+                <div class="modal-header">
+                    <h4 class="modal-title">Thông tin hóa đơn</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#invoice-detail-partial-modal').modal('toggle')">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <div>
+                        <div class="row">
+                            <b class="col-2">Phòng trọ: </b>
+                            <span class="col-10">
+                                Phòng @Model.Room.Code - @Model.Room.MotelChain.Name - @Model.Room.MotelChain.Address
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.Resident.FullName):  </b>
+                            <span class="col-3">@Model.Resident.FullName</span>
+
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.Resident.Phone):  </b>
+                            <span class="col-3">@Model.Resident.Phone</span>
+                        </div>
+                        <div class="row">
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.Room.MotelChain.Manager.FullName):  </b>
+                            <span class="col-3">@Model.Room.MotelChain.Manager.FullName</span>
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.Room.MotelChain.Manager.Phone):  </b>
+                            <span class="col-3">@Model.Room.MotelChain.Manager.Phone</span>
+                        </div>
+                        <div class="row">
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.StartDate):  </b>
+                            <span class="col-3">@Model.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.EndDate):  </b>
+                            <span class="col-3">@Model.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+                        </div>
+                        <div class="row">
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.CreatedDate):  </b>
+                            <span class="col-3">
+                                @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+                            </span>
+
+                            <b class="col-2">@Html.DisplayNameFor(Model => Model.ExpiredDate):  </b>
+                            <span class="col-3">
+                                @Model.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+                            </span>
+                        </div>
+                        <div><b>@Html.DisplayNameFor(Model => Model.PaidDate):  </b>@Model.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</div>
+
+                        <div class="row">
+                            <b class="col-2">Mô tả </b>
+                        </div>
+                        <div>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Loại</th>
+                                        <th scope="col">Đơn vị</th>
+                                        <th scope="col">Từ</th>
+                                        <th scope="col">Đến</th>
+                                        <th scope="col">Tồng số lượng</th>
+                                        <th scope="col">Đơn giá</th>
+                                        <th scope="col">Tồng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*tiền phòng*@
+                                    <tr>
+                                        <th scope="row">Tiền phòng</th>
+                                        <td>Ngày</td>
+                                        <td>@Model.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                                        <td>@Model.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                                        <td>@dayUse</td>
+                                        <td>@Model.Room.RentFee (VNĐ)</td>
+                                        <td>@totalRentFee</td>
+                                    </tr>
+                                    @*tiền phòng*@
+                                    <tr>
+                                        <th scope="row">Tiền điện</th>
+                                        <td>kWh</td>
+                                        <td>@Model.ElectricityConsumptionStart</td>
+                                        <td>@Model.ElectricityConsumptionEnd</td>
+                                        <td>@electricityConsume</td>
+                                        <td>@Model.ElectricityCost.Price (VNĐ)</td>
+                                        <td>@totalElectricCost</td>
+                                    </tr>
+
+                                    @*tiền nước*@
+                                    <tr>
+                                        <th scope="row">Tiền nước</th>
+                                        <td>m3</td>
+                                        <td>@Model.WaterConsumptionStart</td>
+                                        <td>@Model.WaterConsumptionEnd</td>
+                                        <td>@waterConsume</td>
+                                        <td>@Model.WaterCost.Price (VNĐ)</td>
+                                        <td>@totalWaterCost</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=5 scope="row"></td>
+                                        <th scope="row">
+                                            Tổng
+                                        </th>
+                                        <td>@(totalRentFee + totalElectricCost + totalWaterCost)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="$('#invoice-detail-partial-modal').modal('toggle')">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+

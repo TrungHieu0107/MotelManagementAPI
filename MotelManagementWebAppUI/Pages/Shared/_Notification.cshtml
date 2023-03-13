@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div id="notification" class="modal fade" style="z-index:9999;">
+    <div class="modal-dialog d-flex h-100">
+        <div class="modal-content m-auto">
+            <div class="modal-header d-flex justify-content-center">
+                <h5 class="modal-title text-center">Thông báo</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row d-flex justify-content-center" >
+                    <span id="notify-content" class="text-center"></span>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#notification').modal('toggle')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,7 +15,6 @@ namespace BussinessObject.Models
         public string UserName { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "The password can not be empty")]
-        [StringLength(40, MinimumLength = 8, ErrorMessage = "Password field must have minimum 8 and maximum 40 character!")]
         public string Password { get; set; }
 
 

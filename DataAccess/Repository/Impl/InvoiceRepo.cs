@@ -1,4 +1,4 @@
-using BussinessObject.Data;
+﻿using BussinessObject.Data;
 using BussinessObject.DTO;
 using BussinessObject.DTO.Common;
 using BussinessObject.Models;
@@ -175,9 +175,10 @@ namespace DataAccess.Repository
                                     invoice.Room.Code == RoomCode
                                 && 
                                     (
-                                        invoice.Status == InvoiceStatus.NOT_PAID_YET 
-                                    ||
-                                        invoice.Status == InvoiceStatus.LATE)
+                                        invoice.Status == InvoiceStatus.NOT_PAID_YET ||
+                                        invoice.Status == InvoiceStatus.LATE
+                                    )
+                                && invoice.EndDate != null
                                     )
                           .Include(x => x.WaterCost)
                           .Include(x => x.ElectricityCost)
@@ -210,8 +211,6 @@ namespace DataAccess.Repository
         {
             _context.Entry(invoice).State = EntityState.Modified;
             return _context.SaveChanges();
-
-
         }
 
         public InvoiceDTO GetInvoiceDetailById(long id, long userId, long managerId)
@@ -263,6 +262,7 @@ namespace DataAccess.Repository
                     {
                         Id = invoice.Room.Id,
                         Code = invoice.Room.Code,
+                        RentFee = invoice.Room.RentFee,
                         FeeAppliedDate = invoice.Room.FeeAppliedDate,
                         MotelChain = new MotelChainDTO()
                         {
@@ -282,7 +282,7 @@ namespace DataAccess.Repository
             return result;
         }
 
-        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, long userId, long managerId, ref Pagination pagination)
+        public IEnumerable<InvoiceDTO> GetAllInvoice(string roomCode, int status, DateTime? paidDate, long userId, long managerId, ref Pagination pagination)
         {
             pagination = pagination ?? new Pagination();
 
@@ -300,6 +300,8 @@ namespace DataAccess.Repository
                 (invoice.EndDate != null)
                 &&
                 (managerId != -1 ? invoice.Room.MotelChain.ManagerId == managerId : true)
+                && 
+                (invoice.PaidDate.HasValue ? (paidDate.HasValue ? invoice.PaidDate.Value.Date == paidDate.Value.Date : true) : true)
                 ).Select(invoice => new InvoiceDTO
                 {
                     Id = invoice.Id,
@@ -355,7 +357,7 @@ namespace DataAccess.Repository
 
             pagination.Total = listAllInvoice.LongCount();
 
-            return listAllInvoice.Skip((pagination.CurrentPage - 1) * pagination.PageSize)
+            return listAllInvoice.OrderByDescending(i => i.StartDate).Skip((pagination.CurrentPage - 1) * pagination.PageSize)
                 .Take(pagination.PageSize);
 
         }
@@ -431,6 +433,141 @@ namespace DataAccess.Repository
                     },
                 }
             };
+        }
+
+        public List<InvoiceDTO> GetClosedSampleInvoicesThatNotPayYetByResidentIdAndRoomId(long residentId, long roomId, DateTime checkoutDate)
+        {
+            List<InvoiceDTO> invoiceDTOs = new List<InvoiceDTO>(); 
+            Invoice oldInvoice = _context.Invoices
+                .Include(i => i.WaterCost)
+                .Include(i => i.ElectricityCost)
+                .Include(i => i.Resident)
+                .Include(i => i.Room)
+                .Include(i => i.Room.MotelChain)
+                .Include(i => i.Room.MotelChain.Manager)
+                .Where(
+                i => i.ResidentId == residentId && i.RoomId == roomId &&
+                i.PaidDate == null && i.EndDate != null).FirstOrDefault();
+            Invoice newInvoice = _context.Invoices
+                .Include(i => i.WaterCost)
+                .Include(i => i.ElectricityCost)
+                .Include(i => i.Resident)
+                .Include(i => i.Room)
+                .Include(i => i.Room.MotelChain)
+                .Include(i => i.Room.MotelChain.Manager).Where(
+                i => i.ResidentId == residentId && i.RoomId == roomId &&
+                i.PaidDate == null && i.EndDate == null).FirstOrDefault();
+            if (oldInvoice != null)
+            {
+                invoiceDTOs.Add(InvoiceToClosedInvoiceDTO(oldInvoice, checkoutDate));
+            }
+            invoiceDTOs.Add(InvoiceToClosedInvoiceDTO(newInvoice, checkoutDate));
+            return invoiceDTOs;
+        }
+
+        public List<InvoiceDTO> UpdateCheckOutDateForResident(long residentId, long roomId, DateTime checkoutDate)
+        {
+            List<InvoiceDTO> invoiceDTOs = new List<InvoiceDTO>();
+            Invoice oldInvoice = _context.Invoices
+                .Include(i => i.WaterCost)
+                .Include(i => i.ElectricityCost)
+                .Include(i => i.Resident)
+                .Include(i => i.Room)
+                .Include(i => i.Room.MotelChain)
+                .Include(i => i.Room.MotelChain.Manager).Where(
+                i => i.ResidentId == residentId && i.RoomId == roomId &&
+                i.PaidDate == null && i.EndDate != null).FirstOrDefault();
+            Invoice newInvoice = _context.Invoices
+                .Include(i => i.WaterCost)
+                .Include(i => i.ElectricityCost)
+                .Include(i => i.Resident)
+                .Include(i => i.Room)
+                .Include(i => i.Room.MotelChain)
+                .Include(i => i.Room.MotelChain.Manager).Where(
+                i => i.ResidentId == residentId && i.RoomId == roomId &&
+                i.PaidDate == null && i.EndDate == null).FirstOrDefault();
+            if (oldInvoice != null)
+            {
+                oldInvoice.PaidDate = checkoutDate;
+                oldInvoice.Status = InvoiceStatus.PAID;
+                _context.Entry(oldInvoice).State = EntityState.Modified;
+                if (_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
+                invoiceDTOs.Add(InvoiceToClosedInvoiceDTO(oldInvoice, null));
+            }
+            DateTime RoundedDate = new DateTime(checkoutDate.Year, checkoutDate.Month, checkoutDate.Day);
+            newInvoice.PaidDate = checkoutDate;
+            newInvoice.Status = InvoiceStatus.PAID;
+            newInvoice.EndDate = RoundedDate;
+            newInvoice.ExpiredDate = RoundedDate.AddDays(FixedData.DATE_TO_PAY);
+            newInvoice.ElectricityConsumptionEnd = newInvoice.ElectricityConsumptionStart + 1;
+            newInvoice.WaterConsumptionEnd = newInvoice.WaterConsumptionStart + 1;
+            _context.Entry(newInvoice).State = EntityState.Modified;
+            if (_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
+            invoiceDTOs.Add(InvoiceToClosedInvoiceDTO(newInvoice, null));
+            return invoiceDTOs;
+        }
+
+        private InvoiceDTO InvoiceToClosedInvoiceDTO(Invoice invoice, DateTime? dateTime)
+        {
+            DateTime RoundedDate = DateTime.Now;
+            if (dateTime != null)
+            {
+                RoundedDate = new DateTime(dateTime.Value.Year, dateTime.Value.Month, dateTime.Value.Day);
+            }
+
+            InvoiceDTO invoiceDTO = new InvoiceDTO();
+            invoiceDTO.Id = invoice.Id;
+            invoiceDTO.StartDate = invoice.StartDate;
+            invoiceDTO.EndDate = invoice.EndDate == null ? RoundedDate : invoice.EndDate; //////////////////
+            invoiceDTO.CreatedDate = invoice.CreatedDate;
+            invoiceDTO.ExpiredDate = invoice.ExpiredDate == null ? RoundedDate.AddDays(FixedData.DATE_TO_PAY) : invoice.ExpiredDate; /////////////
+            invoiceDTO.PaidDate = invoice.PaidDate == null ? dateTime : invoice.PaidDate; ////////////////////
+            invoiceDTO.Status = invoice.Status;
+            invoiceDTO.ElectricityConsumptionEnd = invoice.ElectricityConsumptionEnd != null ? invoice.ElectricityConsumptionEnd : invoice.ElectricityConsumptionStart + 1;
+            invoiceDTO.ElectricityConsumptionStart = invoice.ElectricityConsumptionStart;
+            invoiceDTO.ElectricityCostId = invoice.ElectricityCostId;
+            invoiceDTO.ElectricityCost = new ElectricityCostDTO()
+            {
+                Price = invoice.ElectricityCost.Price,
+                Id = invoice.ElectricityCost.Id,
+                AppliedDate = invoice.ElectricityCost.AppliedDate
+            };
+            invoiceDTO.WaterConsumptionEnd = invoice.WaterConsumptionEnd != null ? invoice.WaterConsumptionEnd : invoice.WaterConsumptionStart + 1;
+            invoiceDTO.WaterConsumptionStart = invoice.WaterConsumptionStart;
+            invoiceDTO.WaterCost = new WaterCostDTO()
+            {
+                Price = invoice.WaterCost.Price,
+                Id = invoice.WaterCost.Id,
+                AppliedDate = invoice.WaterCost.AppliedDate
+            };
+            invoiceDTO.Resident = new ResidentDTO()
+            {
+                Id = invoice.Resident.Id,
+                FullName = invoice.Resident.FullName,
+                IdentityCardNumber = invoice.Resident.IdentityCardNumber,
+                Phone = invoice.Resident.Phone
+            };
+
+            RoomDTO roomDTO = new RoomDTO();
+            roomDTO.Id = invoice.Room.Id;
+            roomDTO.Code = invoice.Room.Code;
+            roomDTO.FeeAppliedDate = invoice.Room.FeeAppliedDate;
+            roomDTO.RentFee = invoice.Room.RentFee;
+
+            roomDTO.MotelChain = new MotelChainDTO()
+            {
+                Id = invoice.Room.MotelChain.Id,
+                Address = invoice.Room.MotelChain.Address,
+                Name = invoice.Room.MotelChain.Name,
+                Manager = new ManagerDTO()
+                {
+                    FullName = invoice.Room.MotelChain.Manager.FullName,
+                    IdentityCardNumber = invoice.Room.MotelChain.Manager.IdentityCardNumber,
+                    Phone = invoice.Room.MotelChain.Manager.Phone
+                },
+            };
+            invoiceDTO.Room = roomDTO;
+            return invoiceDTO;
         }
     }
 }

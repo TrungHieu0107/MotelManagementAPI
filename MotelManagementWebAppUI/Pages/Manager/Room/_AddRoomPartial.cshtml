@@ -1,0 +1,49 @@
+﻿@using BussinessObject.DTO
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+}
+@model RoomDTO
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm phòng mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#myModal').modal('toggle')">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="create-object-form">
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="number" asp-for="Status" value=1 hidden />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="@Model.Code" class="control-label"></label>
+                            <input id="code" asp-for="@Model.Code" class="form-control" />
+                            <span asp-validation-for="@Model.Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.NearestNextRentFee" class="control-label"></label>
+                            <input id="rent-fee" asp-for="@Model.NearestNextRentFee" class="form-control" />
+                            <span asp-validation-for="@Model.NearestNextRentFee" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.NearestNextFeeAppliedDate" class="control-label"></label>
+                            <input id="fee-applied-date" asp-for="@Model.NearestNextFeeAppliedDate" class="form-control" />
+                            <span asp-validation-for="@Model.NearestNextFeeAppliedDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+        
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#myModal').modal('toggle'); ">Đóng</button>
+                        <button type="submit" class="btn btn-primary" id="save-button">Lưu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />

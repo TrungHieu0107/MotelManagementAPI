@@ -1,0 +1,66 @@
+﻿@page "/room/room-detail/{id}"
+@using System.Globalization
+@model MotelManagementWebAppUI.Pages.Room.RoomDetailModel
+@{
+    Layout = "_LayoutManager";
+    ViewData["Title"] = "Chi tiết phòng";
+    var BookedRoom = Model.BookedRoom;
+    var IsEmpty = Model.IsEmpty;
+    var IsTheOnlyRecord = Model.IsTheOnlyRecord;
+    var RoomId = Model.RoomId;
+}
+@if(TempData["BookRoomSuccessMessage"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.success('@TempData["BookRoomSuccessMessage"]')
+    </script>
+}
+@if(TempData["BookRoomErrorMessage"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["BookRoomErrorMessage"]')
+    </script>
+}
+<div style="width:100%; margin-top: 50px;">
+    <img src="~/image/Room.png" style="width:30%; margin-left:20%; float:left;">
+    <div style="width:fit-content; margin-left:10%; float:left;">
+        <div>
+            <div><h3>Thông tin phòng thuê</h3></div>
+            <div><b>Mã phòng: </b>@Model.BookedRoom.Code</div>
+            <div><b>Trạng thái: </b>@Model.BookedRoom.Status</div>
+            @if (!@Model.IsTheOnlyRecord) { 
+                <div><b>Tiền thuê phòng hiện tại: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.RentFee)) (Áp dụng cho các lần thu tiền trước ngày @Model.BookedRoom.NearestNextFeeAppliedDate)</div>
+                <div><b>Tiền thuê phòng áp dụng cho các lần thu tiền sau ngày @Model.BookedRoom.NearestNextFeeAppliedDate: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.NearestNextRentFee))</div>
+            }
+            else
+            {
+                <div><b>Tiền thuê phòng hiện tại: </b>@String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", long.Parse(Model.BookedRoom.RentFee))</div>
+            }
+            <div><b>Thuộc nhà trọ: </b>@Model.BookedRoom.MotelChainName</div>
+        </div>
+        <div>
+            @if (@Model.BookedRoom.Resident != null)
+            {
+                <br />
+                <div><h3>Thông tin người thuê</h3></div>
+                <div><b>Họ và tên người thuê: </b>@Model.BookedRoom.Resident.FullName</div>
+                <div><b>CMND/CCCD: </b>@Model.BookedRoom.Resident.IdentityCardNumber</div>
+                <div><b>Sđt: </b>@Model.BookedRoom.Resident.Phone</div>
+                <div><b>Trạng thái: </b>@Model.BookedRoom.Resident.Status</div>
+                <div><b>Ngày bắt đầu thuê: </b>@Model.BookedRoom.StartDate</div>
+                <div><b>Ngày ngừng thuê: </b>@Model.BookedRoom.EndDate</div>
+                <a href="/resident/detail/@Model.BookedRoom.Resident.Id" class="btn btn-primary btn-user btn-block" style="width:fit-content; margin-top:25px;">Xem thông tin người thuê</a> <br />
+                <a asp-page="./CheckOutRoom" class="btn btn-danger btn-user btn-block" style="width:fit-content; margin-top:10px;" asp-route-id="@Model.BookedRoom.Id">Kết thúc thuê phòng</a>
+            }
+            @if (IsEmpty)
+            {
+                <a class="btn btn-primary btn-user btn-block" style="width:fit-content; margin-top:25px;" asp-page="./BookRoom" asp-route-id="@Model.RoomId">Đặt phòng này</a>
+            }
+        </div>
+    </div>
+</div>
+

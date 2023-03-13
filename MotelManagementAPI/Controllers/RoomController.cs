@@ -30,7 +30,7 @@ namespace MotelManagementAPI.Controllers
         [Authorize(Roles = "Manager")]
         [HttpPost]
         [Route("add-new-room")]
-        public async Task<IActionResult> AddNewRoom(string Code, string FeeAppliedDate, long RentFee, int Status)
+        public async Task<IActionResult> AddNewRoom(string Code, DateTime FeeAppliedDate, long RentFee, int Status)
         {
             
             CommonResponse commonResponse = new CommonResponse();
@@ -119,7 +119,7 @@ namespace MotelManagementAPI.Controllers
             long? minFee,
             long? maxFee,
             int? status,
-            string? appliedDateAfter,
+            DateTime? appliedDateAfter,
             int? currentPage,
             int? pageSize
         )
@@ -135,11 +135,11 @@ namespace MotelManagementAPI.Controllers
                 pagination.CurrentPage = currentPage ?? 1;
                 var result = _roomService.GetAllRoomHistoryWithFilter
                                 (
-                                     roomCode,
+                                     roomCode ?? null,
                                      minFee ?? -1,
                                      maxFee ?? -1,
                                      status ?? -1,
-                                     appliedDateAfter,
+                                     appliedDateAfter ?? DateTime.MinValue,
                                      ref pagination, 
                                      long.Parse(userId)
                                 );
@@ -191,6 +191,34 @@ namespace MotelManagementAPI.Controllers
 
                 RoomDTOForDetail roomDTOForDetail = _roomService.FindByIdForResident(roomId, residentId);
                 response.Data = roomDTOForDetail;
+                response.Message = "Get room successfully";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpGet]
+        [Route("get-room-by-id")]
+        [Authorize (Roles = Role.MANAGER)]
+        public IActionResult GetRoomByCode(long id)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var claimsIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+                long managerId = long.Parse(claimsIdentity.Claims.FirstOrDefault(a => a.Type == "Id")?.Value);
+
+                RoomDTO roomDTO = _roomService.GetRoomForUpdating(id, managerId);
+                if(roomDTO == null)
+                {
+                    response.Message = "Not found this room with id: " + id;
+                    return StatusCode(StatusCodes.Status204NoContent, response);   
+                }
+                response.Data = roomDTO;
                 response.Message = "Get room successfully";
                 return Ok(response);
             }

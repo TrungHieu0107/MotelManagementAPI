@@ -36,9 +36,9 @@ namespace DataAccess.Service.Impl
 
             Invoice invoice = new()
             {
-                ElectricityConsumptionStart = previousInvoice.ElectricityConsumptionEnd.GetValueOrDefault(0),
+                ElectricityConsumptionStart = previousInvoice == null ? 0 : previousInvoice.ElectricityConsumptionEnd.GetValueOrDefault(0),
                 ElectricityConsumptionEnd = null,
-                WaterConsumptionStart = previousInvoice.WaterConsumptionEnd.GetValueOrDefault(0),
+                WaterConsumptionStart = previousInvoice == null ? 0 : previousInvoice.WaterConsumptionEnd.GetValueOrDefault(0),
                 WaterConsumptionEnd = null,
                 CreatedDate = startDate,
                 StartDate = startDate,
@@ -169,11 +169,12 @@ namespace DataAccess.Service.Impl
             return result;
         }
 
-        public List<InvoiceDTO> GetAllLatestInvoice(string roomCode, int status, long userId,long managerId, ref Pagination pagination)
+        public List<InvoiceDTO> GetAllLatestInvoice(string roomCode, int status, DateTime? paidDate, long userId,long managerId, ref Pagination pagination)
         {
             var result = _invoiceRepo.GetAllInvoice(
                                                 roomCode,
                                                 status,
+                                                paidDate,
                                                 userId,
                                                 managerId,
                                                 ref pagination

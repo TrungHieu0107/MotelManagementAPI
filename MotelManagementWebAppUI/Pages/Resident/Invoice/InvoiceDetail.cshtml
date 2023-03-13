@@ -1,0 +1,195 @@
+﻿@page "/resident/invoice/invoice-detail/{id}"
+@using System.Globalization
+@model MotelManagementWebAppUI.Pages.Resident.Invoice.InvoiceDetailModel
+@{
+    Layout = "_LayoutResident";
+    ViewData["Title"] = "Chi tiết hóa đơn";
+
+    var waterConsume = Model.invoiceDTO?.WaterConsumptionEnd - Model.invoiceDTO?.WaterConsumptionStart;
+    var totalWaterCost = waterConsume * Model.invoiceDTO?.WaterCost?.Price;
+
+    var electricityConsume = Model.invoiceDTO?.ElectricityConsumptionEnd - Model.invoiceDTO?.ElectricityConsumptionStart;
+    var totalElectricCost = electricityConsume * Model.invoiceDTO?.ElectricityCost?.Price;
+
+    var dayUse = (int)(Model.invoiceDTO?.EndDate.Value - Model.invoiceDTO?.StartDate)?.TotalDays;
+    var totalRentFee = dayUse * Model.invoiceDTO?.Room.RentFee;
+
+    var totalInvoice = totalElectricCost + totalWaterCost + totalRentFee;
+    var defaultValue = "0 (VNĐ)";
+}
+@if (@Model.invoiceDTO != null)
+{
+    <div>
+        <div class="text-center mt-2 mb-3">
+            <h3>Thông tin hóa đơn</h3>
+        </div>
+        <div class="row">
+            <b class="col-2">Phòng trọ: </b>
+            <span class="col-10">
+                Phòng @Model.invoiceDTO.Room.Code - @Model.invoiceDTO.Room.MotelChain.Name - @Model.invoiceDTO.Room.MotelChain.Address
+            </span>
+        </div>
+
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.FullName):  </b>
+            <span class="col-3">@Model.invoiceDTO.Resident.FullName</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Resident.Phone):  </b>
+            <span class="col-3">@Model.invoiceDTO.Resident.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.FullName):  </b>
+            <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.FullName</span>
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.Room.MotelChain.Manager.Phone):  </b>
+            <span class="col-3">@Model.invoiceDTO.Room.MotelChain.Manager.Phone</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.StartDate):  </b>
+            <span class="col-3">@Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.EndDate):  </b>
+            <span class="col-3">@Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.CreatedDate):  </b>
+            <span class="col-3">
+                @Model.invoiceDTO.CreatedDate.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+            </span>
+
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.ExpiredDate):  </b>
+            <span class="col-3">
+                @Model.invoiceDTO.ExpiredDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)
+            </span>
+        </div>
+        <div class="row">
+            <b class="col-2">@Html.DisplayNameFor(Model => Model.invoiceDTO.PaidDate):  </b>
+            <span class="col-3">@(Model.invoiceDTO.PaidDate.HasValue ? Model.invoiceDTO.PaidDate.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) : "-")</span>
+        </div>
+
+        <div class="row">
+            <b class="col-2">Mô tả </b>
+        </div>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Loại</th>
+                        <th scope="col">Đơn vị</th>
+                        <th scope="col">Từ</th>
+                        <th scope="col">Đến</th>
+                        <th scope="col">Tổng số lượng</th>
+                        <th scope="col">Đơn giá</th>
+                        <th scope="col">Tổng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*tiền phòng*@
+                    <tr>
+                        <th scope="row">Tiền phòng</th>
+                        <td>Ngày</td>
+                        <td>@Model.invoiceDTO.StartDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                        <td>@Model.invoiceDTO.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                        <td>@dayUse</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.Room.RentFee)
+                        </td>
+                        <td>
+                            @((totalRentFee.HasValue && @totalRentFee.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalRentFee ?? 0) : defaultValue)
+                        </td>
+                    </tr>
+                    @*tiền điện*@
+                    <tr>
+                        <th scope="row">Tiền điện</th>
+                        <td>kWh</td>
+                        <td>@Model.invoiceDTO.ElectricityConsumptionStart</td>
+                        <td>@Model.invoiceDTO.ElectricityConsumptionEnd</td>
+                        <td>@electricityConsume</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.ElectricityCost.Price)
+                        </td>
+                        <td>
+                            @((totalElectricCost.HasValue && totalElectricCost.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalElectricCost ?? 0) : defaultValue)
+                        </td>
+                    </tr>
+
+                    @*tiền nước*@
+                    <tr>
+                        <th scope="row">Tiền nước</th>
+                        <td>m3</td>
+                        <td>@Model.invoiceDTO.WaterConsumptionStart</td>
+                        <td>@Model.invoiceDTO.WaterConsumptionEnd</td>
+                        <td>@waterConsume</td>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", Model.invoiceDTO.WaterCost.Price)
+                        </td>
+                        <td>
+                            @((totalWaterCost.HasValue && totalWaterCost.Value > 0) ? @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", totalWaterCost ?? 0) : defaultValue)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=5 scope="row"></td>
+                        <th scope="row">
+                            Tổng
+                        </th>
+                        <td>
+                            @String.Format(CultureInfo.InvariantCulture, "{0:#,#} (VNĐ)", (totalRentFee + totalElectricCost + totalWaterCost) ?? 0)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <form id="form-pay-invoice" method="post" class="d-flex justify-content-end me-3">
+        <button type="button" class="btn btn-secondary ms-3 me-3" onclick="window.location.href='/resident/invoice/invoice-list'">Trở về</button>
+    </form>
+}
+else
+{
+    <div id="error-invoice-list-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#error-invoice-list-modal').modal('toggle')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="delete-object-form">
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <span>Không tìm thấy hóa đơn nào</span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="window.location.href ='/invoice-list'">Đóng</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+      var modalError = $("#error-invoice-list-modal");
+      console.log(modalError);
+
+      if (modalError) {
+        modalError.modal({
+          modal: true,
+          width: 200,
+          height: 150,
+          draggable: true,
+          resizable: true,
+        });
+
+        modalError.modal("toggle");
+      }
+    });
+
+    function confirmCheckPaid() {
+          showConfirm("<p>Bạn có chắc chắn rằng hóa đơn này đã được thanh toán hay không?</p>", () => {
+            payInvoice();
+            });
+    }
+</script>
