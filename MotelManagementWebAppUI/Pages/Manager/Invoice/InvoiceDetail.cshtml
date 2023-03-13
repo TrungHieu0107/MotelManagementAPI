@@ -207,7 +207,7 @@ else
     function payInvoice(){
       let data = {
         invoiceId: @Model.invoiceDTO.Id,
-        roomCode: @Model.invoiceDTO.Room.Code
+        roomCode: '@Model.invoiceDTO.Room.Code'
       };
 
       console.log(data);
@@ -228,7 +228,8 @@ else
                       $("#notification").modal("toggle");
                       $("#notification").on("hidden.bs.modal" , function () {
                           if(response.success){
-                               window.location.reload();
+                               //window.location.reload();
+                               window.location.href ='/invoice-list';
                           }
                       });
                 },
