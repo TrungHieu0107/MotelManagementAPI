@@ -29,10 +29,12 @@ namespace BussinessObject.DTO
         public HistoryDTO LatestHistory { get; set; }
 
         [Display(Name = "Giá thuê mới")]
-        [Range(1, 1000000000)]
+        [Range(1, 1000000000 , ErrorMessage = "Giá thuê phải lớn hơn 1 và nhỏ hơn 1000000000")]
+        [Required(ErrorMessage = "Nhập giá phòng")]
         public long? NearestNextRentFee { get; set; }
 
         [Display(Name = "Ngày áp dụng giá mới")]
+        [Required(ErrorMessage = "Nhập ngày áp dụng giá phòng")]
         [DataType(DataType.Date)]
         public DateTime? NearestNextFeeAppliedDate { get; set; }
     }
