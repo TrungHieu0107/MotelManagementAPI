@@ -153,6 +153,7 @@
                                             },
                                             error: function (xhr, status, error) {
 
+                                              
                                                 // Parse error response and get validation errors
                                                 var errorResponse = JSON.parse(xhr.responseText);
                                                 var validationErrors = errorResponse.errors;
@@ -175,23 +176,7 @@
 
                                 });
                        
-                            $(document).ready(function () {
-                                $.ajax({
-                                    url: "http://localhost:5001/api/ElectricityCost/get-current-electricity-cost",
-                                    type: "GET",
-                                    headers: { "Authorization": "Bearer @HttpContext.Request.Cookies["token"]", },
-                                    dataType: "json",
-                                    success: function (data) {
-                                        var price = data.data.price;
-                                        var formattedPrice = price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                                        $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
-                                    },
-                                    error: function () {
-                                        $("#electric-cost").html("Error: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
-                                    }
-                                });
-                            });
-                      
+                           
 
                         
                             $(document).ready(function () {
@@ -206,7 +191,7 @@
                                         $("#electric-cost").html("Giá hiện tại: " + formattedPrice);
                                     },
                                     error: function () {
-                                        $("#electric-cost").html("Error: Unable to retrieve current water cost");
+                                            $("#electric-cost").html("Lỗi: Không thể lấy giá điện hiện tại, vui lòng reload lại trang");
                                     }
                                 });
                             });
