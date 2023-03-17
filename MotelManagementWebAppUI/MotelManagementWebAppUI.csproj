@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Partial\**" />
+    <Content Remove="Pages\Partial\**" />
+    <EmbeddedResource Remove="Pages\Partial\**" />
+    <None Remove="Pages\Partial\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BussinessObject\BussinessObject.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\MotelManagementAPI\MotelManagementAPI.csproj" />
@@ -22,10 +29,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="7.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pages\Partial\" />
   </ItemGroup>
 
 </Project>

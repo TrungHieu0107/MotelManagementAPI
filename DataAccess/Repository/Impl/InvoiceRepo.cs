@@ -494,6 +494,12 @@ namespace DataAccess.Repository
                 if (_context.SaveChanges() <= 0) throw new Exception("Đã có lỗi xảy ra ở phía máy chủ.");
                 invoiceDTOs.Add(InvoiceToClosedInvoiceDTO(oldInvoice, null));
             }
+            if(newInvoice.StartDate > checkoutDate)
+            {
+                _context.Invoices.Remove(newInvoice);
+                _context.SaveChanges();
+                return invoiceDTOs;
+            }
             DateTime RoundedDate = new DateTime(checkoutDate.Year, checkoutDate.Month, checkoutDate.Day);
             newInvoice.PaidDate = checkoutDate;
             newInvoice.Status = InvoiceStatus.PAID;

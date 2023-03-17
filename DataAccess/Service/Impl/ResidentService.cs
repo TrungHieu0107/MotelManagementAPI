@@ -260,7 +260,7 @@ namespace DataAccess.Service.Impl
         public bool BookRoom(BookingRoomRequest bookingRoomRequest, long managerId)
         {
             Resident resident = _residentRepo.FindByIdentityCardNumberToBookRoom(bookingRoomRequest.IdentityCardNumber);
-            if (resident == null) throw new Exception("Người thuê với căn cước công dân: " + bookingRoomRequest.IdentityCardNumber + " không tòn tại.");
+            if (resident == null) throw new Exception("Người thuê với căn cước công dân: " + bookingRoomRequest.IdentityCardNumber + " không tồn tại.");
             if (resident.Status == AccountStatus.LATE_PAYMENT) throw new Exception("Người thuê đang có hóa đơn bị trễ.");
 
             Room room = _roomRepo.CheckAndGetBeforeBookingById(managerId, bookingRoomRequest.RoomId);

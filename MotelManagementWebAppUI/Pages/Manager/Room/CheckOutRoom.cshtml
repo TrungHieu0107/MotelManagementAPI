@@ -49,6 +49,22 @@
             <span class="col-3">@Model.InvoiceDTOs[0].Room.MotelChain.Manager.Phone</span>
         </div>
     </div>
+    @if(Model.InvoiceDTOs[0].EndDate < Model.InvoiceDTOs[0].StartDate)
+    {
+    <div class="row">
+        <b class="col-12">Phòng hiện đang được đặt và sẽ bắt đầu tính hóa đơn từ @Model.InvoiceDTOs[0].StartDate</b>
+    </div>
+    <form method="post" class="d-flex justify-content-center">
+    <input type="hidden" name="residentId" asp-for="@Model.ResidentId">
+    <input type="hidden" name="roomId" asp-for="@Model.RoomId">
+    <input type="hidden" name="checkOutDate" asp-for="@Model.CheckOutDate">
+    <button style="width:fit-content;" class="btn btn-primary btn-user btn-block" type="submit" asp-page-handler="CheckOut">
+        Hủy đặt và trả phòng
+    </button>
+</form>
+    }
+    else
+    {
     <div class="row">
         <b class="col-5">
             Hóa đơn cần trả khi trả phòng
@@ -134,6 +150,9 @@
             Thanh toán và trả phòng
         </button>
     </form>
+    }
+    
+    
 </div>
 <div class="view-invoice-detail-modal">
     @*<partial name="~/Pages/Manager/Room/_InvoiceDetailPartial.cshtml" model="@Model.InvoiceDTOs[index]" />*@

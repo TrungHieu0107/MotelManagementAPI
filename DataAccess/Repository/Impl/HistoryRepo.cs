@@ -22,11 +22,11 @@ namespace DataAccess.Repository
             return _context.Histories.Where(p => p.ResidentId == residentId).FirstOrDefault();
         }
 
-        public HistoryDTO GetLatestHistoryByRoomId(long id)
+        public HistoryDTO GetLatestHistoryByRoomId(long roomId)
         {
-            var result = _context.Histories.Where(x => x.Id == id).Select(history => new HistoryDTO()
+            var result = _context.Histories.Where(x => x.RoomId == roomId && x.EndDate == null).Select(history => new HistoryDTO()
             {
-                Id = id,
+                Id = history.Id,
                 RoomId = history.RoomId,
                 EndDate = history.EndDate, 
                 StartDate = history.StartDate,
@@ -118,7 +118,7 @@ namespace DataAccess.Repository
                 .Include(history => history.Room)
                 .Include(history => history.Room.MotelChain)
                 .Where(history => history.Resident.Status == AccountStatus.ACTIVE
-                && history.Room.Status == RoomStatus.ACTIVE
+                && (history.Room.Status == RoomStatus.ACTIVE || history.Room.Status == RoomStatus.BOOKED)
                 && history.ResidentId == residentId
                 && history.RoomId == roomId)
                 .OrderByDescending(history => history.StartDate)
@@ -129,6 +129,12 @@ namespace DataAccess.Repository
             if (history == null)
             {
                 return null;
+            }
+            if(history.StartDate > checkoutDate)
+            {
+                _context.Histories.Remove(history);
+                _context.SaveChanges();
+                return new HistoryDTO();
             }
 
             history.EndDate = checkoutDate;

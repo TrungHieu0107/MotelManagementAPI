@@ -28,17 +28,16 @@ namespace MotelManagementWebAppUI.Pages.Room
         public SelectList SelectListRoomStatus { get; set; } = new SelectList(new Dictionary<int, string>()
                                                     {
                                                         {0, "Hoạt động"},
-                                                        {1, "Không hoạt động"},
                                                         {2, "Trống" },
                                                         {3, "Đã xóa" },
-                                                        {4, "Có người ở" },
+                                                        {4, "Đã được đặt" },
                                                     }, "Key", "Value");
 
         public List<string> ListStatus = new List<string>() { "Hoạt động",
-                                                            "Không hoạt động",
+                                                            "Cũ",
                                                             "Trống",
                                                             "Đã xóa",
-                                                            "Có người ở"
+                                                            "Đã được đặt"
                                                         };
         [BindProperty(SupportsGet = true)]
         public FilterRoomOption filterRoomOption { get; set; } = default(FilterRoomOption);
